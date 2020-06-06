@@ -8,18 +8,18 @@
 all: supporting_libraries Molecule
 
 supporting_libraries:
-	cd lilly/supporting_libraries && make install
+	cd supporting_libraries && make install
 
 Molecule:
-	cd lilly/Molecule && make install
+	cd Molecule && make install
 
 install: supporting_libraries Molecule
 	@echo "No separate installation required" >&2
 
 clean:
-	cd lilly/supporting_libraries && make clean
-	cd lilly/Molecule && make clean
+	cd supporting_libraries && make clean
+	cd Molecule && make clean
 
 uninstall:
-	cd lilly/supporting_libraries && make uninstall
-	cd lilly/Molecule && make uninstall
+	cd supporting_libraries && make uninstall
+	cd Molecule && make uninstall

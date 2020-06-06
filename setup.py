@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-import shutil
 import os
-from sys import platform
+import glob
 
 try:
     from setuptools import setup
@@ -16,7 +15,7 @@ from subprocess import call
 from multiprocessing import cpu_count
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-MEDCHEM_PATH = os.path.join(BASEPATH, 'medchem/')
+MEDCHEM_PATH = os.path.join(BASEPATH, 'medchem')
 
 # define project information
 NAME = 'medchem'
@@ -29,40 +28,31 @@ class LillyBuild(build):
         build.run(self)
 
         # build lilly medchem
-        build_path = os.path.abspath(self.build_temp)
+        build_path = os.path.abspath(MEDCHEM_PATH)
 
         cmd = [
             'make',
-            'OUT=' + build_path,
         ]
 
         try:
             cmd.append('-j%d' % cpu_count())
         except NotImplementedError:
-            print 'Unable to determine number of CPUs. Using single threaded make.'
+            print('Unable to determine number of CPUs. Using single threaded make.')
 
         options = [
             'DEBUG=n',
-            'ENABLE_SDL=n',
         ]
         cmd.extend(options)
 
-        targets = ['python']
+        targets = ['all']
         cmd.extend(targets)
 
-        if platform == 'darwin':
-            target_path = 'OSX64_PYTHON'
-        else:
-            target_path = 'UNIX_PYTHON'
-
-        target_files = [
-            os.path.join(build_path, target_path, 'bin', 'xcsoar.so')
-        ]
+        target_files = list(glob.glob(os.path.join(build_path, 'build', '*'))) + list(glob.glob(os.path.join(build_path, 'lilly', 'lib', '*')))
 
         def compile():
-            call(cmd, cwd=XCSOAR_PATH)
+            call(cmd, cwd=MEDCHEM_PATH)
 
-        self.execute(compile, [], 'Compiling xcsoar')
+        self.execute(compile, [], 'Compiling lilly medchem')
 
         # copy resulting tool to library build folder
         self.mkpath(self.build_lib)
@@ -72,7 +62,7 @@ class LillyBuild(build):
                 self.copy_file(target, self.build_lib)
 
 
-class XCSoarInstall(install):
+class LillyInstall(install):
     def initialize_options(self):
         install.initialize_options(self)
         self.build_scripts = None
@@ -85,9 +75,31 @@ class XCSoarInstall(install):
         # run original install code
         install.run(self)
 
-        # install XCSoar executables
+        # install executable
         self.copy_tree(self.build_lib, self.install_lib)
 
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
+setup(
+    name=NAME,
+    version=VERSION,
+    description='LillyMedchem filtering rules',
+    author='InVivo AI',
+    author_email='emmanuel@invivoai.com',
+    install_requires=["numpy"],
+    maintainer='Emmanuel Noutahi',
+    maintainer_email='emmanuel@invivoai.com',
+    long_description=read('README.md'),
+    packages=['medchem'],
+    license='Not Open Source',
+    scripts=glob.glob('bin/*'),
+    include_package_data=True,
+    python_requires=">=3.6.8",  # Python version restrictions
+    cmdclass={
+        'build': LillyBuild,
+        'install': LillyInstall,
+    }
+)

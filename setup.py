@@ -2,81 +2,97 @@
 
 import os
 import glob
+import shutil
 
-try:
-    from setuptools import setup
-    from setuptools.command.install import install
-except ImportError:
-    from distutils.core import setup
-    from distutils.command.install import install
-
+from setuptools import setup, find_packages
+from setuptools import Command
+from setuptools.command.install import install
 from distutils.command.build import build
 from subprocess import call
 from multiprocessing import cpu_count
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-MEDCHEM_PATH = os.path.join(BASEPATH, 'medchem')
+MEDCHEM_PATH = os.path.join(BASEPATH, 'medchem/lilly')
 
 # define project information
 NAME = 'medchem'
 VERSION = '1.0.0'
 DESCRIPTION = 'Molecule filtering code for medchem'
 
-class LillyBuild(build):
-    def run(self):
-        # run original build code
-        build.run(self)
-
-        # build lilly medchem
-        build_path = os.path.abspath(MEDCHEM_PATH)
-
-        cmd = [
-            'make',
-        ]
-
+def build_make(targets="all", options=['DEBUG=n']):
+    if isinstance(targets, str):
+        targets = [targets]
+    if isinstance(options, str):
+        options = [options]
+    cmd = [
+        'make',
+    ]
+    if 'all' not in targets:
         try:
             cmd.append('-j%d' % cpu_count())
         except NotImplementedError:
             print('Unable to determine number of CPUs. Using single threaded make.')
 
-        options = [
-            'DEBUG=n',
-        ]
-        cmd.extend(options)
+    cmd.extend(options)
+    cmd.extend(targets)
 
-        targets = ['all']
-        cmd.extend(targets)
-
-        target_files = list(glob.glob(os.path.join(build_path, 'build', '*'))) + list(glob.glob(os.path.join(build_path, 'lilly', 'lib', '*')))
-
-        def compile():
-            call(cmd, cwd=MEDCHEM_PATH)
-
-        self.execute(compile, [], 'Compiling lilly medchem')
-
-        # copy resulting tool to library build folder
-        self.mkpath(self.build_lib)
-
-        if not self.dry_run:
-            for target in target_files:
-                self.copy_file(target, self.build_lib)
+    def compile():
+        call(cmd, cwd=MEDCHEM_PATH)
+    return compile
 
 
-class LillyInstall(install):
+class RunMake(Command):
+    description = 'Run makefile for C/C++ source'
+    user_options = [
+        # The format is (long option, short option, description).
+        ('target=', 't', 'Target for the make'),
+    ]
     def initialize_options(self):
-        install.initialize_options(self)
-        self.build_scripts = None
-
+        self.target = None
+    
     def finalize_options(self):
-        install.finalize_options(self)
-        self.set_undefined_options('build', ('build_scripts', 'build_scripts'))
+        if self.target is None:
+            self.target = 'clean'
+        if self.target not in ['clean', 'uninstall', 'all']:
+            raise Exception(f"Wrong values {self.target} for target. Expect one of ['clean', 'uninstall', 'all']")
 
     def run(self):
         # run original install code
+        # install executable
+        self.execute(build_make(targets=self.target), [], "Cleaning C/C++ files")
+
+
+class MedChemInstall(install):
+    def run(self):
+        # build lilly medchem
+        self.execute(build_make(targets="all"), [], "Building C/C++ files")
+        # run original build code
         install.run(self)
 
-        # install executable
-        self.copy_tree(self.build_lib, self.install_lib)
+        # # copy resulting tool to library build folder
+        # self.mkpath(self.build_lib)
+
+        # if not self.dry_run:
+        #     for target in target_files:
+        #         target_dir = os.path.join(build_path, target)
+        #         shutil.copytree(target_dir, os.path.join(self.build_lib, 'medchem', 'lilly'))
+
+
+
+class MedChemBuild(build):
+    def run(self):
+        # run original build code
+        build.run(self)
+        # build lilly medchem
+        build_path = os.path.abspath(MEDCHEM_PATH)
+
+        self.execute(build_make(targets='all'), [], 'Compiling lilly medchem')
+        # copy resulting tool to library build folder
+        self.mkpath(self.build_lib)
+        if not self.dry_run:
+            for target in ['build', 'lib']:
+                target_dir = os.path.join(build_path, target)
+                shutil.copytree(target_dir, os.path.join(self.build_lib, 'medchem', 'lilly'))
 
 
 def read(fname):
@@ -93,13 +109,13 @@ setup(
     maintainer='Emmanuel Noutahi',
     maintainer_email='emmanuel@invivoai.com',
     long_description=read('README.md'),
-    packages=['medchem'],
+    packages=find_packages(),
     license='Not Open Source',
     scripts=glob.glob('bin/*'),
     include_package_data=True,
     python_requires=">=3.6.8",  # Python version restrictions
     cmdclass={
-        'build': LillyBuild,
-        'install': LillyInstall,
-    }
-)
+        'run_make': RunMake,
+        'build': MedChemBuild,
+        'install': MedChemInstall,
+    })

@@ -2,8 +2,8 @@ Lilly-Medchem-Rules
 ===================
 
 
-# Preamble
-This is an implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at [doi 10.1021/jm301008n](https://doi.org/10.1021/jm301008n).
+## Summary
+This is a python binding of the implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at [doi 10.1021/jm301008n](https://doi.org/10.1021/jm301008n).
 
 
 To quote the abstract:
@@ -21,9 +21,9 @@ screening data at Lilly were assigned to 17 subfamilies, and the number of subfa
 was active was used as a promiscuity index.
 ```
 
-# Installation
+## Installation
 
-## Requirements
+### Requirements
 This package requires : `gcc` and `g++` for compilation. Use your OS package manager or conda:
 
 ```bash
@@ -31,7 +31,7 @@ conda install -c conda-forge c-compiler cxx-compiler
 # conda install gcc_linux-64 
 # conda install gxx_linux-64
 ```
-## Source
+### Source
 Clone the repo and install it locally
 ```bash
 git clone https://bitbucket.org/invivoai/medchem.git
@@ -45,16 +45,16 @@ python setup.py install # "python setup.py build" should not be necessary
 
 ```
 
-## pip
+### pip
 You can install from our pypi repo on anaconda
 
 ```bash
 pip install --index-url https://pypi.anaconda.org/t/$TOKEN/invivoai/medchem
 ``` 
 
-# Running
+## Running
 
-## Command line
+### Command line
 You can use the provided binary: ```chemfilter --help```
 ```
 Usage: chemfilter [OPTIONS]
@@ -94,7 +94,7 @@ Options:
   --help                         Show this message and exit.
 ```
 
-## Module
+### Module
 You can import the package instead 
 ```python
 from medchem.filter import score
@@ -140,6 +140,6 @@ res = run_scorer(smiles_list, **test_config)
 print(res)
 ```
 
-# Maintainers
+## Maintainers
 
 @maclandrol - Emmanuel Noutahi

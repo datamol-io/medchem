@@ -2,7 +2,7 @@
 import click
 import os
 import pandas as pd
-from medchem.filter import run_scorer
+from medchem.filter import score
 
 
 @click.command(context_settings=dict(
@@ -98,12 +98,12 @@ def filter(ctx, min_atoms, soft_max_atoms, hard_max_atoms, min_num_rings,
         smiles_list = df[smcol].values
     else:
         smiles_list = df.ix[:, 0].values
-    results = run_scorer(smiles_list, **ctx.params)
+    results = score(smiles_list, **ctx.params)
 
     cols = ["rejected"]
     if not nodemerit:
         cols += ["reasons", "demerit_score"]
-    df[cols] = results.iloc[cols]
+    df[cols] = results[cols]
     df.to_csv(output, index=False)
 
     # export to output here

@@ -45,11 +45,11 @@ def run_cmd(cmd, shell=False):
     return res
 
 
-def run_scorer(smiles_list,
-               mc_first_pass_options="",
-               iwd_options="",
-               stop_after_step=3,
-               **run_options):
+def score(smiles_list,
+          mc_first_pass_options="",
+          iwd_options="",
+          stop_after_step=3,
+          **run_options):
     """Run scorer on input smile list:
     Arguments
     ----------

@@ -53,6 +53,12 @@ pip install --index-url https://pypi.anaconda.org/t/$TOKEN/invivoai/medchem
 ``` 
 
 ## Running
+The following "information" will be computed and added as columns to a DataFrame for each run:
+
+- **rejected** : whether the molecule pass the filter or was rejected
+- **reasons**: the reasons why the molecule was rejected if available
+- **demerit_score** a demerit score for molecules. The lower the better. A cutoff (parameter) is used to reject molecule with too many demerits
+- **step**: step of the pipeline where molecule was filtered out, if available
 
 ### Command line
 You can use the provided binary: ```chemfilter --help```
@@ -96,6 +102,7 @@ Options:
 
 ### Module
 You can import the package instead 
+
 ```python
 from medchem.filter import score
 test_config = {
@@ -110,6 +117,7 @@ test_config = {
     'okiso': False,
     'noapdm': False
 } # config file follow parameters of the binary
+
 smiles_list = [
     'Cc1cnc(CNc(cccc2-c3cn(CC(C4)CC4O)c4ncnc(N)c34)c2F)s1'
     'Cc1cnc(CNc(cccc2-c3cn(C[C@H](C4)C[C@@H]4O)c4ncnc(N)c34)c2F)s1',
@@ -136,7 +144,7 @@ smiles_list = [
     'Nc1c(c(-c2cccc(NCc3nc(CO)cs3)c2F)cn2CC3CCC3)c2ncn1',
     'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C4CCCC4)nn3)c2ncn1'
 ]
-res = run_scorer(smiles_list, **test_config)
+res = score(smiles_list, **test_config)
 print(res)
 ```
 

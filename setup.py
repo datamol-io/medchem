@@ -21,6 +21,7 @@ NAME = 'medchem'
 VERSION = '1.0.0'
 DESCRIPTION = 'Molecule filtering code for medchem'
 
+
 def build_make(targets="all", options=['DEBUG=n']):
     if isinstance(targets, str):
         targets = [targets]
@@ -33,13 +34,16 @@ def build_make(targets="all", options=['DEBUG=n']):
         try:
             cmd.append('-j%d' % cpu_count())
         except NotImplementedError:
-            print('Unable to determine number of CPUs. Using single threaded make.')
+            print(
+                'Unable to determine number of CPUs. Using single threaded make.'
+            )
 
     cmd.extend(options)
     cmd.extend(targets)
 
     def compile():
         call(cmd, cwd=MEDCHEM_PATH)
+
     return compile
 
 
@@ -49,6 +53,7 @@ class RunMake(Command):
         # The format is (long option, short option, description).
         ('target=', 't', 'Target for the make'),
     ]
+
     def initialize_options(self):
         self.target = None
 
@@ -56,12 +61,15 @@ class RunMake(Command):
         if self.target is None:
             self.target = 'clean'
         if self.target not in ['clean', 'uninstall', 'all']:
-            raise Exception(f"Wrong values {self.target} for target. Expect one of ['clean', 'uninstall', 'all']")
+            raise Exception(
+                f"Wrong values {self.target} for target. Expect one of ['clean', 'uninstall', 'all']"
+            )
 
     def run(self):
         # run original install code
         # install executable
-        self.execute(build_make(targets=self.target), [], "Cleaning C/C++ files")
+        self.execute(build_make(targets=self.target), [],
+                     "Cleaning C/C++ files")
 
 
 class MedChemInstall(install):
@@ -89,7 +97,9 @@ class MedChemBuild(build):
         if not self.dry_run:
             for target in ['build', 'lib']:
                 target_dir = os.path.join(build_path, target)
-                shutil.copytree(target_dir, os.path.join(self.build_lib, 'medchem', 'lilly'), dirs_exist_ok=True)
+                shutil.copytree(
+                    target_dir,
+                    os.path.join(self.build_lib, 'medchem', 'lilly', target))
 
 
 class MedChemDev(develop):
@@ -98,6 +108,7 @@ class MedChemDev(develop):
         self.execute(build_make(targets="all"), [], "Building C/C++ files")
         # run original build code
         develop.run(self)
+
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()

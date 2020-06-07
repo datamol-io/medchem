@@ -44,13 +44,20 @@ This will build (compile the C source) and install the package. If you are havin
 python setup.py install # "python setup.py build" should not be necessary
 
 ```
-
 ### pip
-You can install from our pypi repo on anaconda
+You can install from our pypi repo on anaconda (assuming you are login)
 
 ```bash
+pip install -i https://pypi.anaconda.org/invivoai/simple medchem
+# or if you want to use a token
 pip install --index-url https://pypi.anaconda.org/t/$TOKEN/invivoai/medchem
 ``` 
+
+### Troubleshooting
+
+In the rare case where you `$CPATH` is not well configured, you will get some `error: stray \number in program`. 
+Please set your CPATH to empy with `export CPATH=` before compiling/installing.
+
 
 ## Running
 The following "information" will be computed and added as columns to a DataFrame for each run:

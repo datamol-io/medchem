@@ -7,6 +7,8 @@ import shutil
 from setuptools import setup, find_packages
 from setuptools import Command
 from setuptools.command.install import install
+from setuptools.command.develop import develop
+from setuptools.command.egg_info import egg_info
 from distutils.command.build import build
 from subprocess import call
 from multiprocessing import cpu_count
@@ -49,7 +51,7 @@ class RunMake(Command):
     ]
     def initialize_options(self):
         self.target = None
-    
+
     def finalize_options(self):
         if self.target is None:
             self.target = 'clean'
@@ -69,14 +71,9 @@ class MedChemInstall(install):
         # run original build code
         install.run(self)
 
-        # # copy resulting tool to library build folder
-        # self.mkpath(self.build_lib)
-
-        # if not self.dry_run:
-        #     for target in target_files:
-        #         target_dir = os.path.join(build_path, target)
-        #         shutil.copytree(target_dir, os.path.join(self.build_lib, 'medchem', 'lilly'))
-
+    def do_egg_install(self):
+        self.execute(build_make(targets="all"), [], "Building C/C++ files")
+        install.do_egg_install(self)
 
 
 class MedChemBuild(build):
@@ -92,8 +89,15 @@ class MedChemBuild(build):
         if not self.dry_run:
             for target in ['build', 'lib']:
                 target_dir = os.path.join(build_path, target)
-                shutil.copytree(target_dir, os.path.join(self.build_lib, 'medchem', 'lilly'))
+                shutil.copytree(target_dir, os.path.join(self.build_lib, 'medchem', 'lilly'), dirs_exist_ok=True)
 
+
+class MedChemDev(develop):
+    def run(self):
+        # build lilly medchem
+        self.execute(build_make(targets="all"), [], "Building C/C++ files")
+        # run original build code
+        develop.run(self)
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -117,5 +121,6 @@ setup(
     cmdclass={
         'run_make': RunMake,
         'build': MedChemBuild,
+        'develop': MedChemDev,
         'install': MedChemInstall,
     })

@@ -92,3 +92,9 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+iwdemerit
+mc_first_pass
+mc_summarise
+tsubstructure
+libiwsupport.a

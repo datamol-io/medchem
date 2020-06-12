@@ -120,7 +120,7 @@ setup(
     description='LillyMedchem filtering rules',
     author='InVivo AI',
     author_email='emmanuel@invivoai.com',
-    install_requires=["numpy"],
+    install_requires=["click", "pandas"],
     maintainer='Emmanuel Noutahi',
     maintainer_email='emmanuel@invivoai.com',
     long_description=read('README.md'),

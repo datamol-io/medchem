@@ -1,0 +1,53 @@
+{% set name = "medchem" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+    path: ../
+
+build:
+  number: 0
+  skip: True  # [win]
+  binary_relocation: False  # [osx]
+
+requirements:
+  build:
+    - python {{ python }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.1
+    - make  # [not win]
+    - binutils
+    - libgcc
+    - setuptools
+    - pip
+  host:
+    - python
+    - zlib
+    - libgcc
+  run:
+    - python
+    - libgcc
+    - zlib
+    - pandas
+    - click
+
+test:
+  requires:
+    - pandas
+    - click
+  imports:
+    - medchem.filter
+  commands:
+    - chemfilter --help
+
+about:
+  home: https://bitbucket.org/invivoai/medchem/
+  summary: 'Implementation of Lilly medchem rules for molecule reactivity and drug-likeness prediction and filtering.'
+
+extra:
+  recipe-maintainers:
+    - maclandrol

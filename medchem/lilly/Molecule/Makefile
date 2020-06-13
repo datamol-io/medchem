@@ -1,19 +1,6 @@
-#Intel Compiler
-
-#CXX = icpc
-#CC = icc
-#LD = icpc
-#CXXFLAGS = -O2 -I . -I ../include -ffast-math -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-
-# Clang
-# CXX=clang++-9
-# CC=clang-9
-# LD=clang++-9
-
-CC=gcc
-CXX = g++
+CC ?= gcc
+CXX ?= g++
 LD = g++
-CXXFLAGS = -O2 -I . -I ../include -ffast-math -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 
 CXXFLAGS = -O2 -I . -I ../include -ffast-math -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DIW_IMPLEMENTATIONS_EXPOSED
 
@@ -48,6 +35,7 @@ all: $(EXECUTABLES)
 install:  $(EXECUTABLES)
 	if [ ! -d $(BIN_FOLDER) ] ; then mkdir $(BIN_FOLDER) ; fi
 	$(CP) -p $(EXECUTABLES) $(BIN_FOLDER)
+	$(RM) $(EXECUTABLES)
 
 mc_first_pass: $(MC_FIRST_PASS_OBJECTS)
 	$(LD) -o $@ $(MC_FIRST_PASS_OBJECTS) $(LIBDIRS) -liwsupport -lz

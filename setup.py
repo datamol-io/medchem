@@ -3,12 +3,10 @@
 import os
 import glob
 import shutil
-
 from setuptools import setup, find_packages
 from setuptools import Command
 from setuptools.command.install import install
 from setuptools.command.develop import develop
-from setuptools.command.egg_info import egg_info
 from distutils.command.build import build
 from subprocess import call
 from multiprocessing import cpu_count
@@ -18,7 +16,7 @@ MEDCHEM_PATH = os.path.join(BASEPATH, 'medchem/lilly')
 
 # define project information
 NAME = 'medchem'
-VERSION = '1.0.0'
+VERSION = "1.0.0"
 DESCRIPTION = 'Molecule filtering code for medchem'
 
 
@@ -97,9 +95,10 @@ class MedChemBuild(build):
         if not self.dry_run:
             for target in ['build', 'lib']:
                 target_dir = os.path.join(build_path, target)
-                shutil.copytree(
-                    target_dir,
-                    os.path.join(self.build_lib, 'medchem', 'lilly', target))
+                output = os.path.join(
+                    self.build_lib, 'medchem', 'lilly', target)
+                shutil.rmtree(output)
+                shutil.copytree(target_dir, output)
 
 
 class MedChemDev(develop):
@@ -116,22 +115,24 @@ def read(fname):
 
 setup(
     name=NAME,
-    version=VERSION,
     description='LillyMedchem filtering rules',
     author='InVivo AI',
     author_email='emmanuel@invivoai.com',
-    install_requires=["click", "pandas"],
+    install_requires=["numpy"],
     maintainer='Emmanuel Noutahi',
     maintainer_email='emmanuel@invivoai.com',
     long_description=read('README.md'),
     packages=find_packages(),
-    license='Not Open Source',
-    scripts=glob.glob('bin/*'),
-    include_package_data=True,
-    python_requires=">=3.6.8",  # Python version restrictions
+    version=VERSION,
     cmdclass={
         'run_make': RunMake,
         'build': MedChemBuild,
         'develop': MedChemDev,
         'install': MedChemInstall,
-    })
+        'pyinstall': install,
+    },
+    license='Not Open Source',
+    scripts=glob.glob('bin/*'),
+    include_package_data=True,
+    python_requires=">=3.6.8",  # Python version restrictions
+)

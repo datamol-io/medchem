@@ -1,21 +1,11 @@
-#CXX = icpc
-#CC = icc
-#CXXFLAGS = -O2 -I . -I ../include -Wall -ffast-math -DLINUX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-
-# CXX=clang++-9
-# CC=clang-9
-# LD=clang++-9
-
-CXX = g++
-CC = gcc
-LD = g++
+CXX ?= g++
+CC ?= gcc
 
 CXXFLAGS = -O2 -I . -I ../include -Wall -ffast-math -DLINUX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DIW_IMPLEMENTATIONS_EXPOSED
 
 AR = ar
 CP = cp
 RM = rm -f
-
 
 CFLAGS = -O2 -I . -I ../include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 

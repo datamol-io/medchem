@@ -70,7 +70,7 @@ from medchem.filter import score
     help=
     "Input csv or smi files. Header expected and first column should always be the smiles if smiles column name is not provided."
 )
-def filter(ctx, min_atoms, soft_max_atoms, hard_max_atoms, min_num_rings,
+def run(ctx, min_atoms, soft_max_atoms, hard_max_atoms, min_num_rings,
            max_num_rings, max_size_rings, max_size_chain, smarts, nodemerit,
            dthresh, output, odm, okiso, noapdm, smcol, allow_non_interesting,
            input_file):
@@ -110,4 +110,4 @@ def filter(ctx, min_atoms, soft_max_atoms, hard_max_atoms, min_num_rings,
 
 
 if __name__ == "__main__":
-    filter()
+    run()

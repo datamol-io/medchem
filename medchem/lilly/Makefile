@@ -11,6 +11,7 @@ supporting_libraries:
 	cd supporting_libraries && make install
 
 Molecule:
+	mkdir -p build
 	cd Molecule && make install
 
 install: supporting_libraries Molecule
@@ -21,5 +22,6 @@ clean:
 	cd Molecule && make clean
 
 uninstall:
+	rm -rf build
 	cd supporting_libraries && make uninstall
 	cd Molecule && make uninstall

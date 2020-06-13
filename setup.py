@@ -97,8 +97,7 @@ class MedChemBuild(build):
                 target_dir = os.path.join(build_path, target)
                 output = os.path.join(
                     self.build_lib, 'medchem', 'lilly', target)
-                shutil.rmtree(output)
-                shutil.copytree(target_dir, output)
+                self.copy_tree(target_dir, output)
 
 
 class MedChemDev(develop):
@@ -118,7 +117,7 @@ setup(
     description='LillyMedchem filtering rules',
     author='InVivo AI',
     author_email='emmanuel@invivoai.com',
-    install_requires=["numpy"],
+    install_requires=["pandas"],
     maintainer='Emmanuel Noutahi',
     maintainer_email='emmanuel@invivoai.com',
     long_description=read('README.md'),

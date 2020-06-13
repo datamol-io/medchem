@@ -38,6 +38,7 @@ git clone https://bitbucket.org/invivoai/medchem.git
 cd medchem 
 pip install . # Alternatively you can install a develop version
 ```
+
 This will build (compile the C source) and install the package. If you are having trouble with pip, use setup.py:
 
 ```bash
@@ -45,12 +46,16 @@ python setup.py install # "python setup.py build" should not be necessary
 
 ```
 ### pip
-You can install from our pypi repo on anaconda (assuming you are login)
+You can install directly from git using pip too:
 
 ```bash
-pip install -i https://pypi.anaconda.org/invivoai/simple medchem
-# or if you want to use a token
-pip install --index-url https://pypi.anaconda.org/t/$TOKEN/invivoai/medchem
+pip install git+https://bitbucket.org/invivoai/medchem.git
+``` 
+
+### conda
+
+```bash
+conda install -c invivoai medchem
 ``` 
 
 ### Troubleshooting

@@ -25,13 +25,14 @@ def _parse_output(rowlist):
     content = "\n".join([
         _rreplace(
             re.sub(r"\s+\([0-9]*\s+(matches\sto\s)", " \"", line.strip(), 1),
-            ")", "\"", 1).strip("'") for line in rowlist
+            "\')", "'\"", 1).strip("'") for line in rowlist
     ])
     flux = StringIO(content)
     df = pd.read_csv(flux,
                      sep="\s+",
                      doublequote=True,
                      names=["_smiles", "ID", "reasons"])
+    df['reasons'] = df['reasons'].apply(lambda x: x.strip("'") if x and isinstance(x, str) else x)
     return df
 
 

@@ -49,7 +49,7 @@ python setup.py install # "python setup.py build" should not be necessary
 You can install directly from git using pip too:
 
 ```bash
-pip install git+https://github.org/invivoai-platform/medchem.git
+pip install git+https://github.com/invivoai-platform/medchem.git
 ``` 
 
 ### conda

@@ -34,7 +34,7 @@ conda install -c conda-forge c-compiler cxx-compiler
 ### Source
 Clone the repo and install it locally
 ```bash
-git clone https://bitbucket.org/invivoai/medchem.git
+git clone https://github.com/invivoai-platform/medchem.git
 cd medchem 
 pip install . # Alternatively you can install a develop version
 ```

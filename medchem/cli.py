@@ -3,6 +3,7 @@ import click
 import os
 import pandas as pd
 from medchem.filter.demerits import score
+from medchem.filter.lead import lead_filter
 
 
 @click.command(
@@ -68,6 +69,17 @@ from medchem.filter.demerits import score
     required=True,
     help="Input csv or smi files. Header expected and first column should always be the smiles if smiles column name is not provided.",
 )
+@click.option(
+    "--lead-filter",
+    is_flag=True,
+    help="Whether to run lead filter on the molecules.",
+)
+@click.option(
+    "--alerts",
+    multiple=True,
+    default=["BMS"],
+    help="alerts to use for lead filtering",
+)
 def run(
     ctx,
     min_atoms,
@@ -87,6 +99,8 @@ def run(
     smcol,
     allow_non_interesting,
     input_file,
+    lead_filter,
+    alerts,
 ):
     if (hard_max_atoms and soft_max_atoms) and hard_max_atoms < soft_max_atoms:
         raise ValueError("--hard_max_atoms should be greater than --soft_max_atoms")
@@ -111,6 +125,8 @@ def run(
         smiles_list = df[smcol].values
     else:
         smiles_list = df.ix[:, 0].values
+    if lead_filter:
+        df["leadlike"] = lead_filter(smiles_list, alerts=alerts, n_jobs=os.cpu_count())
     results = score(smiles_list, **ctx.params)
 
     cols = ["rejected"]

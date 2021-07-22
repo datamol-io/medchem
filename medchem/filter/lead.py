@@ -45,14 +45,16 @@ class AlertsFilters:
 
         if isinstance(alerts_set, str):
             alerts_set = [alerts_set]
-        self.alerts_set = list(set(alerts_set))
+        self.alerts_set = [x.lower() for x in set(alerts_set)]
         self._build_rule_list()
 
     def _build_rule_list(self):
         """
         Build the rule sets defined in alerts_set for this object
         """
-        self.rule_df = self.rule_df[self.rule_df.rule_set_name.isin(self.alerts_set)]
+        self.rule_df = self.rule_df[
+            self.rule_df.rule_set_name.str.lower().isin(self.alerts_set)
+        ]
         tmp_rule_list = self.rule_df[
             ["rule_id", "smarts", "mincount", "description"]
         ].values.tolist()

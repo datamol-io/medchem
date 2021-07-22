@@ -53,7 +53,7 @@ def run_cmd(cmd, shell=False):
     return res
 
 
-def score(
+def lilly_score(
     smiles_list,
     mc_first_pass_options="",
     iwd_options="",

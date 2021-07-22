@@ -22,6 +22,13 @@ These are python binding of the implementation of Eli Lilly Medchem Rules publis
 
 These rules are used in `medchem.demerits.score` function and are the main offering of this package.
 
+The following "information" will be computed and added as columns to a DataFrame for each run:
+
+- **rejected** : whether the molecule pass the filter or was rejected
+- **reasons**: the reasons why the molecule was rejected if available
+- **demerit_score** a demerit score for molecules. The lower the better. A cutoff (parameter) is used to reject molecule with too many demerits
+- **step**: step of the pipeline where molecule was filtered out, if available
+- 
 #### NIBR filters
 
 Rules used by Novartis to build their new screening deck. The rules are published under "Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020), https://dx.doi.org/10.1021/acs.jmedchem.0c01332. 
@@ -93,15 +100,6 @@ pip install git+https://github.com/valence-platform/medchem.git
 
 In the rare case where you `$CPATH` is not well configured, you will get some `error: stray \number in program`. 
 Please set your CPATH to empy with `export CPATH=` before compiling/installing.
-
-
-## Running
-The following "information" will be computed and added as columns to a DataFrame for each run:
-
-- **rejected** : whether the molecule pass the filter or was rejected
-- **reasons**: the reasons why the molecule was rejected if available
-- **demerit_score** a demerit score for molecules. The lower the better. A cutoff (parameter) is used to reject molecule with too many demerits
-- **step**: step of the pipeline where molecule was filtered out, if available
 
 ### Command line
 You can use the provided binary: ```chemfilter --help```. This will only apply the demerits (Eli Lilly) filters.

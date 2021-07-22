@@ -1,29 +1,66 @@
-Lilly-Medchem-Rules
+Medchem
 ===================
 
+Package for applying common medchem filters to a dataset of molecules.
 
 ## Summary
-This is a python binding of the implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at [doi 10.1021/jm301008n](https://doi.org/10.1021/jm301008n).
+
+This package contains various implementation of medchem rules collected from various sources that may be applied as filters on generated or screened molecules. It centralizes all common filters used at Valence Discovery.
+
+Although the list is as exhaustive as possible, filtering rules mainly depends on the drug discovery programs. 
+
+It should be noted that **systematically applying all filters is to be avoided**. For example, "PAINS C" filters are usually not very relevant, another example is the filtering are very strict and could flag important substructure for a project (example some ZBGs).
 
 
-To quote the abstract:
+## Available Filters
 
-```
-[This approach] describes a set of 275 rules, developed over an 18-year period, used to identify 
-compounds that may interfere with biological assays, allowing their removal from screening sets. 
-Reasons for rejection include reactivity (e.g., acyl halides), interference with assay measurements 
-(fluorescence, absorbance, quenching), activities that damage proteins (oxidizers, detergents), instability 
-(e.g., latent aldehydes), and lack of druggability (e.g., compounds lacking both oxygen and nitrogen). 
-The structural queries were profiled for frequency of occurrence in druglike and nondruglike compound sets 
-and were extensively reviewed by a panel of experienced medicinal chemists. As a means of profiling the rules 
-and as a filter in its own right, an index of biological promiscuity was developed. The 584 gene targets with 
-screening data at Lilly were assigned to 17 subfamilies, and the number of subfamilies at which a compound 
-was active was used as a promiscuity index.
-```
+The following filters are available:
 
+#### **Eli Lilly Medchem Rules**
+
+These are python binding of the implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at [doi 10.1021/jm301008n](https://doi.org/10.1021/jm301008n).
+
+These rules are used in `medchem.demerits.score` function and are the main offering of this package.
+
+#### NIBR filters
+
+Rules used by Novartis to build their new screening deck. The rules are published under "Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020), https://dx.doi.org/10.1021/acs.jmedchem.0c01332. 
+
+These rules are used in lead filtering as `medchem.filter.lead.screening_filter`
+
+#### Common tox and assay interference rules
+
+These are pure rdkit filtering rules based on PAINS, BRENK, NIH and ZINC filters. There are used in lead filtering as `medchem.filter.lead.common_filter`
+
+#### ChEMBL filters
+
+These are alerts rules from the ChEMBL database that have been collected from various Pharma groups and commons assays. The rule set are:
+
+| Rule Set                                                | Number of Alerts |
+| ------------------------------------------------------- | ---------------: |
+| BMS                                                     |              180 |
+| Dundee                                                  |              105 |
+| Glaxo                                                   |               55 |
+| Inpharmatica                                            |               91 |
+| LINT                                                    |               57 |
+| MLSMR                                                   |              116 |
+| [PAINS](https://pubs.acs.org/doi/abs/10.1021/jm901137j) |              479 |
+| SureChEMBL                                              |              166 |
+
+There are used in lead filtering as `medchem.filter.lead.lead_filter`
+
+#### Generic filters
+
+These are generic filters based on specific molecular property such as number of atoms, size of macrocycles, etc. They are available at `medchem.filter.generic`
 ## Installation
 
-### Requirements
+### conda
+
+```bash
+conda install -c invivoai medchem
+``` 
+
+### Source
 This package requires : `gcc` and `g++` for compilation. Use your OS package manager or conda:
 
 ```bash
@@ -31,7 +68,7 @@ conda install -c conda-forge c-compiler cxx-compiler
 # conda install gcc_linux-64 
 # conda install gxx_linux-64
 ```
-### Source
+
 Clone the repo and install it locally
 ```bash
 git clone https://github.com/invivoai-platform/medchem.git
@@ -49,13 +86,7 @@ python setup.py install # "python setup.py build" should not be necessary
 You can install directly from git using pip too:
 
 ```bash
-pip install git+https://github.com/invivoai-platform/medchem.git
-``` 
-
-### conda
-
-```bash
-conda install -c invivoai medchem
+pip install git+https://github.com/valence-platform/medchem.git
 ``` 
 
 ### Troubleshooting
@@ -73,7 +104,7 @@ The following "information" will be computed and added as columns to a DataFrame
 - **step**: step of the pipeline where molecule was filtered out, if available
 
 ### Command line
-You can use the provided binary: ```chemfilter --help```
+You can use the provided binary: ```chemfilter --help```. This will only apply the demerits (Eli Lilly) filters.
 ```
 Usage: chemfilter [OPTIONS]
 
@@ -116,7 +147,9 @@ Options:
 You can import the package instead 
 
 ```python
-from medchem.filter import score
+from medchem.filter.demerits import score
+from medchem.filter.lead import common_filter
+from medchem.filter.generic import atom_list_filter
 test_config = {
     'output': 'test',
     'min_atoms': 7,
@@ -157,6 +190,9 @@ smiles_list = [
     'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C4CCCC4)nn3)c2ncn1'
 ]
 res = score(smiles_list, **test_config)
+
+res["not_toxic"] = common_filter(res["_smiles"].values)
+res["no_fluorine"] = atom_list_filter(res["_smiles"].values, atom_list=["F"])
 print(res)
 ```
 

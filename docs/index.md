@@ -20,7 +20,7 @@ The following filters are available:
 
 These are python binding of the implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at [doi 10.1021/jm301008n](https://doi.org/10.1021/jm301008n).
 
-These rules are used in `medchem.demerits.score` function and are the main offering of this package.
+These rules are used in `medchem.filter.demerit_filter` function and are the main offering of this package.
 
 #### NIBR filters
 
@@ -47,7 +47,7 @@ These are alerts rules from the ChEMBL database that have been collected from va
 | [PAINS](https://pubs.acs.org/doi/abs/10.1021/jm901137j) |              479 |
 | SureChEMBL                                              |              166 |
 
-There are used in lead filtering as `medchem.filter.lead.lead_filter`
+There are used in lead filtering as `medchem.filter.lead.alert_filter`
 
 #### Generic filters
 

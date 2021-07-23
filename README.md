@@ -47,7 +47,7 @@ These are alerts rules from the ChEMBL database that have been collected from va
 | [PAINS](https://pubs.acs.org/doi/abs/10.1021/jm901137j) |              479 |
 | SureChEMBL                                              |              166 |
 
-There are used in lead filtering as `medchem.filter.lead.lead_filter`
+There are used in lead filtering as `medchem.filter.lead.alert_filter`
 
 #### Generic filters
 

@@ -95,7 +95,6 @@ def screening_filter(
     filt_obj = NovartisFilters()
     df = filt_obj(mols, n_jobs=n_jobs)
     df = df[(df.status != "Exclude") & (df.severity < max_severity)]
-    print(df)
     filtered_idx = df.index.values
     filtered_mask = np.zeros(len(mols), dtype=bool)
     filtered_mask[filtered_idx] = True
@@ -159,15 +158,16 @@ def common_filter(
     return np.bitwise_not(toxic)
 
 
-def demerits_filter(
-    mols_list, demerits_cutoff: Optional[int] = 160, return_idx: bool = False, **kwargs
+def demerit_filter(
+    mols_list, max_demerits: Optional[int] = 160, return_idx: bool = False, **kwargs
 ):
     """Run demerit filtering on current list of molecules
 
     Args:
         mols_list: list of input molecules
-        demerits_cutoff: Cutoff to reject molecules Defaults to 160.
+        max_demerits: Cutoff to reject molecules Defaults to 160.
         return_idx: whether to return a mask or a list of valid indexes
+        kwargs: parameters specific to the `demerits.score` function
 
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule is ok.
@@ -179,8 +179,7 @@ def demerits_filter(
         mols_list = dm.parallelized(dm.to_smiles, mols_list)
     df = demerits.score(mols_list, **kwargs)
     df = df[
-        (~df.rejected)
-        & ((df.demerit_score.isna()) | (df.demerit_score < demerits_cutoff))
+        (~df.rejected) & ((df.demerit_score.isna()) | (df.demerit_score < max_demerits))
     ]
 
     filtered_idx = df["ID"].values

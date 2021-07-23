@@ -1,6 +1,7 @@
 import unittest as ut
 import datamol as dm
 import pandas as pd
+import numpy as np
 from medchem.filter import lead
 from rdkit.Chem.Descriptors import MolWt
 
@@ -14,7 +15,12 @@ class Test_LeadFilter(ut.TestCase):
         ("CCOC(=O)NC1(NCc2ccccc2)Oc3ccccc3O1", 0, 0, 10),
         ("Oc1nnc(SCC(=O)N2CCOCC2)n1c3ccccc3", 0, 0, 1),
         ("Fc1ccc(C(=O)NNC(=O)c2ccc(cc2)n3cnnn3)c(F)c1", 0, 0, 0),
-        ("COc1cc(Cl)ccc1N=C(S)N(CCN2CCOCC2)C3CCN(CC3)C(=O)C", 0, 0, 0),
+        (
+            "COc1cc(Cl)ccc1N=C(S)N(CCN2CCOCC2)C3CCN(CC3)C(=O)C",
+            float("nan"),
+            float("nan"),
+            0,
+        ),
         ("CCCCCCCCCCCCCNC(=O)[C@H](CO)\\N=C\\c1ccccc1", 0, 0, 2),
     ]
 
@@ -76,14 +82,12 @@ class Test_LeadFilter(ut.TestCase):
     def test_screening_filter(self):
         df = pd.DataFrame.from_records(
             self.screening_smiles_set,
-            columns=["smiles", "covalent", "special", "severity"],
+            columns=["smiles", "covalent", "special_mol", "severity"],
         )
         idx = lead.screening_filter(
             df.smiles, n_jobs=2, max_severity=5, return_idx=True
         )
         expected_idx = list(df[df.severity < 5].index)
-        print(idx)
-        print(expected_idx)
         self.assertEqual(len(set(idx).difference(set(expected_idx))), 0)
 
         nov_filters = lead.NovartisFilters()
@@ -101,6 +105,9 @@ class Test_LeadFilter(ut.TestCase):
         self.assertTrue(
             len(expected_cols.intersection(set(out.columns))) == len(expected_cols)
         )
+        np.testing.assert_array_equal(df.severity, out.severity)
+        np.testing.assert_array_equal(df.covalent, out.covalent)
+        np.testing.assert_array_equal(df.special_mol, out.special_mol)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import click
 import os
 import pandas as pd
 from medchem.demerits import score
-from medchem.filter.lead import alert_filter
+from medchem.filter import lead
 
 
 @click.command(
@@ -126,7 +126,9 @@ def run(
     else:
         smiles_list = df.ix[:, 0].values
     if alert_filter:
-        df["leadlike"] = alert_filter(smiles_list, alerts=alerts, n_jobs=os.cpu_count())
+        df["leadlike"] = lead.alert_filter(
+            smiles_list, alerts=alerts, n_jobs=os.cpu_count()
+        )
     results = score(smiles_list, **ctx.params)
 
     cols = ["rejected"]

@@ -1,5 +1,5 @@
 site_name: "medchem"
-site_description: "An all in one package for molecule featurization"
+site_description: "Making medchem redundant... \\s"
 site_url: "https://github.com/valence-platform/medchem"
 repo_url: "https://github.com/valence-platform/medchem"
 repo_name: "valence-platform/medchem"
@@ -28,8 +28,8 @@ theme:
   name: material
   custom_dir: docs/_overrides
   palette:
-    primary: pink
-    accent: orange
+    primary: teal
+    accent: red
   features:
     - navigation.expand
 

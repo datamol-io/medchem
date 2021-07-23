@@ -17,10 +17,17 @@ class NovartisFilters:
     Filtering class for building a screening deck following the novartis filtering process
     published in https://dx.doi.org/10.1021/acs.jmedchem.0c01332.
 
-    This filters also provide a severity score:
-        - 0 -> compound has no flags, might have annotations;
-        - 1-9 number of flags the compound raises;
-        - >= 10 exclusion criterion for our newly designed screening deck
+    The output of the filter are explained below:
+    - **status**: one of `["Exclude", "Flag", "Annotations", "Ok"]` (ordered by quality).
+        Generally, you can keep anything without the "Exclude" label, as long as you also apply
+        a maximum severity score for compounds that collects too many flags.
+    - **covalent**: number of potentially covalent motifs contained in the compound
+    - **severity**: how severe are the issues with the molecules:
+        - `0`: compound has no flags, might have annotations;
+        - `1-9`:  number of flags the compound raises;
+        - `>= 10`:  default exclusion criterion used in the paper
+    - **special_mol**: whether the compound/parts of the compound belongs to a special class of molecules
+        (e.g peptides, glycosides, fatty acid). In that case, you should review the rejection reasons.
     """
 
     def __call__(
@@ -91,7 +98,7 @@ class NovartisFilters:
                     co = sum(covalent)
                     sm = sum(special_mol)
             except Exception as e:
-                logger.exception(e)
+                raise
                 logger.warning(f"Fail on molecule at index {i}")
 
             results.append([smiles, status, reasons, sc, co, sm])

@@ -85,7 +85,7 @@ def score(
     min_num_rings = run_options.get("min_num_rings")
     max_num_rings = run_options.get("max_num_rings")
     max_size_chain = run_options.get("max_size_chain")
-    atom_count = run_options.get("min_atoms")
+    atom_count = run_options.get("min_atoms", 1)
     allow_non_int_atoms = run_options.get("allow_non_interesting", False)
 
     ring_bond_ratio = run_options.get("ring_bond_ratio", -1)
@@ -282,6 +282,10 @@ def score(
         data_list.append(df)
         i += 1
     final_df = pd.concat(data_list).sort_values("ID").reset_index(drop=True)
+    final_df["status"] = final_df["rejected"].apply(lambda x: "Exclude" if x else "Ok")
+    final_df.loc[
+        ((final_df.demerit_score > 0) & (~final_df.rejected)), "status"
+    ] = "Flag"
     # clean
     for to_del in files_to_be_deleted:
         if os.path.isfile(to_del):

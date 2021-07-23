@@ -100,6 +100,7 @@ You can import the package and run the filters of interest. For more information
 ```python
 from medchem.filter.lead import common_filter
 from medchem.filter.lead import demerit_filter
+
 test_config = {
     'output': 'test',
     'min_atoms': 7,
@@ -111,26 +112,13 @@ test_config = {
     'odm': [],
     'okiso': False,
     'noapdm': False
-} # config file follow parameters of the binary
+} # optional config dict
 
 smiles_list = [
     'Cc1cnc(CNc(cccc2-c3cn(CC(C4)CC4O)c4ncnc(N)c34)c2F)s1'
     'Cc1cnc(CNc(cccc2-c3cn(C[C@H](C4)C[C@@H]4O)c4ncnc(N)c34)c2F)s1',
-    'Cc1cnc(CNc(cccc2-c3cn(C[C@H](C4)C[C@H]4O)c4ncnc(N)c34)c2F)s1',
-    'Cc1cnc(CNc(cccc2-c3cn(C[C@H]4C[C@H](CO)C4)c4ncnc(N)c34)c2F)s1',
-    'Cc1cnc(CNc(cccc2-c3cn(C[C@H]4C[C@@H](CO)C4)c4ncnc(N)c34)c2F)s1',
-    'Cc1cnc(CNc2c(CO)c(-c3cn(C[C@H](C4)C[C@@H]4O)c4ncnc(N)c34)ccc2)s1',
-    'CC(C)(C)c1cnc(CNc(cccc2-c3cn(CC(C4)CC4O)c4ncnc(N)c34)c2F)s1',
-    'Cc1cnc(CNc2nc(-c3cn(C[C@H](C4)C[C@@H]4O)c4ncnc(N)c34)ccc2)s1',
-    'Cc1nc(CNc(cccc2-c3cn(C[C@H](C4)C[C@@H]4O)c4ncnc(N)c34)c2F)cs1',
-    'NC(c(ccc(NC(c1cccc(C(F)(F)F)c1)=O)c1)c1-c1cc2cnc(NC3CC3)nc2cc1)=O',
     'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C4CC5(COCC5)OCC4)nn3)c2ncn1',
     'C[C@@H](c1cn(CC2CCCCC2)nn1)N(Cc1nccs1)c(cccc1-c2c[nH]c3ncnc(N)c23)c1F',
-    'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(CC4C(CC5)CC5C4)nn3)c2ncn1',
-    'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C4CC5(CSCC5)OCC4)nn3)c2ncn1',
-    'CC1OC(Cn2nnc(CNc3c(c(-c4cccc(NCc5nccs5)c4F)c[nH]4)c4ncn3)c2)CC1',
-    'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C[C@@H](C4)c5c4cccc5)nn3)c2ncn1',
-    'C[C@@H](c1cn(Cc2nnnn2C2CC2)nn1)Nc1c(c(-c2cccc(NCc3nccs3)c2F)c[nH]2)c2ncn1',
     'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(CCN4CCOCC4)nn3)c2ncn1',
     'Cc1cnc(C(Nc(cccc2-c3cn(C[C@H](C4)C[C@@H]4O)c4ncnc(N)c34)c2F)=O)s1',
     'Nc1c(c(-c(cccc2NCc3nccs3)c2F)cn2Cc3cn(-c(cc4)cc5c4scc5)nn3)c2ncn1',
@@ -140,7 +128,7 @@ smiles_list = [
     'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C4CCCC4)nn3)c2ncn1'
 ]
 res_demerits = demerit_filter(smiles_list, **test_config)
-res_common = common_filter(res["_smiles"].values)
+res_common = common_filter(smiles_list)
 ```
 ### Command line
 You can also use the provided binary: ```chemfilter --help```. This will only apply the demerits (Eli Lilly) filters.

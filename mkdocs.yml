@@ -1,0 +1,70 @@
+site_name: "medchem"
+site_description: "Makes medicinal chemists redundant... \\s"
+site_url: "https://github.com/valence-platform/medchem"
+repo_url: "https://github.com/valence-platform/medchem"
+repo_name: "valence-platform/medchem"
+copyright: Copyright 2021 Valence
+
+remote_branch: "privpage"
+use_directory_urls: false
+docs_dir: "docs"
+
+nav:
+  - Overview: index.md
+  - Tutorials:
+      Getting Started: tutorials/getting-started.ipynb
+
+  - API:
+      - medchem.filter: api/medchem.filter.md
+      - medchem.catalog: api/medchem.catalog.md
+      - medchem.demerits: api/medchem.demerits.md
+      - medchem.alerts: api/medchem.alerts.md
+      - medchem.novartis: api/medchem.novartis.md
+  - CLI References: cli-references.md
+
+theme:
+  name: material
+  custom_dir: docs/_overrides
+  palette:
+    primary: teal
+    accent: red
+  features:
+    - navigation.expand
+
+extra_css:
+  - _assets/css/custom.css
+
+markdown_extensions:
+  - admonition
+  - markdown_include.include
+  - pymdownx.emoji
+  - pymdownx.highlight
+  - pymdownx.magiclink
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist
+  - mdx_truly_sane_lists
+  - mkdocs-click
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      watch:
+        - medchem/
+      handlers:
+        python:
+          setup_commands:
+            - import sys
+            - sys.path.append("docs")
+            - sys.path.append("medchem")
+          selection:
+            new_path_syntax: yes
+          rendering:
+            show_root_heading: yes
+            heading_level: 3
+            show_if_no_docstring: true
+  - mkdocs-jupyter:
+      execute: False
+      # kernel_name: python3

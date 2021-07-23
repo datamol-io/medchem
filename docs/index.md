@@ -20,7 +20,7 @@ The following filters are available:
 
 These are python binding of the implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at [doi 10.1021/jm301008n](https://doi.org/10.1021/jm301008n).
 
-These rules are used in `medchem.filter.demerit_filter` function.
+These rules are used in `medchem.filter.demerit_filter` function and are the main offering of this package.
 
 #### NIBR filters
 
@@ -88,90 +88,6 @@ You can install directly from git using pip too:
 ```bash
 pip install git+https://github.com/valence-platform/medchem.git
 ``` 
-
-### Troubleshooting
-
-In the rare case where you `$CPATH` is not well configured, you will get some `error: stray \number in program`. 
-Please set your CPATH to empy with `export CPATH=` before compiling/installing.
-
-### Module
-You can import the package and run the filters of interest. For more information see the  [Getting Started](docs/tutorials/getting-started.ipynb) tutorial.
-
-```python
-from medchem.filter.lead import common_filter
-from medchem.filter.lead import demerit_filter
-
-test_config = {
-    'output': 'test',
-    'min_atoms': 7,
-    'soft_max_atoms': 30,
-    'hard_max_atoms': 50,
-    'smarts': [],
-    'nodemerit': False,
-    'dthresh': 160,
-    'odm': [],
-    'okiso': False,
-    'noapdm': False
-} # optional config dict
-
-smiles_list = [
-    'Cc1cnc(CNc(cccc2-c3cn(CC(C4)CC4O)c4ncnc(N)c34)c2F)s1'
-    'Cc1cnc(CNc(cccc2-c3cn(C[C@H](C4)C[C@@H]4O)c4ncnc(N)c34)c2F)s1',
-    'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C4CC5(COCC5)OCC4)nn3)c2ncn1',
-    'C[C@@H](c1cn(CC2CCCCC2)nn1)N(Cc1nccs1)c(cccc1-c2c[nH]c3ncnc(N)c23)c1F',
-    'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(CCN4CCOCC4)nn3)c2ncn1',
-    'Cc1cnc(C(Nc(cccc2-c3cn(C[C@H](C4)C[C@@H]4O)c4ncnc(N)c34)c2F)=O)s1',
-    'Nc1c(c(-c(cccc2NCc3nccs3)c2F)cn2Cc3cn(-c(cc4)cc5c4scc5)nn3)c2ncn1',
-    'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(CCC4CC4)nn3)c2ncn1',
-    'CC(C)Cn1ncnc1Cn1nnc(CNc2c(c(-c3cccc(NCc4nccs4)c3F)c[nH]3)c3ncn2)c1',
-    'Nc1c(c(-c2cccc(NCc3nc(CO)cs3)c2F)cn2CC3CCC3)c2ncn1',
-    'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C4CCCC4)nn3)c2ncn1'
-]
-res_demerits = demerit_filter(smiles_list, **test_config)
-res_common = common_filter(smiles_list)
-```
-### Command line
-You can also use the provided binary: ```chemfilter --help```. This will only apply the demerits (Eli Lilly) filters.
-```
-Usage: chemfilter [OPTIONS]
-
-Options:
-  -n, --min-atoms INTEGER        Use lower atom count cutoff
-  -Cs, --soft-max-atoms INTEGER  Apply soft upper atom count cuttof
-  -Ch, --hard-max-atoms INTEGER  Apply hard upper atom count cuttof
-  --min-num-rings INTEGER        Minimum number of rings accepted
-  --max-num-rings INTEGER        Maximum number of rings accepted
-  --max-size-rings INTEGER       Maximum ring size (number of atom per ring)
-  --max-size-chain INTEGER       Threshold for long carbon chain (7)
-  --smarts TEXT                  Optional smarts to reject. File or smarts
-                                 string
-
-  --nodemerit                    Use hard rejections only, do not apply any
-                                 demerits
-
-  --dthresh INTEGER              Demerit threshold. For relaxed rules, use 160
-                                 demerit cutoff
-
-  -o, --output TEXT              output file where to write result  [required]
-  --odm TEXT                     Optional demerits to omit to apply. File or
-                                 demerits
-
-  --okiso                        Allow isotopic atoms to pass through
-  --noapdm                       Do not append demerit reasons
-  --smcol TEXT                   Name of the smiles columns
-  --alert-filter                 Whether to run lead filtering (alerts) on the molecules
-  --alerts TEXT                  Alerts to use for lead filtering (multiple allowed)
-  --allow-non-interesting        Allow molecules with non interesting atoms
-                                 only to pass
-
-  -i, --input-file TEXT          Input csv or smi files. Header expected and
-                                 first column should always be the smiles if
-                                 smiles column name is not provided.
-                                 [required]
-
-  --help                         Show this message and exit.
-```
-
 
 
 ## Maintainers

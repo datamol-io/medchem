@@ -45,15 +45,11 @@ jobs:
         run: |
           mamba env update -f env.yml
 
-      - name: Install library
-        run: |
-          python -m pip install .
-
       - name: Deploy the doc
         run: |
 
           # Get the privpage branch
           git fetch origin privpage
-
+          python -m pip install .
           # Build and serve the doc
           mkdocs gh-deploy

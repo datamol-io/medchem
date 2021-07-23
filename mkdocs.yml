@@ -15,9 +15,7 @@ nav:
       Getting Started: tutorials/getting-started.ipynb
 
   - API:
-      - medchem.filter:
-          - medchem.filter.generic: api/medchem.filter.generic.md
-          - medchem.filter.lead: api/medchem.filter.lead.md
+      - medchem.filter: api/medchem.filter.md
       - medchem.catalog: api/medchem.catalog.md
       - medchem.demerits: api/medchem.demerits.md
       - medchem.alerts: api/medchem.alerts.md

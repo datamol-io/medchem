@@ -18,7 +18,7 @@ BIN2PATH = dict((x, os.path.join(BUILD_DIR, x)) for x in os.listdir(BUILD_DIR))
 
 
 def _rreplace(input_str, old, rep, occurrence):
-    """Replace last occurence of 'old' in 'input_str' by 'rep' """
+    """Replace last occurence of 'old' in 'input_str' by 'rep'"""
     tmp = input_str.rsplit(old, occurrence)
     return rep.join(tmp)
 

@@ -2,7 +2,7 @@
 import click
 import os
 import pandas as pd
-from medchem.filter.demerits import score
+from medchem.demerits import score
 from medchem.filter.lead import alert_filter
 
 
@@ -72,7 +72,7 @@ from medchem.filter.lead import alert_filter
 @click.option(
     "--alert-filter",
     is_flag=True,
-    help="Whether to run lead filter on the molecules.",
+    help="Whether to run lead filtering (alerts) on the molecules",
 )
 @click.option(
     "--alerts",

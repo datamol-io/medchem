@@ -1,4 +1,5 @@
 import unittest as ut
+import numpy as np
 import datamol as dm
 
 from medchem.filter import generic
@@ -20,29 +21,31 @@ class Test_GenericFilter(ut.TestCase):
 
     def test_num_atom_filter(self):
         mols = [dm.to_mol(x) for x in self.data.smiles.values]
-        passing_idx = [i for i, m in enumerate(mols) if m.GetNumAtoms() < 20]
+        passing_idx = [i for i, m in enumerate(mols) if m.GetNumAtoms() <= 20]
         idx = generic.num_atom_filter(
             self.data.smiles.values, max_atoms=20, return_idx=True
         )
-        self.assertListEqual(passing_idx, idx)
+        np.testing.assert_array_equal(idx, passing_idx)
 
     def test_ring_infraction_filter(self):
-        idx = generic.ring_infraction_filter(self.smiles_with_issues, return_idx=True)
-        self.assertListEqual([0, 2, 3], idx)
+        out = generic.ring_infraction_filter(self.smiles_with_issues, return_idx=True)
+        self.assertListEqual([0, 2, 3], out)
 
     def test_macrocycle_filter(self):
-        idx = generic.macrocycle_filter(
+        out = generic.macrocycle_filter(
             self.smiles_with_issues, max_cycle_size=7, return_idx=False
         )
-        self.assertListEqual([0, 1, 2], [False, False, False, True])
+        self.assertListEqual(out, [True, True, True, False])
 
     def test_atom_list_filter(self):
-        idx = generic.atom_list_filter(self.smiles_with_issues, ["B"], return_idx=True)
-        self.assertListEqual([0, 2, 3], idx)
+        out = generic.atom_list_filter(
+            self.smiles_with_issues, unwanted_atom_list=["B"], return_idx=True
+        )
+        self.assertListEqual([0, 2, 3], out)
 
     def test_halogenicity_filter(self):
-        idx, _ = generic.halogenicity_filter(self.smiles_with_issues, True)
-        self.assertListEqual([0, 2, 3], idx)
+        out = generic.halogenicity_filter(self.smiles_with_issues, return_idx=True)
+        self.assertListEqual([0, 2, 3], out)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import unittest as ut
 import datamol as dm
 
-from medchem.filter import demerits
+from medchem import demerits
 
 
 class Test_DemeritsFilter(ut.TestCase):
@@ -91,7 +91,8 @@ class Test_DemeritsFilter(ut.TestCase):
     ]
 
     def test_demerits(self):
-        res = demerits.demerit_filter(self.smiles_list, **self.test_config)
+        res = demerits.score(self.smiles_list, **self.test_config)
+        self.assertTrue(res.shape[0] > 0)
 
 
 if __name__ == "__main__":

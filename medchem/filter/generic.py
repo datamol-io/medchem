@@ -1,4 +1,5 @@
 from typing import Iterable
+from typing import Optional
 import datamol as dm
 from rdkit.Chem import MolFromSmarts
 
@@ -35,12 +36,19 @@ def macrocycle_filter(
     return filtered_mask
 
 
-def atom_list_filter(mols: Iterable, atom_list: Iterable, return_idx: bool = False):
+def atom_list_filter(
+    mols: Iterable,
+    unwanted_atom_list: Optional[Iterable] = None,
+    wanted_atom_list: Optional[Iterable] = None,
+    return_idx: bool = False,
+):
     """Find molecule without any atom from a set of unwanted atom symbols
+    and with all atoms in the set of desirable atom list
 
     Args:
         mols: list of input molecules
-        atom_list: list of undesirable atom symbol
+        unwanted_atom_list: list of undesirable atom symbol
+        wanted_atom_list: list of desirable atom symbol
         return_idx: whether to return index or a boolean mask
 
     Returns:
@@ -48,11 +56,16 @@ def atom_list_filter(mols: Iterable, atom_list: Iterable, return_idx: bool = Fal
     """
     filtered_mask = []
     filtered_idx = []
+    unwanted_atom_list = unwanted_atom_list or []
+    wanted_atom_list = wanted_atom_list or []
     for i, mol in enumerate(mols):
         mol = dm.to_mol(mol)
         add_mol = True
         for atom in mol.GetAtoms():
-            if atom.GetSymbol() in atom_list:
+            cur_symb = atom.GetSymbol()
+            if cur_symb in unwanted_atom_list or (
+                len(wanted_atom_list) > 0 and cur_symb not in wanted_atom_list
+            ):
                 add_mol = False
                 break
         filtered_mask.append(add_mol)
@@ -105,8 +118,8 @@ def num_atom_filter(
 
     Args:
         mols: list of input molecules
-        min_atoms: minimum number of atoms
-        max_atoms: maximum number of atoms
+        min_atoms: minimum number of atoms (>=)
+        max_atoms: maximum number of atoms (<=)
         return_idx: whether to return index or a boolean mask
 
     Returns:

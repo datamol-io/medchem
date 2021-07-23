@@ -1,0 +1,109 @@
+from typing import Iterable
+from typing import Optional
+from typing import Union
+
+import pandas as pd
+import datamol as dm
+
+from tqdm.auto import tqdm
+from loguru import logger
+from rdkit.Chem import rdchem
+from medchem.utils import get_data
+from medchem.catalog import NamedCatalogs
+
+
+class NovartisFilters:
+    """
+    Filtering class for building a screening deck following the novartis filtering process
+    published in https://dx.doi.org/10.1021/acs.jmedchem.0c01332.
+
+    This filters also provide a severity score:
+        - 0 -> compound has no flags, might have annotations;
+        - 1-9 number of flags the compound raises;
+        - >= 10 exclusion criterion for our newly designed screening deck
+    """
+
+    def __call__(
+        self,
+        mols: Iterable[Union[str, rdchem.Mol]],
+        n_jobs: Optional[int] = None,
+        progress: bool = False,
+    ):
+        """Run alert evaluation on this list of molecule and return the full dataframe
+
+        Args:
+            mols: input list of molecules
+            n_jobs: number of jobs
+            progress: whether to show progress or not
+        """
+
+        catalog = NamedCatalogs.nibr_catalog()
+        if n_jobs is not None:
+            mols = dm.parallelized(dm.to_mol, mols)
+            matches = dm.parallelized(
+                catalog.GetMatches,
+                mols,
+                n_jobs=n_jobs,
+                progress=progress,
+                scheduler="threads",
+            )
+        else:
+            mols = [dm.to_mol(x) for x in mols]
+            iter_mols = mols
+            if progress:
+                iter_mols = tqdm(mols)
+            matches = [catalog.GetMatches(mol) for mol in iter_mols]
+
+        results = []
+        for i, (mol, entries) in enumerate(zip(mols, matches)):
+            status = "Ok"
+            smiles = None
+            reasons = None
+            co = None
+            sm = None
+            sc = 0
+            try:
+                smiles = dm.to_smiles(mol)
+                if len(list(entries)):
+                    # initialize empty lists
+                    names, severity, covalent, special_mol = ([] for _ in range(4))
+                    # get the matches
+                    for entry in entries:
+                        pname = entry.GetDescription()
+                        name, sev, cov, m = pname.split("||")
+                        names.append(name)
+                        severity.append(int(sev))
+                        covalent.append(int(cov))
+                        special_mol.append(int(m))
+                    # concatenate all matching filters
+                    reasons = "; ".join(names)
+                    # severity of 2 means EXCLUDE
+                    if severity.count(2):
+                        sc = 10
+                        status = "Exclude"
+                    else:
+                        sc = sum(severity)
+                        if severity.count(1):
+                            status = "Flag"
+                        elif severity.count(0):
+                            status = "Annotations"
+                    # get number of covalent flags and special molecule flags
+                    co = sum(covalent)
+                    sm = sum(special_mol)
+            except Exception as e:
+                logger.exception(e)
+                logger.warning(f"Fail on molecule at index {i}")
+
+            results.append([smiles, status, reasons, sc, co, sm])
+        df = pd.DataFrame(
+            results,
+            columns=[
+                "_smiles",
+                "status",
+                "reasons",
+                "severity",
+                "covalent",
+                "special_mol",
+            ],
+        )
+        return df

@@ -5,247 +5,14 @@ from typing import Dict
 from typing import Union
 
 import os
-import sys
-import copy
-import functools
 import numpy as np
-import multiprocessing as mp
-import pandas as pd
 import datamol as dm
 
-from tqdm.auto import tqdm
-from loguru import logger
 from rdkit.Chem import rdchem
-from rdkit.Chem import MolFromSmarts
-from rdkit.Chem.Descriptors import MolWt, MolLogP, NumHDonors, NumHAcceptors, TPSA
-from medchem.utils import get_data
 from medchem.catalog import NamedCatalogs
 from medchem import demerits
-
-
-class AlertFilters:
-    """
-    Class for managing filters
-    """
-
-    def __init__(
-        self,
-        alerts_set: Union[str, List[str]] = ["BMS"],
-        alerts_db: Optional[os.PathLike] = None,
-    ):
-        """Filtering molecules based on chemical alerts
-
-        Args:
-            alerts_set: Alerts catalog to use. Default is BMS
-            alerts_db: Alerts file to use. Default is internal
-        """
-        if alerts_db is None:
-            alerts_db = get_data(file="rd_alerts.csv")
-        self.rule_df = pd.read_csv(alerts_db)
-        self.rule_list = []
-
-        if isinstance(alerts_set, str):
-            alerts_set = [alerts_set]
-        self.alerts_set = [x.lower() for x in set(alerts_set)]
-        self._build_rule_list()
-
-    def _build_rule_list(self):
-        """
-        Build the rule sets defined in alerts_set for this object
-        """
-        self.rule_df = self.rule_df[
-            self.rule_df.rule_set_name.str.lower().isin(self.alerts_set)
-        ]
-        tmp_rule_list = self.rule_df[
-            ["rule_id", "smarts", "mincount", "description"]
-        ].values.tolist()
-        for rule_id, smarts, mincount, desc in tmp_rule_list:
-            smarts_mol = MolFromSmarts(smarts)
-            if smarts_mol:
-                self.rule_list.append([smarts_mol, mincount, desc])
-            else:
-                logger.warning(f"Error parsing SMARTS for rule {rule_id}")
-
-    def get_alert_sets(self):
-        """
-        Return a list of unique rule set names
-        """
-        return self.rule_df.rule_set_name.unique()
-
-    def evaluate(self, mol: Union[str, rdchem.Mol]):
-        """
-        Evaluate structure alerts on a molecule
-
-        Args:
-            mol: input molecule
-
-        Returns:
-            list of alerts matched
-        """
-        mol = dm.to_mol(mol)
-        if mol is None:
-            return [mol, "INVALID", -999, -999, -999, -999, -999] + [1] * len(
-                self.rule_list
-            )
-
-        desc_list = [
-            MolWt(mol),
-            MolLogP(mol),
-            NumHDonors(mol),
-            NumHAcceptors(mol),
-            TPSA(mol),
-        ]
-        alerts = [
-            int(len(mol.GetSubstructMatches(patt)) >= mincount)
-            for patt, mincount, desc in self.rule_list
-        ]
-        status = "Ok"
-        reasons = None
-        if any(alerts):
-            status = "Exclude"
-            reasons = "; ".join(
-                [x[-1] for i, x in enumerate(self.rule_list) if alerts[i]]
-            )
-
-        return [dm.to_smiles(mol), status, reasons] + desc_list + alerts
-
-    def __call__(
-        self,
-        mols: Iterable[Union[str, rdchem.Mol]],
-        n_jobs: Optional[int] = None,
-        progress: bool = False,
-        include_all_alerts: bool = False,
-    ):
-        """Run alert evaluation on this list of molecule and return the full dataframe
-
-        Args:
-            mols: input list of molecules
-            n_jobs: number of jobs
-            progress: whether to show progress or not
-            include_all_alerts: whether to include all of the alerts that match as columns
-        """
-        if n_jobs is not None:
-            alert_filter = copy.deepcopy(self)
-            results = dm.parallelized(
-                alert_filter.evaluate, mols, n_jobs=n_jobs, progress=progress
-            )
-        else:
-            iter_mols = mols
-            if progress:
-                iter_mols = tqdm(mols)
-            results = [self.evaluate(mol) for mol in iter_mols]
-
-        df = pd.DataFrame(
-            results,
-            columns=[
-                "_smiles",
-                "status",
-                "reasons",
-                "MW",
-                "LogP",
-                "HBD",
-                "HBA",
-                "TPSA",
-            ]
-            + [str(x[-1]) for x in self.rule_list],
-        )
-        if not include_all_alerts:
-            df = df[
-                ["_smiles", "status", "reasons", "MW", "LogP", "HBD", "HBA", "TPSA"]
-            ]
-        return df
-
-
-class NovartisFilters:
-    """
-    Filtering class for building a screening deck following the novartis filtering process
-    published in https://dx.doi.org/10.1021/acs.jmedchem.0c01332.
-
-    This filters also provide a severity score:
-        - 0 -> compound has no flags, might have annotations;
-        - 1-9 number of flags the compound raises;
-        - >= 10 exclusion criterion for our newly designed screening deck
-    """
-
-    def __call__(
-        self,
-        mols: Iterable[Union[str, rdchem.Mol]],
-        n_jobs: Optional[int] = None,
-        progress: bool = False,
-    ):
-        """Run alert evaluation on this list of molecule and return the full dataframe
-
-        Args:
-            mols: input list of molecules
-            n_jobs: number of jobs
-            progress: whether to show progress or not
-        """
-
-        catalog = FilterCatalog.nibr_catalog()
-        if n_jobs is not None:
-            mols = dm.parallelized(dm.to_mol, mols)
-            matches = dm.parallelized(
-                catalog.HasMatch, mols, n_jobs=n_jobs, progress=progress
-            )
-        else:
-            mols = [dm.to_mol(x) for x in mols]
-            iter_mols = mols
-            if progress:
-                iter_mols = tqdm(mols)
-            matches = [catalog.HasMatch(mol) for mol in iter_mols]
-
-        results = []
-        for i, (mol, entries) in enumerate(zip(mols, matches)):
-            status = "Ok"
-            smiles = None
-            reasons = None
-            co = None
-            sm = None
-            sc = 0
-            try:
-                smiles = dm.to_smiles(mol)
-                if len(list(entries)):
-                    # initialize empty lists
-                    names, severity, covalent, special_mol = ([] for _ in range(4))
-                    # get the matches
-                    for entry in entries:
-                        pname = entry.GetDescription()
-                        name, sev, cov, m = pname.split("||")
-                        names.append(name)
-                        severity.append(int(sev))
-                        covalent.append(int(cov))
-                        special_mol.append(int(m))
-                    # concatenate all matching filters
-                    reasons = "; ".join(names)
-                    # severity of 2 means EXCLUDE
-                    if severity.count(2):
-                        sc = 10
-                        status = "Fail"
-                    else:
-                        sc = sum(severity)
-                        if severity.count(1):
-                            status = "Flag"
-                        elif severity.count(0):
-                            status = "Annotations"
-                    # get number of covalent flags and special molecule flags
-                    co = sum(covalent)
-                    sm = sum(special_mol)
-            except Exception as e:
-                logger.warning(f"Fail on molecule at index {i}")
-
-            results.append([smiles, status, reasons, sc, co, sm])
-        df = pd.DataFrame(
-            results,
-            columns=[
-                "_smiles",
-                "status",
-                "reasons",
-                "severity",
-                "covalent",
-                "special_mol",
-            ],
-        )
-        return df
+from medchem.alerts import AlertFilters
+from medchem.novartis import NovartisFilters
 
 
 def alert_filter(
@@ -254,7 +21,7 @@ def alert_filter(
     alerts_db: Optional[os.PathLike] = None,
     n_jobs: Optional[int] = 1,
     rule_dict: Dict = None,
-    return_idx=False,
+    return_idx: bool = False,
 ):
     r"""Filter a dataset of molecules, based on structural alerts and specific rules.
 
@@ -285,7 +52,7 @@ def alert_filter(
 
     custom_filters = AlertFilters(alerts_set=alerts, alerts_db=alerts_db)
     df = custom_filters(mols, n_jobs=n_jobs, progress=False)
-    df = df[df.status != "Fail"]
+    df = df[df.status != "Exclude"]
     if rule_dict is not None and len(rule_dict) > 0:
         df = df[
             (df.MW.between(*rule_dict.get("MW", [-np.inf, np.inf])))
@@ -327,7 +94,8 @@ def screening_filter(
 
     filt_obj = NovartisFilters()
     df = filt_obj(mols, n_jobs=n_jobs)
-    df = df[(df.status != "Fail") & (df.severity < max_severity)]
+    df = df[(df.status != "Exclude") & (df.severity < max_severity)]
+    print(df)
     filtered_idx = df.index.values
     filtered_mask = np.zeros(len(mols), dtype=bool)
     filtered_mask[filtered_idx] = True

@@ -1,0 +1,3 @@
+# `medchem.novartis`
+
+::: medchem.novartis

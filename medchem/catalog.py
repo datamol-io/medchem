@@ -52,12 +52,12 @@ class NamedCatalogs:
         nibr_filters = pd.read_csv(get_data("nibr.csv"))
         catalog = FilterCatalog.FilterCatalog()
         for i in range(nibr_filters.shape[0]):
-            mincount = max(nibr_filters["mincount"].values[i], 1)
+            mincount = int(max(nibr_filters["mincount"].values[i], 1))
             pname = nibr_filters["description"].values[i]
             sname = nibr_filters["rule_set_name"].values[i]
             severity = nibr_filters["severity"].values[i]
             covalent = nibr_filters["covalent"].values[i]
-            special_mol = nibr_filters["SPECIAL_MOL"].values[i]
+            special_mol = nibr_filters["special_mol"].values[i]
             pname_final = "{0}_min({1})||{2}||{3}||{4}".format(
                 pname,
                 mincount,

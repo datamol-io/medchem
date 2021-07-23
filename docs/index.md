@@ -71,7 +71,7 @@ conda install -c conda-forge c-compiler cxx-compiler
 
 Clone the repo and install it locally
 ```bash
-git clone https://github.com/invivoai-platform/medchem.git
+git clone https://github.com/valence-platform/medchem.git
 cd medchem 
 pip install . # Alternatively you can install a develop version
 ```

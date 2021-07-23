@@ -78,7 +78,7 @@ conda install -c conda-forge c-compiler cxx-compiler
 
 Clone the repo and install it locally
 ```bash
-git clone https://github.com/invivoai-platform/medchem.git
+git clone https://github.com/valence-platform/medchem.git
 cd medchem 
 pip install . # Alternatively you can install a develop version
 ```
@@ -125,7 +125,7 @@ Options:
 
   -o, --output TEXT              output file where to write result  [required]
   --odm TEXT                     Optional demerits to omit to apply. File or
-                                 demerit
+                                 demerits
 
   --okiso                        Allow isotopic atoms to pass through
   --noapdm                       Do not append demerit reasons

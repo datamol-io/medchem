@@ -110,12 +110,12 @@ def read(fname):
 
 setup(
     name=NAME,
-    description="LillyMedchem filtering rules",
+    description="Medchem filtering",
     author="InVivo AI",
-    author_email="emmanuel@invivoai.com",
+    author_email="emmanuel@valencediscovery.com",
     install_requires=["pandas"],
     maintainer="Emmanuel Noutahi",
-    maintainer_email="emmanuel@invivoai.com",
+    maintainer_email="emmanuel@valencediscovery.com",
     long_description=read("README.md"),
     packages=find_packages(),
     version=VERSION,

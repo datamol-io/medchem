@@ -20,9 +20,10 @@ from rdkit.Chem import MolFromSmarts
 from rdkit.Chem.Descriptors import MolWt, MolLogP, NumHDonors, NumHAcceptors, TPSA
 from medchem.utils import get_data
 from medchem.catalog import NamedCatalogs
+from medchem import demerits
 
 
-class AlertsFilters:
+class AlertFilters:
     """
     Class for managing filters
     """
@@ -247,7 +248,7 @@ class NovartisFilters:
         return df
 
 
-def lead_filter(
+def alert_filter(
     mols: Iterable[Union[str, rdchem.Mol]],
     alerts: List[str],
     alerts_db: Optional[os.PathLike] = None,
@@ -282,16 +283,16 @@ def lead_filter(
         filtered_mask: boolean array (or index array) where true means the molecule is ok.
     """
 
-    custom_filters = AlertsFilters(alerts_set=alerts, alerts_db=alerts_db)
+    custom_filters = AlertFilters(alerts_set=alerts, alerts_db=alerts_db)
     df = custom_filters(mols, n_jobs=n_jobs, progress=False)
-    df = df[df.status == "Ok"]
+    df = df[df.status != "Fail"]
     if rule_dict is not None and len(rule_dict) > 0:
         df = df[
-            (df.MW.between(*rule_dict["MW"]))
-            & (df.LogP.between(*rule_dict["LogP"]))
-            & (df.HBD.between(*rule_dict["HBD"]))
-            & (df.HBA.between(*rule_dict["HBA"]))
-            & (df.TPSA.between(*rule_dict["TPSA"]))
+            (df.MW.between(*rule_dict.get("MW", [-np.inf, np.inf])))
+            & (df.LogP.between(*rule_dict.get("LogP", [-np.inf, np.inf])))
+            & (df.HBD.between(*rule_dict.get("HBD", [-np.inf, np.inf])))
+            & (df.HBA.between(*rule_dict.get("HBA", [-np.inf, np.inf])))
+            & (df.TPSA.between(*rule_dict.get("TPSA", [-np.inf, np.inf])))
         ]
 
     filtered_idx = df.index.values
@@ -324,9 +325,9 @@ def screening_filter(
 
     """
 
-    filt_obj = NovartisFilter()
+    filt_obj = NovartisFilters()
     df = filt_obj(mols, n_jobs=n_jobs)
-    df = df[(df.status == "Ok") & (df.severity < max_severity)]
+    df = df[(df.status != "Fail") & (df.severity < max_severity)]
     filtered_idx = df.index.values
     filtered_mask = np.zeros(len(mols), dtype=bool)
     filtered_mask[filtered_idx] = True
@@ -339,8 +340,8 @@ def common_filter(
     mols: Iterable[Union[str, rdchem.Mol]],
     pains_a: bool = True,
     pains_b: bool = True,
-    pains_c: bool = True,
-    brenk: bool = True,
+    pains_c: bool = False,
+    brenk: bool = False,
     nih: bool = False,
     zinc: bool = False,
     pains: bool = False,
@@ -388,3 +389,35 @@ def common_filter(
     if return_idx:
         return filtered_idx
     return np.bitwise_not(toxic)
+
+
+def demerits_filter(
+    mols_list, demerits_cutoff: Optional[int] = 160, return_idx: bool = False, **kwargs
+):
+    """Run demerit filtering on current list of molecules
+
+    Args:
+        mols_list: list of input molecules
+        demerits_cutoff: Cutoff to reject molecules Defaults to 160.
+        return_idx: whether to return a mask or a list of valid indexes
+
+    Returns:
+        filtered_mask: boolean array (or index array) where true means the molecule is ok.
+
+    """
+
+    if not isinstance(mols_list[0], str):
+        mols_list = dm.parallelized(dm.to_mol, mols_list)
+        mols_list = dm.parallelized(dm.to_smiles, mols_list)
+    df = demerits.score(mols_list, **kwargs)
+    df = df[
+        (~df.rejected)
+        & ((df.demerit_score.isna()) | (df.demerit_score < demerits_cutoff))
+    ]
+
+    filtered_idx = df["ID"].values
+    filtered_mask = np.zeros(len(mols_list), dtype=bool)
+    filtered_mask[filtered_idx] = True
+    if return_idx:
+        return filtered_idx
+    return filtered_mask

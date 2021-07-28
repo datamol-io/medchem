@@ -4,6 +4,7 @@ from typing import Optional
 import copy
 import functools
 import pandas as pd
+import numpy as np
 from rdkit.Chem import FilterCatalog
 from medchem.utils import get_data
 

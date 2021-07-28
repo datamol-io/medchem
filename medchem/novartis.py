@@ -44,7 +44,7 @@ class NovartisFilters:
             progress: whether to show progress or not
         """
 
-        catalog = NamedCatalogs.nibr_catalog()
+        catalog = NamedCatalogs.nibr()
         if n_jobs is not None:
             mols = dm.parallelized(dm.to_mol, mols)
             matches = dm.parallelized(

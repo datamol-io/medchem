@@ -136,7 +136,7 @@ def common_filter(
     if pains:
         pains_a = pains_b = pains_c = True
 
-    catalog = NamedCatalogs.tox_catalog(
+    catalog = NamedCatalogs.tox(
         pains_a=pains_a,
         pains_b=pains_b,
         pains_c=pains_c,

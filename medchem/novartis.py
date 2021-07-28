@@ -77,7 +77,7 @@ class NovartisFilters:
                     # get the matches
                     for entry in entries:
                         pname = entry.GetDescription()
-                        name, sev, cov, m = pname.split("||")
+                        _, name, sev, cov, m = pname.split("||")
                         names.append(name)
                         severity.append(int(sev))
                         covalent.append(int(cov))

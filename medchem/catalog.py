@@ -48,11 +48,9 @@ def from_smarts(
 
     for i, (sm, lb, count) in enumerate(zip(smarts, labels, mincounts)):
         if maxcounts is None:
-            fil = FilterCatalog.SmartsMatcher(lb, sm, minCount=count)
+            fil = FilterCatalog.SmartsMatcher(lb, sm, count)
         else:
-            fil = FilterCatalog.SmartsMatcher(
-                lb, sm, minCount=count, maxCount=maxcounts[i]
-            )
+            fil = FilterCatalog.SmartsMatcher(lb, sm, count, maxcounts[i])
         entry_name = lb
         if entry_as_inds:
             entry_name = i

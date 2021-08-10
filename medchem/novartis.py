@@ -44,7 +44,7 @@ class NovartisFilters:
             progress: whether to show progress or not
         """
 
-        catalog = NamedCatalogs.nibr_catalog()
+        catalog = NamedCatalogs.nibr()
         if n_jobs is not None:
             mols = dm.parallelized(dm.to_mol, mols)
             matches = dm.parallelized(
@@ -77,7 +77,7 @@ class NovartisFilters:
                     # get the matches
                     for entry in entries:
                         pname = entry.GetDescription()
-                        name, sev, cov, m = pname.split("||")
+                        _, name, sev, cov, m = pname.split("||")
                         names.append(name)
                         severity.append(int(sev))
                         covalent.append(int(cov))

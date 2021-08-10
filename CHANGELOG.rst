@@ -7,6 +7,11 @@ medchem Change Log
 v1.1.2
 ====================
 
+
+
+v1.1.2
+====================
+
 **Changed:**
 
 * Catalog class more general now

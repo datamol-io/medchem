@@ -4,6 +4,15 @@ medchem Change Log
 
 .. current developments
 
+v1.1.3
+====================
+
+**Fixed:**
+
+* Fix bugs in `medchem.catalogs` module preventing loading some catalogs (the alert ones).
+
+
+
 v1.1.2
 ====================
 

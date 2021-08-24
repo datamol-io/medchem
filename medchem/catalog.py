@@ -2,13 +2,21 @@ from typing import List
 from typing import Union
 from typing import Optional
 
+import warnings
 import functools
 
 import pandas as pd
 import numpy as np
 import datamol as dm
 
-from rdkit.Chem import FilterCatalog
+with warnings.catch_warnings():
+
+    # Remove annoying `RuntimeWarnings`:
+    # `<frozen importlib._bootstrap>:219: RuntimeWarning: to-Python converter for boost::shared_ptr<RDKit::FilterCatalogEntry const> already registered; second conversion method ignored.`
+    warnings.simplefilter("ignore")
+
+    from rdkit.Chem import FilterCatalog
+
 from medchem.utils import get_data
 
 
@@ -109,6 +117,27 @@ class NamedCatalogs:
     def pains():
         return FilterCatalog.FilterCatalog(
             FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS
+        )
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def pains_a():
+        return FilterCatalog.FilterCatalog(
+            FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_A
+        )
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def pains_b():
+        return FilterCatalog.FilterCatalog(
+            FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_B
+        )
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def pains_c():
+        return FilterCatalog.FilterCatalog(
+            FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_C
         )
 
     @staticmethod

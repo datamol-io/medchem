@@ -101,3 +101,4 @@ libiwsupport.a
 # Rever
 rever/
 site/
+.vscode/

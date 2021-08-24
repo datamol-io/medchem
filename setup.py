@@ -113,7 +113,6 @@ setup(
     description="Medchem filtering",
     author="InVivo AI",
     author_email="emmanuel@valencediscovery.com",
-    install_requires=["pandas"],
     maintainer="Emmanuel Noutahi",
     maintainer_email="emmanuel@valencediscovery.com",
     long_description=read("README.md"),

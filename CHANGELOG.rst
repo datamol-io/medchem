@@ -4,6 +4,19 @@ medchem Change Log
 
 .. current developments
 
+v1.1.4
+====================
+
+**Added:**
+
+* add `.pains_a`, `.pains_b` and `.pains_c` to `NamedCatalogs`.
+
+**Fixed:**
+
+* Remove an annoying `RuntimeWarnings` when important `medchem.catalogs`
+
+
+
 v1.1.3
 ====================
 

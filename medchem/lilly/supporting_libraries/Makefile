@@ -1,6 +1,3 @@
-CXX ?= g++
-CC ?= gcc
-
 CXXFLAGS = -O2 -I . -I ../include -Wall -ffast-math -DLINUX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DIW_IMPLEMENTATIONS_EXPOSED
 
 AR = ar

@@ -1,6 +1,4 @@
-CC ?= gcc
-CXX ?= g++
-LD = g++
+LD = $(CXX)
 
 CXXFLAGS = -O2 -I . -I ../include -ffast-math -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DIW_IMPLEMENTATIONS_EXPOSED
 
@@ -16,7 +14,7 @@ COMMON_OBJECTS = molecule.o moleculeb.o moleculeh.o element.o atom.o bond.o bond
 	rwsubstructure.o substructure_nmab.o molecule_to_query.o is_actually_chiral.o tokenise_atomic_smarts.o temp_detach_atoms.o path_scoring.o \
 	element_hits_needed.o numass.o misc2.o standardise.o toggle_kekule_form.o
 
-LIBDIRS = -L../lib/ -L../supporting_libraries
+LIBDIRS = -L../lib/ -L../supporting_libraries -L$(PREFIX)/lib
 
 MC_FIRST_PASS_OBJECTS = mc_first_pass.o $(COMMON_OBJECTS)
 

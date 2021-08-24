@@ -23,14 +23,6 @@ jobs:
           path: ~/conda_pkgs_dir
           key: conda-${{ runner.os }}-${{ env.CACHE_NUMBER }}-${{ hashFiles('env.yml') }}
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@master # TODO: pin once 2.1 released.
-        with:
-          miniforge-variant: Mambaforge
-          use-mamba: true
-          use-only-tar-bz2: true
-          activate-environment: medchem
-
       - name: Anaconda Login
         env:
           ANACONDA_USER_TOKEN: ${{ secrets.INVIVOAI_ANACONDA_USER_BOT_TOKEN }}
@@ -41,9 +33,14 @@ jobs:
           mkdir -p $TOKEN_DIR
           echo -e "${ANACONDA_USER_TOKEN}\c" > $TOKEN_PATH
 
-      - name: Setup conda env
-        run: |
-          mamba env update -f env.yml
+      - name: Setup conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          use-mamba: true
+          use-only-tar-bz2: true
+          activate-environment: "medchem"
+          environment-file: env.yml
 
       - name: Deploy the doc
         run: |

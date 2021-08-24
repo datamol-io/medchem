@@ -1,10 +1,13 @@
 from typing import List
 from typing import Union
 from typing import Optional
-import copy
+
 import functools
+
 import pandas as pd
 import numpy as np
+import datamol as dm
+
 from rdkit.Chem import FilterCatalog
 from medchem.utils import get_data
 
@@ -40,21 +43,23 @@ def from_smarts(
     Returns:
         catalog (FilterCatalog): merged catalog
     """
-    catalog = FilterCatalog.FilterCatalog()
-    if labels is None:
-        labels = smarts
-    if mincounts is None:
-        mincounts = [1] * len(smarts)
 
-    for i, (sm, lb, count) in enumerate(zip(smarts, labels, mincounts)):
-        if maxcounts is None:
-            fil = FilterCatalog.SmartsMatcher(lb, sm, count)
-        else:
-            fil = FilterCatalog.SmartsMatcher(lb, sm, count, maxcounts[i])
-        entry_name = lb
-        if entry_as_inds:
-            entry_name = i
-        catalog.AddEntry(FilterCatalog.FilterCatalogEntry(entry_name, fil))
+    with dm.without_rdkit_log():
+        catalog = FilterCatalog.FilterCatalog()
+        if labels is None:
+            labels = smarts
+        if mincounts is None:
+            mincounts = [1] * len(smarts)
+
+        for i, (sm, lb, count) in enumerate(zip(smarts, labels, mincounts)):
+            if maxcounts is None:
+                fil = FilterCatalog.SmartsMatcher(lb, sm, count)
+            else:
+                fil = FilterCatalog.SmartsMatcher(lb, sm, count, maxcounts[i])
+            entry_name = lb
+            if entry_as_inds:
+                entry_name = i
+            catalog.AddEntry(FilterCatalog.FilterCatalogEntry(entry_name, fil))
     return catalog
 
 
@@ -128,7 +133,6 @@ class NamedCatalogs:
         )
 
     @staticmethod
-    @functools.lru_cache(maxsize=32)
     def alerts(subset: Optional[Union[List[str], str]] = None):
         """Alerts filter catalogs used in most pharma
         Args:
@@ -144,7 +148,8 @@ class NamedCatalogs:
             subset = [x.lower() for x in subset]
             rd_filters = rd_filters[rd_filters.rule_set_name.str.lower().isin(subset)]
         mincount = np.maximum(rd_filters["mincount"], 1).astype(int)
-        labels = nibr_filters.apply(
+
+        labels = rd_filters.apply(
             lambda x: "{0}||{1}_min({2})||{3}".format(
                 x["rule_set_name"],
                 x["description"],
@@ -154,34 +159,44 @@ class NamedCatalogs:
             axis=1,
         )
         return from_smarts(
-            rd_filters["smarts"].values, labels, mincount, entry_as_inds=True
+            rd_filters["smarts"].values,
+            labels,
+            mincount,
+            entry_as_inds=False,
         )
 
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def dundee():
         return NamedCatalogs.alerts(subset=["Dundee"])
 
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def bms():
         return NamedCatalogs.alerts(subset=["BMS"])
 
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def glaxo():
         return NamedCatalogs.alerts(subset=["Glaxo"])
 
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def schembl():
         return NamedCatalogs.alerts(subset=["SureChEMBL"])
 
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def mlsmr():
         return NamedCatalogs.alerts(subset=["MLSMR"])
 
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def inpharmatica():
         return NamedCatalogs.alerts(subset=["Inpharmatica"])
 
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def lint():
         return NamedCatalogs.alerts(subset=["LINT"])
 

@@ -9,21 +9,24 @@ on:
       - "*"
 
 jobs:
-  python-format-black:
-    name: Python lint [black]
+  docker:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout the code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Fetch Valence Actions
+        uses: actions/checkout@v2
         with:
-          python-version: 3.8
+          repository: valence-platform/valence-actions
+          ref: main
+          token: ${{ secrets.VALENCE_GITHUB_TOKEN_PLATFORM }}
+          path: .github/valence-actions
 
-      - name: Install black
-        run: |
-          pip install black==20.8b1
-
-      - name: Lint
-        run: black --check .
+      - name: Code Check
+        uses: ./.github/valence-actions/code-check
+        with:
+          python-version: "3.8"
+          black-enable: true
+          mypy-enable: false

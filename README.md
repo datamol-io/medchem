@@ -137,7 +137,7 @@ res_common = common_filter(smiles_list)
 
 You can also use the provided binary: `chemfilter --help`. This will only apply the demerits (Eli Lilly) filters.
 
-```
+```bash
 Usage: chemfilter [OPTIONS]
 
 Options:

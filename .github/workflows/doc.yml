@@ -29,5 +29,6 @@ jobs:
         with:
           env-name: medchem
           env-file: env.yml
+          install-editable: true
           anaconda-token: ${{ secrets.INVIVOAI_ANACONDA_USER_BOT_TOKEN }}
           valdoc-json-key: ${{ secrets.VALDOC_WRITE_JSON_KEY }}

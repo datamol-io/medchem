@@ -51,43 +51,32 @@ There are used in lead filtering as `medchem.filter.lead.alert_filter`
 
 These are generic filters based on specific molecular property such as number of atoms, size of macrocycles, etc. They are available at `medchem.filter.generic`
 
-## Installation
+## Development Lifecycle
 
-### conda
-
-```bash
-conda install -c invivoai medchem
-```
-
-### Source
-
-This package requires : `gcc` and `g++` for compilation. Use your OS package manager or conda:
+### Setup a local dev environment
 
 ```bash
-conda install -c conda-forge c-compiler cxx-compiler makez zlib
-```
-
-Clone the repo and install it locally
-
-```bash
-git clone https://github.com/valence-platform/medchem.git
-cd medchem
+conda create -n medchem
+conda activate medchem
+mamba env update -f env.yml
 pip install -e .
 ```
 
-This will build (compile the C source) and install the package. If you are having trouble with pip, use setup.py:
+### Tests
+
+You can run tests locally with (you need to specify an env file to setup Ada):
 
 ```bash
-python setup.py install # "python setup.py build" should not be necessary
-
+pytest --envfile ada-prod.env
 ```
 
-### pip
+### Build the documentation
 
-You can install directly from git using pip too:
+You can build and serve the documentation locally with:
 
 ```bash
-pip install git+https://github.com/valence-platform/medchem.git
+# Build and serve the doc
+mkdocs serve
 ```
 
 ### Troubleshooting

@@ -62,7 +62,7 @@ def alert_filter(
             & (df.TPSA.between(*rule_dict.get("TPSA", [-np.inf, np.inf])))
         ]
 
-    filtered_idx = df.index.values
+    filtered_idx = df.index.values.astype(int)
     filtered_mask = np.zeros(len(mols), dtype=bool)
     filtered_mask[filtered_idx] = True
     if return_idx:
@@ -182,7 +182,7 @@ def demerit_filter(
         (~df.rejected) & ((df.demerit_score.isna()) | (df.demerit_score < max_demerits))
     ]
 
-    filtered_idx = df["ID"].values
+    filtered_idx = df["ID"].values.astype(int)
     filtered_mask = np.zeros(len(mols_list), dtype=bool)
     filtered_mask[filtered_idx] = True
     if return_idx:

@@ -4,6 +4,15 @@ medchem Change Log
 
 .. current developments
 
+v1.1.6
+====================
+
+**Fixed:**
+
+* Explicit conversion to int type for df index
+
+
+
 v1.1.5
 ====================
 

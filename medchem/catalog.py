@@ -66,7 +66,7 @@ def from_smarts(
                 fil = FilterCatalog.SmartsMatcher(lb, sm, count, maxcounts[i])
             entry_name = lb
             if entry_as_inds:
-                entry_name = i
+                entry_name = str(i)
             catalog.AddEntry(FilterCatalog.FilterCatalogEntry(entry_name, fil))
     return catalog
 
@@ -248,4 +248,30 @@ class NamedCatalogs:
         )
         return from_smarts(
             nibr_filters["smarts"].values, labels, mincount, entry_as_inds=False
+        )
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def bredt():
+        """Bredt fitler rules"""
+        bredt_df = pd.read_csv(get_data("bredt.csv"))
+        return from_smarts(
+            bredt_df["smarts"].values,
+            bredt_df["labels"].values,
+            entry_as_inds=True,
+        )
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def unstable_graph(max_severity: int = 5):
+        """Unstable molecular graph to filter out especially for generative models
+        Args:
+            max_severity: maximum severity to consider for bredt rules
+        """
+        graph_df = pd.read_csv(get_data("graph.csv"))
+        graph_df = graph_df[graph_df["severity"] <= max_severity]
+        return from_smarts(
+            graph_df["smarts"].values,
+            graph_df["labels"].values,
+            entry_as_inds=True,
         )

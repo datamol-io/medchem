@@ -23,6 +23,16 @@ class Test_LeadFilter(ut.TestCase):
         ),
         ("CCCCCCCCCCCCCNC(=O)[C@H](CO)\\N=C\\c1ccccc1", 0, 0, 2),
     ]
+    bredt_test_set = [
+        "C1C2=C1C2",
+        "C1CC=C=CC1",
+        "C1C2CCCC=C12",
+        "C1C2=C1CCCC2",  # is ok
+        "C1CC2=CCC1C2",
+        "C1CC2=CC1CC2",
+        "C1CC2CCC1C=C2",  # is ok
+        "C1CC2=CCC1CC2",
+    ] + list(data.smiles.values[:10])
 
     def test_alert_filter(self):
         ok_mols = lead.alert_filter(
@@ -108,6 +118,15 @@ class Test_LeadFilter(ut.TestCase):
         np.testing.assert_array_equal(df.severity, out.severity)
         np.testing.assert_array_equal(df.covalent, out.covalent)
         np.testing.assert_array_equal(df.special_mol, out.special_mol)
+
+    def test_bredt_filter(self):
+        """Test whether the input molecules pass all bredt filters"""
+
+        output = lead.bredt_filter(self.bredt_test_set, n_jobs=2)
+        expected_results = [False, False, False, True, False, False, True, False] + [
+            True
+        ] * 10
+        np.testing.assert_array_equal(output, expected_results)
 
 
 if __name__ == "__main__":

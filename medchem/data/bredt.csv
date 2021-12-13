@@ -1,0 +1,28 @@
+smarts,labels,description,severity
+"[r3,r4,r5,r6,r7:1]@&#[r3,r4,r5,r6,r7:2]",B1,"Ring of length up to 7 should not have triple bond",10
+"[*]1[*]2[*]@!-[*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*]2@!-[*]1[*]2",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*]2[*][*]@!-[*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*]2@!-[*]1[*][*]2",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*][*]2@![*][*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*]2[*][*][*]@!-[*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*]2@!-[*]1[*][*][*]2",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*][*]2@!-[*][*][*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*][*]2[*]@!-[*]2[*]1",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*]-2-[*]-[*]-[*][*]@!-[*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*][*]2@!-[*][*][*][*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*]@!-[*]2[*][*][*][*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*][*][*]2@!-[*][*]2[*]1",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*]2[*][*]1@!-[*]-2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*]2[*][*]1@!-[*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*]2[*][*][*]1@!-[*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*]2[*][*]1@![*][*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*]2[*][*][*][*]1@!-[*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*][*]2@!-[*][*][*]1[*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*][*]2@!-[*][*]1[*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*][*]2@!-[*][*][*][*]1[*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*][*]2@!-[*][*]1[*][*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*]@!-[*]2[*][*]1[*][*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*][*]2!-[*][*][*]1[*][*]2",B4,"Bond that share an atom belonging to one of the shared 3 bonds of 6-6 rings has to be single",10
+"[*:1]!-[D2:2]!-[*:3]",B5,"No atom has two double or triple bonds unless it is also bonded to some other heavy atoms",10
+"[r:1]!-[D2,r3,r4,r5,r6,r7,r8:2]!-[r:3]",B6,"No atom in a ring of length up to 8 has two double bonds unless it is also bonded to some other heavy atom",10

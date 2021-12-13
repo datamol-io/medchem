@@ -4,6 +4,18 @@ medchem Change Log
 
 .. current developments
 
+v1.1.7
+====================
+
+**Added:**
+
+* Support for bredt's rule
+* Support for illegal/nasty molecular graphs
+* Parallelization for demerits score
+* Move to threads as main scheduler because of rdkit
+
+
+
 v1.1.6
 ====================
 

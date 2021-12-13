@@ -1,3 +1,4 @@
+from typing import Union
 from typing import Iterable
 from typing import Optional
 import datamol as dm

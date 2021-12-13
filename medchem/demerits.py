@@ -1,14 +1,17 @@
 from typing import List
 from typing import Optional
 
-import glob
 import os
+import uuid
 import pandas as pd
 import re
 import shutil
 import subprocess
 import tempfile
+import datamol as dm
+import numpy as np
 from io import StringIO
+from loguru import logger
 
 this_dir, _ = os.path.split(__file__)
 BUILD_DIR = os.path.join(this_dir, "lilly/build")
@@ -54,6 +57,50 @@ def run_cmd(cmd, shell=False):
         print(" ".join(cmd))
         res.check_returncode()
     return res
+
+
+def batch_score(
+    smiles_list: List,
+    n_jobs: Optional[int] = None,
+    batch_size: Optional[int] = 5_000,
+    progress: bool = False,
+    **run_options,
+):
+    """Run scorer on input smile list in batch
+
+    Args:
+        smiles_list: list of smiles
+        n_jobs: Number of jobs to run in parallel.
+        batch_size: Optional batch_size to run the the scoring in parallels.
+        progress: Whether to show progress bar.
+        run_options: Run options to pass to the underlining score function
+
+    Returns:
+        out_df (pd.DataFrame): Dataframe containing the smiles and computed properties:
+            (rejected, demerit_score, reason, step)
+    """
+    n_splits = max(1, int(np.ceil(len(smiles_list) / batch_size)))
+    if n_jobs is not None and n_splits > 1:
+        smiles_batch_list = np.array_split(smiles_list, n_splits)
+        smiles_batch = [
+            dict(smiles_list=list(smlist), **run_options)
+            for smlist in smiles_batch_list
+        ]
+        # EN: cannot run this code in processes or loky mode
+        output = dm.parallelized(
+            score,
+            smiles_batch,
+            n_jobs=n_jobs,
+            progress=progress,
+            scheduler="threads",
+            arg_type="kwargs",
+        )
+        cur_len = 0
+        for sm_list, df in zip(smiles_batch_list, output):
+            df["ID"] += cur_len
+            cur_len += len(sm_list)
+        return pd.concat(output, ignore_index=True)
+    return score(smiles_list, **run_options)
 
 
 def score(
@@ -120,7 +167,8 @@ def score(
 
     # output file dir
     files_to_be_deleted = []
-    bad_file_dir = tempfile.mkdtemp(suffix="lilly")
+    run_id = str(uuid.uuid4())[:8]
+    bad_file_dir = tempfile.mkdtemp(suffix=f"_lilly_{run_id}")
     files_to_be_deleted.append(bad_file_dir)
     bad_file_0 = os.path.join(bad_file_dir, "bad0")
     bad_file_1 = os.path.join(bad_file_dir, "bad1")
@@ -157,11 +205,10 @@ def score(
         odm_patterns = [re.compile(odm_p, re.I) for odm_p in odm]
         with open(query_files[2]) as QRY_IN:
             current_queries = [qry.strip() for qry in QRY_IN]
-            omit_queries = [
+            current_queries = [
                 qry
-                for odm_p in odm_patterns
-                for qry in set(current_queries)
-                if odm_p.search(qry) and not current_queries.remove(qry)
+                for qry in current_queries
+                if not any(odm_p.search(qry) for odm_p in odm_patterns)
             ]
 
         with tempfile.NamedTemporaryFile(
@@ -173,7 +220,7 @@ def score(
 
     smiles_file = None
     with tempfile.NamedTemporaryFile(
-        mode="w+t", suffix=".smi", delete=False
+        mode="w+t", suffix=f"_lilly_{run_id}.smi", delete=False
     ) as smiles_tmp_files:
         smiles_tmp_files.write(
             "\n".join(

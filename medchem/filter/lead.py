@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -112,8 +113,10 @@ def common_filter(
     nih: bool = False,
     zinc: bool = False,
     pains: bool = False,
-    n_jobs: Optional[int] = None,
     return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: str = "threads",
 ):
     """Filter a list of compounds according to common toxicity alerts
 
@@ -126,8 +129,10 @@ def common_filter(
         nih: whether to include NIH filters
         zinc: whether to include ZINC filters
         pains: whether to include all PAINS filters
+        return_idx: whether to return index or a boolean mask
         n_jobs: number of parallel job to run. Sequential by default
-        return_idx: whether to return index of a boolean mask
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
 
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule is not toxic.
@@ -144,13 +149,11 @@ def common_filter(
         zinc=zinc,
         nih=nih,
     )
-    toxic = [False] * len(mols)
-    if n_jobs is not None:
-        mols = dm.parallelized(dm.to_mol, mols)
-        toxic = dm.parallelized(catalog.HasMatch, mols, n_jobs=n_jobs)
-    else:
-        mols = [dm.to_mol(x) for x in mols]
-        toxic = [catalog.HasMatch(mol) for mol in mols]
+
+    mols = dm.parallelized(dm.to_mol, mols, n_jobs=n_jobs)
+    toxic = dm.parallelized(
+        catalog.HasMatch, mols, n_jobs=n_jobs, scheduler=scheduler, progress=progress
+    )
 
     filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
     if return_idx:
@@ -158,32 +161,116 @@ def common_filter(
     return np.bitwise_not(toxic)
 
 
+def bredt_filter(
+    mols: Iterable[Union[str, rdchem.Mol]],
+    return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: str = "threads",
+):
+    """Filter a list of compounds according to Bredt's rules
+    https://en.wikipedia.org/wiki/Bredt%27s_rule
+
+    Args:
+        mols: list of input molecules
+        return_idx: whether to return index or a boolean mask
+        n_jobs: number of parallel job to run. Sequential by default
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
+
+    Returns:
+        filtered_mask: boolean array (or index array) where true means the molecule is not toxic.
+    """
+
+    catalog = NamedCatalogs.bredt()
+    # molecules needs to be kekulized for bredt
+    mols = dm.parallelized(partial(dm.to_mol, kekulize=True), mols, n_jobs=n_jobs)
+    toxic = dm.parallelized(
+        catalog.HasMatch, mols, n_jobs=n_jobs, scheduler=scheduler, progress=progress
+    )
+    filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
+    if return_idx:
+        return filtered_idx
+    return np.bitwise_not(toxic)
+
+
+def molecular_graph_filter(
+    mols: Iterable[Union[str, rdchem.Mol]],
+    max_severity: int = 5,
+    return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: str = "threads",
+):
+    """Filter a list of compounds according to unstable molecular graph filter list.
+
+    This list was obtained from observation around The disallowed graphs are:
+
+    * K3,3 or K2,4 structure
+    * Cone of P4 or K4 with 3-ear
+    * Node in more than one ring of length 3 or 4
+
+    Args:
+        mols: list of input molecules
+        max_severity: maximum severity allowed. Default is <=5
+        return_idx: whether to return index or a boolean mask
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
+
+    Returns:
+        filtered_mask: boolean array (or index array) where true means the molecule is not toxic.
+    """
+    if max_severity is None:
+        max_severity = 5
+    catalog = NamedCatalogs.unstable_graph(max_severity=max_severity)
+    mols = dm.parallelized(dm.to_mol, mols, n_jobs=n_jobs)
+    toxic = dm.parallelized(
+        catalog.HasMatch, mols, n_jobs=n_jobs, scheduler=scheduler, progress=progress
+    )
+    filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
+    if return_idx:
+        return filtered_idx
+    return np.bitwise_not(toxic)
+
+
 def demerit_filter(
-    mols_list, max_demerits: Optional[int] = 160, return_idx: bool = False, **kwargs
+    smiles: Iterable[str],
+    max_demerits: Optional[int] = 160,
+    return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    **kwargs
 ):
     """Run demerit filtering on current list of molecules
 
     Args:
-        mols_list: list of input molecules
+        smiles: list of input molecules as smiles preferably
         max_demerits: Cutoff to reject molecules Defaults to 160.
         return_idx: whether to return a mask or a list of valid indexes
+        progress: whether to show progress bar
         kwargs: parameters specific to the `demerits.score` function
 
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule is ok.
-
     """
 
-    if not isinstance(mols_list[0], str):
-        mols_list = dm.parallelized(dm.to_mol, mols_list)
-        mols_list = dm.parallelized(dm.to_smiles, mols_list)
-    df = demerits.score(mols_list, **kwargs)
+    if not isinstance(smiles[0], str):
+        # canonicalize the smiles and ensure the input is smiles and not Chem.Mol
+        def canonical_smi(smi):
+            mol = dm.to_mol(smi)
+            if mol is not None:
+                return dm.to_smiles(mol)
+            return mol
+
+        smiles = dm.parallelized(canonical_smi, smiles, n_jobs=n_jobs)
+
+    df = demerits.batch_score(smiles, n_jobs=n_jobs, progress=progress, **kwargs)
     df = df[
         (~df.rejected) & ((df.demerit_score.isna()) | (df.demerit_score < max_demerits))
     ]
 
     filtered_idx = df["ID"].values.astype(int)
-    filtered_mask = np.zeros(len(mols_list), dtype=bool)
+    filtered_mask = np.zeros(len(smiles), dtype=bool)
     filtered_mask[filtered_idx] = True
     if return_idx:
         return filtered_idx

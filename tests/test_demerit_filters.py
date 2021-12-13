@@ -94,6 +94,12 @@ class Test_DemeritsFilter(ut.TestCase):
         res = demerits.score(self.smiles_list, **self.test_config)
         self.assertTrue(res.shape[0] > 0)
 
+    def test_batch_demerits(self):
+        res = demerits.batch_score(
+            self.smiles_list, n_jobs=4, batch_size=5, **self.test_config
+        )
+        self.assertTrue(res.shape[0] > 0)
+
 
 if __name__ == "__main__":
     ut.main()

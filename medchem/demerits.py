@@ -170,13 +170,13 @@ def score(
     run_id = str(uuid.uuid4())[:8]
     bad_file_dir = tempfile.mkdtemp(suffix=f"_lilly_{run_id}")
     files_to_be_deleted.append(bad_file_dir)
-    bad_file_0 = os.path.join(bad_file_dir, f"bad0")
-    bad_file_1 = os.path.join(bad_file_dir, f"bad1")
-    bad_file_2 = os.path.join(bad_file_dir, f"bad2")
-    bad_file_3 = os.path.join(bad_file_dir, f"bad3")
-    mc_pass_out = os.path.join(bad_file_dir, f"mc_pass.smi")
-    tsub_out_1 = os.path.join(bad_file_dir, f"tsub1.smi")
-    tsub_out_2 = os.path.join(bad_file_dir, f"tsub2.smi")
+    bad_file_0 = os.path.join(bad_file_dir, "bad0")
+    bad_file_1 = os.path.join(bad_file_dir, "bad1")
+    bad_file_2 = os.path.join(bad_file_dir, "bad2")
+    bad_file_3 = os.path.join(bad_file_dir, "bad3")
+    mc_pass_out = os.path.join(bad_file_dir, "mc_pass.smi")
+    tsub_out_1 = os.path.join(bad_file_dir, "tsub1.smi")
+    tsub_out_2 = os.path.join(bad_file_dir, "tsub2.smi")
     iwd_out = os.path.join(bad_file_dir, f"iwd.smi")
 
     # optional_queries

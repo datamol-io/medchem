@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Callable, Iterable
+from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Dict
@@ -14,10 +14,6 @@ from medchem.catalog import NamedCatalogs
 from medchem import demerits
 from medchem.alerts import AlertFilters
 from medchem.novartis import NovartisFilters
-from joblib.externals.loky import set_loky_pickler
-from joblib import parallel_backend
-from joblib import Parallel, delayed
-from joblib import wrap_non_picklable_objects
 
 
 def alert_filter(
@@ -208,9 +204,9 @@ def molecular_graph_filter(
 ):
     """Filter a list of compounds according to unstable molecular graph filter list.
 
-    The disallowed graphs are:
+    This list was obtained from observation around The disallowed graphs are:
 
-    * K_33 or K_24 structure
+    * K3,3 or K2,4 structure
     * Cone of P4 or K4 with 3-ear
     * Node in more than one ring of length 3 or 4
 

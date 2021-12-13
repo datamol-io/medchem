@@ -177,7 +177,7 @@ def score(
     mc_pass_out = os.path.join(bad_file_dir, "mc_pass.smi")
     tsub_out_1 = os.path.join(bad_file_dir, "tsub1.smi")
     tsub_out_2 = os.path.join(bad_file_dir, "tsub2.smi")
-    iwd_out = os.path.join(bad_file_dir, f"iwd.smi")
+    iwd_out = os.path.join(bad_file_dir, "iwd.smi")
 
     # optional_queries
     optional_queries = ""

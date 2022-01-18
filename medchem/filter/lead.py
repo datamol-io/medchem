@@ -212,7 +212,7 @@ def molecular_graph_filter(
 
     Args:
         mols: list of input molecules
-        max_severity: maximum severity allowed. Default is <=5
+        max_severity: maximum acceptable severity (1-10). Default is <5
         return_idx: whether to return index or a boolean mask
         progress: whether to show progress bar
         scheduler: joblib scheduler to use

@@ -105,7 +105,6 @@ class NovartisFilters:
                     co = sum(covalent)
                     sm = sum(special_mol)
             except Exception as e:
-                raise
                 logger.warning(f"Fail on molecule at index {i}")
 
             results.append([smiles, status, reasons, sc, co, sm])

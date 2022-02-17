@@ -8,7 +8,7 @@ class Test_ChemicalGroup(ut.TestCase):
         c_group = ChemicalGroup(groups="rings_in_drugs")
         rings_numbers = 92
         self.assertEqual(len(c_group), rings_numbers)
-        self.assertEqual(len(c_group.get_smarts()), rings_numbers)
+        self.assertEqual(len(c_group.smarts), rings_numbers)
         out_false = c_group.has_match("CCCCCCCCCC")
         self.assertFalse(out_false)
         out_true = c_group.has_match("C1CCCCC1")

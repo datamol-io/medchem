@@ -12,7 +12,17 @@ from medchem import catalog
 
 
 class ChemicalGroup:
-    """Build a library of chemical group based on availability"""
+    """Build a library of chemical group using a list of structures
+
+    The default library of structure has been curated from https://github.com/Sulstice/global-chem.
+
+    !!! warning
+        The SMILES and SMARTS used in the default library do not result in the same match.
+        Unless specified otherwise, the SMILES will be used in the matching done by this class,
+        while due to RDKit's limitation the SMARTS will be used in the matching done by the generated catalog.
+        For more information see this discussion: https://github.com/valence-platform/medchem/pull/19,
+
+    """
 
     def __init__(
         self,
@@ -61,33 +71,33 @@ class ChemicalGroup:
     def __len__(self):
         return len(self.data)
 
-    def get_iupac(self):
-        """Get the IUPAC name of the chemical group in this instance"""
-        self.data.iupac.values
+    @property
+    def iupac(self):
+        """Get the IUPAC name of the chemical groups in this instance"""
+        return self.data.iupac.tolist()
 
-    def get_smiles(self, as_mols: bool = True):
-        """Get the SMILES name of the chemical group in this instance
+    @property
+    def smiles(self):
+        """Get the SMILES of the chemical groups in this instance"""
+        return self.data.smiles.tolist()
 
-        Args:
-            as_mols: Return the SMILES as RDKit molecules
-        """
-        smiles_list = self.data.smiles.values
-        if as_mols:
-            smiles_list = self.data.mol.values
-        return smiles_list
+    @property
+    def mols(self):
+        """Get the Molecule object of the SMILES for the chemical groups in this instance"""
+        return self.data.mol.tolist()
 
-    def get_smarts(self, as_mols: bool = False):
-        """Get the SMARTS string of the chemical group in this instance
+    @property
+    def smarts(self):
+        """Get the SMARTS of the chemical groups in this instance"""
+        return self.data.smarts.tolist()
 
-        Args:
-            as_mols: Return the SMARTS as RDKit molecules
-        """
-        smarts_list = self.data.smarts.values
-        if as_mols:
-            smarts_list = self.data.mol_smarts.values
-        return smarts_list
+    @property
+    def mol_smarts(self):
+        """Get the SMARTS of the chemical groups in this instance"""
+        return self.data.mol_smarts.tolist()
 
-    def get_dataframe(self):
+    @property
+    def dataframe(self):
         """Get the dataframe of the chemical groups"""
         return self.data
 
@@ -95,8 +105,8 @@ class ChemicalGroup:
     def get_catalog(self):
         """Build an rdkit catalog from the current chemical group data"""
         return catalog.from_smarts(
-            self.get_smarts(as_mols=False),
-            self.get_iupac(),
+            self.mol_smarts,
+            self.iupac,
             entry_as_inds=False,
         )
 

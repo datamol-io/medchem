@@ -297,10 +297,11 @@ class NamedCatalogs:
     def unstable_graph(max_severity: int = 5):
         """Unstable molecular graph to filter out especially for generative models
         Args:
-            max_severity: maximum severity to consider for bredt rules
+            max_severity: maximum severity to consider for graph rules to be acceptable
         """
         graph_df = pd.read_csv(get_data("graph.csv"))
-        graph_df = graph_df[graph_df["severity"] <= max_severity]
+        # only apply rules with severity >= max_severity
+        graph_df = graph_df[graph_df["severity"] >= max_severity]
         return from_smarts(
             graph_df["smarts"].values,
             graph_df["labels"].values,

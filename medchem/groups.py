@@ -12,14 +12,14 @@ from medchem import catalog
 
 
 class ChemicalGroup:
-    """Build a library of chemical group using a list of structures
+    """Build a library of chemical groups using a list of structures parsed from a file
 
     The default library of structure has been curated from https://github.com/Sulstice/global-chem.
 
     !!! warning
-        The SMILES and SMARTS used in the default library do not result in the same match.
+        The SMILES and SMARTS used in the default list of substructures do not result in the same matches.
         Unless specified otherwise, the SMILES will be used in the matching done by this class,
-        while due to RDKit's limitation the SMARTS will be used in the matching done by the generated catalog.
+        whereas due to RDKit's limitation, the SMARTS will be used in the matching done by the generated catalog.
         For more information see this discussion: https://github.com/valence-platform/medchem/pull/19,
 
     """
@@ -117,7 +117,9 @@ class ChemicalGroup:
 
     @staticmethod
     def list_hierarchy_groups():
-        """List all the hierarchy in chemical groups available"""
+        """List all the hierarchy in chemical groups available.
+        To get the full hierarchy on each path, split by the `.` character.
+        """
         return catalog.list_chemical_groups(hierachy=True)
 
     def get_matches(self, mol: Union[dm.Mol, str], use_smiles: bool = True):

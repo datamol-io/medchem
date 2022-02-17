@@ -19,7 +19,7 @@ nav:
       - medchem.catalog: api/medchem.catalog.md
       - medchem.demerits: api/medchem.demerits.md
       - medchem.alerts: api/medchem.alerts.md
-      - medchem.novartis: api/medchem.novartis.md
+      - medchem.groups: api/medchem.groups.md
   - CLI References: cli-references.md
 
 theme:

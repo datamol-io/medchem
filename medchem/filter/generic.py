@@ -1,8 +1,7 @@
-from typing import Union
 from typing import Iterable
 from typing import Optional
+
 import datamol as dm
-from rdkit.Chem import MolFromSmarts
 
 
 def macrocycle_filter(
@@ -93,9 +92,9 @@ def ring_infraction_filter(mols: Iterable, return_idx: bool = False):
     filtered_idx = []
     for i, molecule in enumerate(mols):
         molecule = dm.to_mol(molecule)
-        ring_allene = molecule.HasSubstructMatch(MolFromSmarts("[R]=[R]=[R]"))
+        ring_allene = molecule.HasSubstructMatch(dm.from_smarts("[R]=[R]=[R]"))
         double_bond_in_small_ring = molecule.HasSubstructMatch(
-            MolFromSmarts("[r3,r4]=[r3,r4]")
+            dm.from_smarts("[r3,r4]=[r3,r4]")
         )
         if not any([ring_allene, double_bond_in_small_ring]):
             filtered_mask.append(True)
@@ -168,13 +167,13 @@ def halogenicity_filter(
     for i, molecule in enumerate(mols):
         molecule = dm.to_mol(molecule)
         fluorine_saturation = (
-            len(molecule.GetSubstructMatches(MolFromSmarts("[F]"))) > thresh_F
+            len(molecule.GetSubstructMatches(dm.from_smarts("[F]"))) > thresh_F
         )
         bromide_saturation = (
-            len(molecule.GetSubstructMatches(MolFromSmarts("[Br]"))) > thresh_Br
+            len(molecule.GetSubstructMatches(dm.from_smarts("[Br]"))) > thresh_Br
         )
         chlorine_saturation = (
-            len(molecule.GetSubstructMatches(MolFromSmarts("[Cl]"))) > thresh_Cl
+            len(molecule.GetSubstructMatches(dm.from_smarts("[Cl]"))) > thresh_Cl
         )
         if not any([chlorine_saturation, bromide_saturation, fluorine_saturation]):
             filtered_mask.append(True)

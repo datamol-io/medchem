@@ -1,0 +1,3 @@
+# `medchem.groups`
+
+::: medchem.groups

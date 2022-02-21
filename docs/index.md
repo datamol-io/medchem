@@ -20,7 +20,7 @@ The following filters are available:
 
 These are python binding of the implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at [doi 10.1021/jm301008n](https://doi.org/10.1021/jm301008n).
 
-These rules are used in `medchem.filter.demerit_filter` function and are the main offering of this package.
+These rules are used in `medchem.filter.lilly_demerit_filter` function and are the main offering of this package.
 
 #### NIBR filters
 
@@ -30,7 +30,13 @@ These rules are used in lead filtering as `medchem.filter.lead.screening_filter`
 
 #### Common tox and assay interference rules
 
-These are pure rdkit filtering rules based on PAINS, BRENK, NIH and ZINC filters. There are used in lead filtering as `medchem.filter.lead.common_filter`
+These are filtering rules based on PAINS, BRENK, NIH and ZINC and any other catalog provided by medchem. There are used in lead filtering as `medchem.filter.lead.alert_filter` and you need to provide the list of catalog you want to use.
+
+
+#### Bredt filters
+
+These are filters based on the Bredt's rules for unstable chemistry.There are used in lead filtering as `medchem.filter.lead.bredt_filter`.
+
 
 #### ChEMBL filters
 
@@ -47,7 +53,7 @@ These are alerts rules from the ChEMBL database that have been collected from va
 | [PAINS](https://pubs.acs.org/doi/abs/10.1021/jm901137j) |              479 |
 | SureChEMBL                                              |              166 |
 
-There are used in lead filtering as `medchem.filter.lead.alert_filter`
+There are used in lead filtering as `medchem.filter.lead.chembl_filter`
 
 #### Generic filters
 

@@ -1,4 +1,3 @@
-from functools import partial
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -10,13 +9,17 @@ import numpy as np
 import datamol as dm
 
 from rdkit.Chem import rdchem
-from medchem.catalog import NamedCatalogs
+from functools import partial
+from loguru import logger
 from medchem import demerits
-from medchem.alerts import AlertFilters
-from medchem.novartis import NovartisFilters
+from medchem.alerts import ChEMBLFilters, NovartisFilters
+from medchem.catalog import NamedCatalogs
+from medchem.catalog import FilterCatalog
+from medchem.catalog import merge_catalogs
+from medchem.groups import ChemicalGroup
 
 
-def alert_filter(
+def chembl_filter(
     mols: Iterable[Union[str, rdchem.Mol]],
     alerts: List[str],
     alerts_db: Optional[os.PathLike] = None,
@@ -28,7 +31,7 @@ def alert_filter(
 
     Arguments:
         mols: List of molecules to filter
-        alerts: List of alert collections to screen for.
+        alerts: List of alert collections to screen for
             Supported collections are:
             * 'Glaxo'
             * 'Dundee'
@@ -48,10 +51,11 @@ def alert_filter(
         return_idx: Whether to return the filtered index
 
     Returns:
-        filtered_mask: boolean array (or index array) where true means the molecule is ok.
+        filtered_mask: boolean array (or index array) where true means
+            the molecule is ok (not found in the alert catalog).
     """
 
-    custom_filters = AlertFilters(alerts_set=alerts, alerts_db=alerts_db)
+    custom_filters = ChEMBLFilters(alerts_set=alerts, alerts_db=alerts_db)
     df = custom_filters(mols, n_jobs=n_jobs, progress=False)
     df = df[df.status != "Exclude"]
     if rule_dict is not None and len(rule_dict) > 0:
@@ -89,7 +93,8 @@ def screening_filter(
         return_idx: Whether to return the filtered index
 
     Returns:
-        filtered_mask: boolean array (or index array) where true means the molecule is ok.
+        filtered_mask: boolean array (or index array) where true means the molecule
+            is not rejected (i.e not found in the alert catalog).
 
     """
 
@@ -104,15 +109,9 @@ def screening_filter(
     return filtered_mask
 
 
-def common_filter(
+def alert_filter(
     mols: Iterable[Union[str, rdchem.Mol]],
-    pains_a: bool = True,
-    pains_b: bool = True,
-    pains_c: bool = False,
-    brenk: bool = False,
-    nih: bool = False,
-    zinc: bool = False,
-    pains: bool = False,
+    catalogs: List[Union[str, FilterCatalog.FilterCatalog]],
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,
@@ -122,13 +121,64 @@ def common_filter(
 
     Args:
         mols: list of input molecules
-        pains_a: whether to include PAINS filters from assay A
-        pains_b: whether to include PAINS filters from assay B
-        pains_c: whether to include PAINS filters from assay C
-        brenk: whether to include BRENK filters
-        nih: whether to include NIH filters
-        zinc: whether to include ZINC filters
-        pains: whether to include all PAINS filters
+        catalogs: list of catalogs (name or FilterCatalog)
+        return_idx: whether to return index or a boolean mask
+        n_jobs: number of parallel job to run. Sequential by default
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
+
+    Returns:
+        filtered_mask: boolean array (or index array) where true means the molecule is not found in the catalog.
+    """
+
+    named_catalogs = []
+    for catalog in catalogs:
+        if isinstance(catalog, str):
+            catalog_fn = getattr(NamedCatalogs, catalog, None)
+            if catalog_fn is None:
+                logger.warning(f"Catalog {catalog} not found. Ignoring.")
+            else:
+                named_catalogs.append(catalog_fn())
+        else:
+            named_catalogs.append(catalog)
+    if len(named_catalogs) < 1:
+        raise ValueError("Please provide at least one catalog !")
+    catalog = merge_catalogs(*named_catalogs)
+    mols = dm.parallelized(
+        dm.to_mol,
+        mols,
+        n_jobs=n_jobs,
+        progress=progress,
+        tqdm_kwargs=dict(desc="To mol", leave=False),
+    )
+    toxic = dm.parallelized(
+        catalog.HasMatch,
+        mols,
+        n_jobs=n_jobs,
+        scheduler=scheduler,
+        progress=progress,
+        tqdm_kwargs=dict(desc="Match", leave=False),
+    )
+
+    filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
+    if return_idx:
+        return filtered_idx
+    return np.bitwise_not(toxic)
+
+
+def chemical_group_filter(
+    mols: Iterable[Union[str, rdchem.Mol]],
+    chemical_group: ChemicalGroup,
+    return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: str = "threads",
+):
+    """Filter a list of compounds according to a chemical group instance
+
+    Args:
+        mols: list of input molecules
+        chemical_group: a chemical group instance with the required functional groups to use.
         return_idx: whether to return index or a boolean mask
         n_jobs: number of parallel job to run. Sequential by default
         progress: whether to show progress bar
@@ -138,27 +188,16 @@ def common_filter(
         filtered_mask: boolean array (or index array) where true means the molecule is not toxic.
     """
 
-    if pains:
-        pains_a = pains_b = pains_c = True
-
-    catalog = NamedCatalogs.tox(
-        pains_a=pains_a,
-        pains_b=pains_b,
-        pains_c=pains_c,
-        brenk=brenk,
-        zinc=zinc,
-        nih=nih,
+    if isinstance(chemical_group, ChemicalGroup):
+        chemical_group = chemical_group.get_catalog()
+    return alert_filter(
+        mols,
+        [chemical_group],
+        return_idx=return_idx,
+        n_jobs=n_jobs,
+        progress=progress,
+        scheduler=scheduler,
     )
-
-    mols = dm.parallelized(dm.to_mol, mols, n_jobs=n_jobs)
-    toxic = dm.parallelized(
-        catalog.HasMatch, mols, n_jobs=n_jobs, scheduler=scheduler, progress=progress
-    )
-
-    filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
-    if return_idx:
-        return filtered_idx
-    return np.bitwise_not(toxic)
 
 
 def bredt_filter(
@@ -184,9 +223,20 @@ def bredt_filter(
 
     catalog = NamedCatalogs.bredt()
     # molecules needs to be kekulized for bredt
-    mols = dm.parallelized(partial(dm.to_mol, kekulize=True), mols, n_jobs=n_jobs)
+    mols = dm.parallelized(
+        partial(dm.to_mol, kekulize=True),
+        mols,
+        n_jobs=n_jobs,
+        progress=progress,
+        tqdm_kwargs=dict(desc="To mol", leave=False),
+    )
     toxic = dm.parallelized(
-        catalog.HasMatch, mols, n_jobs=n_jobs, scheduler=scheduler, progress=progress
+        catalog.HasMatch,
+        mols,
+        n_jobs=n_jobs,
+        scheduler=scheduler,
+        progress=progress,
+        tqdm_kwargs=dict(desc="Match", leave=False),
     )
     filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
     if return_idx:
@@ -212,7 +262,7 @@ def molecular_graph_filter(
 
     Args:
         mols: list of input molecules
-        max_severity: maximum severity allowed. Default is <=5
+        max_severity: maximum acceptable severity (1-10). Default is <5
         return_idx: whether to return index or a boolean mask
         progress: whether to show progress bar
         scheduler: joblib scheduler to use
@@ -223,9 +273,21 @@ def molecular_graph_filter(
     if max_severity is None:
         max_severity = 5
     catalog = NamedCatalogs.unstable_graph(max_severity=max_severity)
-    mols = dm.parallelized(dm.to_mol, mols, n_jobs=n_jobs)
+    if isinstance(mols[0], str):
+        mols = dm.parallelized(
+            dm.to_mol,
+            mols,
+            n_jobs=n_jobs,
+            progress=progress,
+            tqdm_kwargs=dict(desc="To mol", leave=False),
+        )
     toxic = dm.parallelized(
-        catalog.HasMatch, mols, n_jobs=n_jobs, scheduler=scheduler, progress=progress
+        catalog.HasMatch,
+        mols,
+        n_jobs=n_jobs,
+        scheduler=scheduler,
+        progress=progress,
+        tqdm_kwargs=dict(desc="Match", leave=False),
     )
     filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
     if return_idx:
@@ -233,15 +295,15 @@ def molecular_graph_filter(
     return np.bitwise_not(toxic)
 
 
-def demerit_filter(
+def lilly_demerit_filter(
     smiles: Iterable[str],
     max_demerits: Optional[int] = 160,
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,
-    **kwargs
+    **kwargs,
 ):
-    """Run demerit filtering on current list of molecules
+    """Run Lilly demerit filtering on current list of molecules
 
     Args:
         smiles: list of input molecules as smiles preferably
@@ -262,7 +324,13 @@ def demerit_filter(
                 return dm.to_smiles(mol)
             return mol
 
-        smiles = dm.parallelized(canonical_smi, smiles, n_jobs=n_jobs)
+        smiles = dm.parallelized(
+            canonical_smi,
+            smiles,
+            n_jobs=n_jobs,
+            progress=progress,
+            tqdm_kwargs=dict(desc="Canonical Smiles", leave=False),
+        )
 
     df = demerits.batch_score(smiles, n_jobs=n_jobs, progress=progress, **kwargs)
     df = df[

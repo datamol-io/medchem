@@ -3,7 +3,10 @@ import datamol as dm
 import pandas as pd
 import numpy as np
 from medchem.filter import lead
+from medchem.alerts import ChEMBLFilters, NovartisFilters
 from rdkit.Chem.Descriptors import MolWt
+
+from medchem.groups import ChemicalGroup
 
 
 class Test_LeadFilter(ut.TestCase):
@@ -35,18 +38,18 @@ class Test_LeadFilter(ut.TestCase):
     ] + list(data.smiles.values[:10])
 
     def test_alert_filter(self):
-        ok_mols = lead.alert_filter(
+        ok_mols = lead.chembl_filter(
             self.data.smiles.values, alerts=["Glaxo", "BMS"], n_jobs=2, return_idx=False
         )
-        ok_index_2 = lead.alert_filter(
+        ok_index_2 = lead.chembl_filter(
             self.data.smiles.values, alerts=["Glaxo", "bms"], n_jobs=2, return_idx=True
         )
-        self.assertEquals(sum(ok_mols), len(ok_index_2))
+        self.assertEqual(sum(ok_mols), len(ok_index_2))
         self.assertTrue(sum(ok_mols) == 503)
 
         # test filter object
         rule_dict = dict(MW=[100, 200])
-        ok_index_3 = lead.alert_filter(
+        ok_index_3 = lead.chembl_filter(
             self.data.smiles.values,
             alerts=["Glaxo", "bms"],
             n_jobs=2,
@@ -59,7 +62,7 @@ class Test_LeadFilter(ut.TestCase):
                 for x in self.data.iloc[ok_index_3].smiles.apply(dm.to_mol).apply(MolWt)
             )
         )
-        al_filter = lead.AlertFilters(alerts_set=["BMS"])
+        al_filter = ChEMBLFilters(alerts_set=["BMS"])
         df = al_filter(self.data.smiles.values[:10])
         expected_cols = set(
             ["_smiles", "status", "reasons", "MW", "LogP", "HBD", "HBA", "TPSA"]
@@ -69,21 +72,15 @@ class Test_LeadFilter(ut.TestCase):
         )
 
     def test_common_filter(self):
-        idx = lead.common_filter(
+        idx = lead.alert_filter(
             self.data.smiles.values,
-            pains=True,
-            brenk=False,
-            nih=False,
-            zinc=False,
+            catalogs=["pains"],
             return_idx=False,
         )
         self.assertTrue(sum(idx) == 632)
-        idx = lead.common_filter(
+        idx = lead.alert_filter(
             self.data.smiles.values,
-            pains=False,
-            brenk=True,
-            nih=False,
-            zinc=False,
+            catalogs=["brenk"],
             return_idx=True,
         )
         # brenk should filter alkyl halide
@@ -100,7 +97,7 @@ class Test_LeadFilter(ut.TestCase):
         expected_idx = list(df[df.severity < 5].index)
         self.assertEqual(len(set(idx).difference(set(expected_idx))), 0)
 
-        nov_filters = lead.NovartisFilters()
+        nov_filters = NovartisFilters()
         out = nov_filters(df.smiles)
         expected_cols = set(
             [
@@ -127,6 +124,15 @@ class Test_LeadFilter(ut.TestCase):
             True
         ] * 10
         np.testing.assert_array_equal(output, expected_results)
+
+    def test_chemical_groups(self):
+        """Test whether the input molecules contains any privileged scaffold"""
+
+        c_group = ChemicalGroup(groups=["privileged_scaffolds"])
+        mols = self.data.smiles.values
+        output = lead.chemical_group_filter(mols, c_group)
+        self.assertEqual(len(output), len(mols))
+        self.assertEqual(sum(output), 622)
 
 
 if __name__ == "__main__":

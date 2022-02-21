@@ -20,16 +20,47 @@ with warnings.catch_warnings():
 from medchem.utils import get_data
 
 
-def merge(*catalogs):
+def list_named_catalogs():
+    """List all available named catalogs"""
+    return [
+        x
+        for x in NamedCatalogs.__dict__.keys()
+        if (not x.startswith("_") and x != "alerts")
+    ]
+
+
+def list_chemical_groups(hierachy: bool = False):
+    """List all the functional groups available
+    Args:
+        hierarchy: whether to return the full hierarchy or the group name only
+    """
+    data = get_data("chemical_groups.csv")
+    if hierachy:
+        return list(data.hierarchy.unique())
+    return list(data.group.unique())
+
+
+def merge_catalogs(*catalogs):
     """Merge several catalogs into a single one
 
     Returns:
         catalog (FilterCatalog): merged catalog
     """
+    if len(catalogs) == 1:
+        return catalogs[0]
     params = FilterCatalog.FilterCatalogParams()
+    missing_catalogs = []
     for catlg in catalogs:
-        params.AddCatalog(catlg)
-    return FilterCatalog.FilterCatalog(params)
+        if isinstance(catlg, FilterCatalog.FilterCatalogParams.FilterCatalogs):
+            params.AddCatalog(catlg)
+        else:
+            missing_catalogs.append(catlg)
+    parameterized_catalogs = FilterCatalog.FilterCatalog(params)
+    for catlg in missing_catalogs:
+        for entry_nums in range(catlg.GetNumEntries()):
+            entry = catlg.GetEntryWithIdx(entry_nums)
+            parameterized_catalogs.AddEntry(entry)
+    return parameterized_catalogs
 
 
 def from_smarts(
@@ -49,7 +80,7 @@ def from_smarts(
         entry_as_inds: whether to use index for entry id or the label
 
     Returns:
-        catalog (FilterCatalog): merged catalog
+        catalog (FilterCatalog): merged catalogs
     """
 
     with dm.without_rdkit_log():
@@ -96,20 +127,20 @@ class NamedCatalogs:
             nih: whether to include NIH filters
             zinc: whether to include ZINC filters
         """
-        params = FilterCatalog.FilterCatalogParams()
+        catalogs = []
         if pains_a:
-            params.AddCatalog(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_A)
+            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_A)
         if pains_b:
-            params.AddCatalog(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_B)
+            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_B)
         if pains_c:
-            params.AddCatalog(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_C)
+            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_C)
         if brenk:
-            params.AddCatalog(FilterCatalog.FilterCatalogParams.FilterCatalogs.BRENK)
+            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.BRENK)
         if nih:
-            params.AddCatalog(FilterCatalog.FilterCatalogParams.FilterCatalogs.NIH)
+            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.NIH)
         if zinc:
-            params.AddCatalog(FilterCatalog.FilterCatalogParams.FilterCatalogs.ZINC)
-        catalog = FilterCatalog.FilterCatalog(params)
+            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.ZINC)
+        catalog = merge_catalogs(*catalogs)
         return catalog
 
     @staticmethod
@@ -266,12 +297,34 @@ class NamedCatalogs:
     def unstable_graph(max_severity: int = 5):
         """Unstable molecular graph to filter out especially for generative models
         Args:
-            max_severity: maximum severity to consider for bredt rules
+            max_severity: maximum severity to consider for graph rules to be acceptable
         """
         graph_df = pd.read_csv(get_data("graph.csv"))
-        graph_df = graph_df[graph_df["severity"] <= max_severity]
+        # only apply rules with severity >= max_severity
+        graph_df = graph_df[graph_df["severity"] >= max_severity]
         return from_smarts(
             graph_df["smarts"].values,
             graph_df["labels"].values,
             entry_as_inds=True,
+        )
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def chemicals_groups(filters: Union[str, List[str]] = "medicinal"):
+        """Unstable molecular graph to filter out especially for generative models
+
+        Args:
+            medchem_only: maximum severity to consider for bredt rules
+        """
+        chemical_groups = pd.read_csv(get_data("chemical_groups.csv"))
+        if isinstance(filters, str):
+            filters = [filters]
+            chemical_groups = chemical_groups[
+                chemical_groups.hierarchy.str.contains("|".join(filters))
+            ]
+
+        return from_smarts(
+            chemical_groups["smarts"].values,
+            chemical_groups["iupac"].values,
+            entry_as_inds=False,
         )

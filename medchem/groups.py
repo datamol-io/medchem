@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 from typing import List
 from typing import Optional
 from typing import Union
@@ -11,10 +12,25 @@ from medchem.utils import get_data
 from medchem import catalog
 
 
+def list_default_chemical_groups(hierachy: bool = False):
+    """List all the functional groups available
+
+    Args:
+        hierarchy: whether to return the full hierarchy or the group name only
+    """
+    data = get_data("chemical_groups.csv")
+    if hierachy:
+        return list(data.hierarchy.unique())
+    return list(data.group.unique())
+
+
 class ChemicalGroup:
     """Build a library of chemical groups using a list of structures parsed from a file
 
-    The default library of structure has been curated from https://github.com/Sulstice/global-chem.
+    The default library of structure has been curated from https://github.com/Sulstice/global-chem and additional open source data.
+
+    !!! note
+        For new chemical groups, please minimally provide the 'smiles'/'smarts', 'name' and "group" and optional 'hierarchy' columns
 
     !!! warning
         The SMILES and SMARTS used in the default list of substructures do not result in the same matches.
@@ -27,7 +43,6 @@ class ChemicalGroup:
     def __init__(
         self,
         groups: Union[str, List[str]] = None,
-        medchem_only: bool = True,
         n_jobs: Optional[int] = None,
         groups_db: Optional[os.PathLike] = None,
     ):
@@ -35,7 +50,6 @@ class ChemicalGroup:
 
         Args:
             groups: List of groups to use. Defaults to None where all functional groups are used
-            medchem_only: Whether to filter out any subset that is not classified as `medicinal_chemistry. Defaults to True.
             n_jobs: Optional number of jobs to run in parallel for internally building the data. Defaults to None.
             groups_db: Path to a file containing the dump of the chemical groups. Defaults is internal dataset
         """
@@ -45,15 +59,18 @@ class ChemicalGroup:
         if groups is None:
             groups = []
         self.groups = groups
-        self.medchem_only = medchem_only
         self.n_jobs = n_jobs or 0
         if groups_db is None:
             groups_db = get_data("chemical_groups.csv")
-        data = pd.read_csv(groups_db)
-        self.data = data[data.hierarchy.str.contains("|".join(self.groups))]
-        if self.medchem_only:
-            self.data = self.data[self.data.hierarchy.str.contains("medicinal")]
-
+        self.data = pd.read_csv(groups_db)
+        if "hierarchy" not in self.data.columns:
+            self.data["hierarchy"] = self.data["group"]
+        if self.groups:
+            self.data = self.data[
+                self.data.hierarchy.str.contains("|".join(self.groups))
+            ]
+        self.data["smiles"] = self.data["smiles"].fillna("")
+        self.data["smarts"] = self.data["smarts"].fillna("")
         self._initialize_data()
 
     def _initialize_data(self):
@@ -72,9 +89,9 @@ class ChemicalGroup:
         return len(self.data)
 
     @property
-    def iupac(self):
-        """Get the IUPAC name of the chemical groups in this instance"""
-        return self.data.iupac.tolist()
+    def name(self):
+        """Get the Name of the chemical groups in this instance"""
+        return self.data.name.tolist()
 
     @property
     def smiles(self):
@@ -106,21 +123,19 @@ class ChemicalGroup:
         """Build an rdkit catalog from the current chemical group data"""
         return catalog.from_smarts(
             self.mol_smarts,
-            self.iupac,
+            self.name,
             entry_as_inds=False,
         )
 
-    @staticmethod
-    def list_groups():
+    def list_groups(self):
         """List all the chemical groups available"""
-        return catalog.list_chemical_groups(hierachy=False)
+        return list(self.data.group.unique())
 
-    @staticmethod
-    def list_hierarchy_groups():
+    def list_hierarchy_groups(self):
         """List all the hierarchy in chemical groups available.
         To get the full hierarchy on each path, split by the `.` character.
         """
-        return catalog.list_chemical_groups(hierachy=True)
+        return list(self.data.hierarchy.unique())
 
     def get_matches(self, mol: Union[dm.Mol, str], use_smiles: bool = True):
         """Get all the functional groups in this instance that matches the input molecule
@@ -145,7 +160,7 @@ class ChemicalGroup:
             matches = dm.parallelized(
                 matcher, self.data.mol_smarts.values, n_jobs=self.n_jobs, progress=False
             )
-        out = self.data[["iupac", "smiles", "smarts", "group"]].copy()
+        out = self.data[["name", "smiles", "smarts", "group"]].copy()
         out["matches"] = matches
         out = out.dropna(subset=["matches"])
         return out

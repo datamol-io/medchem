@@ -28,24 +28,39 @@ These rules are used in lead filtering as `medchem.filter.lead.screening_filter`
 
 ### Common tox and assay interference rules
 
-These are pure rdkit filtering rules based on PAINS, BRENK, NIH and ZINC filters. There are used in lead filtering as `medchem.filter.lead.common_filter`
+These are pure rdkit filtering rules based on PAINS, BRENK, NIH, ZINC and other catalogs. There are used in lead filtering as `medchem.filter.lead.catalog_filter`
 
-### ChEMBL filters
+### Alerts filters
 
-These are alerts rules from the ChEMBL database that have been collected from various Pharma groups and commons assays. The rule set are:
+These are alerts rules from the ChEMBL database curation scheme and public litterature on promiscuous compounds on commons assays. The rule set are:
 
-| Rule Set                                                | Number of Alerts |
-| ------------------------------------------------------- | ---------------: |
-| BMS                                                     |              180 |
-| Dundee                                                  |              105 |
-| Glaxo                                                   |               55 |
-| Inpharmatica                                            |               91 |
-| LINT                                                    |               57 |
-| MLSMR                                                   |              116 |
-| [PAINS](https://pubs.acs.org/doi/abs/10.1021/jm901137j) |              479 |
-| SureChEMBL                                              |              166 |
+| name                          | # alerts | source      |
+| :---------------------------- | -------: | :---------- |
+| Glaxo                         |       55 | ChEMBL      |
+| Dundee                        |      105 | ChEMBL      |
+| BMS                           |      180 | ChEMBL      |
+| PAINS                         |      481 | ChEMBL      |
+| SureChEMBL                    |      166 | ChEMBL      |
+| MLSMR                         |      116 | ChEMBL      |
+| Inpharmatica                  |       91 | ChEMBL      |
+| LINT                          |       57 | ChEMBL      |
+| Alarm-NMR                     |       75 | Litterature |
+| AlphaScreen-Hitters           |        6 | Litterature |
+| GST-Hitters                   |       34 | Litterature |
+| HIS-Hitters                   |       19 | Litterature |
+| LuciferaseInhibitor           |        3 | Litterature |
+| DNABinder                     |       78 | Litterature |
+| Chelator                      |       55 | Litterature |
+| Frequent-Hitter               |       15 | Litterature |
+| Electrophilic                 |      119 | Litterature |
+| Genotoxic-Carcinogenicity     |      117 | Litterature |
+| LD50-Oral                     |       20 | Litterature |
+| Non-Genotoxic-Carcinogenicity |       22 | Litterature |
+| Reactive-Unstable-Toxic       |      335 | Litterature |
+| Skin                          |      155 | Litterature |
+| Toxicophore                   |      154 | Litterature |
 
-There are used in lead filtering as `medchem.filter.lead.alert_filter`
+There are used in lead filtering through `medchem.filter.lead.alert_filter`
 
 #### Generic filters
 
@@ -89,7 +104,7 @@ Please set your CPATH to empy with `export CPATH=` before compiling/installing.
 You can import the package and run the filters of interest. For more information see the [Getting Started](docs/tutorials/getting-started.ipynb) tutorial.
 
 ```python
-from medchem.filter.lead import common_filter
+from medchem.filter.lead import alert_filter
 from medchem.filter.lead import demerit_filter
 
 test_config = {
@@ -119,7 +134,7 @@ smiles_list = [
     'Nc1c(c(-c2cccc(NCc3nccs3)c2F)cn2Cc3cn(C4CCCC4)nn3)c2ncn1'
 ]
 res_demerits = demerit_filter(smiles_list, **test_config)
-res_common = common_filter(smiles_list)
+res_common = alert_filter(smiles_list)
 ```
 
 ### Command line

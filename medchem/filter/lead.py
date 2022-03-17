@@ -3,6 +3,7 @@ from typing import List
 from typing import Optional
 from typing import Dict
 from typing import Union
+from typing import Any
 
 import os
 import numpy as np
@@ -12,14 +13,16 @@ from rdkit.Chem import rdchem
 from functools import partial
 from loguru import logger
 from medchem import demerits
-from medchem.alerts import ChEMBLFilters, NovartisFilters
+from medchem.alerts import AlertFilters
+from medchem.alerts import NovartisFilters
 from medchem.catalog import NamedCatalogs
 from medchem.catalog import FilterCatalog
 from medchem.catalog import merge_catalogs
 from medchem.groups import ChemicalGroup
+from medchem.rules import RuleFilters
 
 
-def chembl_filter(
+def alert_filter(
     mols: Iterable[Union[str, rdchem.Mol]],
     alerts: List[str],
     alerts_db: Optional[os.PathLike] = None,
@@ -27,20 +30,11 @@ def chembl_filter(
     rule_dict: Dict = None,
     return_idx: bool = False,
 ):
-    r"""Filter a dataset of molecules, based on structural alerts and specific rules.
+    r"""Filter a dataset of molecules, based on common structural alerts and specific rules.
 
     Arguments:
         mols: List of molecules to filter
-        alerts: List of alert collections to screen for
-            Supported collections are:
-            * 'Glaxo'
-            * 'Dundee'
-            * 'BMS'
-            * 'PAINS'
-            * 'SureChEMBL'
-            * 'MLSMR'
-            * 'Inpharmatica'
-            * 'LINT
+        alerts: List of alert collections to screen for. See AlertFilters.list_default_available_alerts()
         alerts_db: Path to the alert file name.
             The internal default file (alerts.csv) will be used if not provided
         n_jobs: Number of cpu to use
@@ -52,10 +46,10 @@ def chembl_filter(
 
     Returns:
         filtered_mask: boolean array (or index array) where true means
-            the molecule is ok (not found in the alert catalog).
+            the molecule IS OK (not found in the alert catalog).
     """
 
-    custom_filters = ChEMBLFilters(alerts_set=alerts, alerts_db=alerts_db)
+    custom_filters = AlertFilters(alerts_set=alerts, alerts_db=alerts_db)
     df = custom_filters(mols, n_jobs=n_jobs, progress=False)
     df = df[df.status != "Exclude"]
     if rule_dict is not None and len(rule_dict) > 0:
@@ -94,7 +88,7 @@ def screening_filter(
 
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule
-            is not rejected (i.e not found in the alert catalog).
+            IS NOT REJECTED (i.e not found in the alert catalog).
 
     """
 
@@ -109,7 +103,7 @@ def screening_filter(
     return filtered_mask
 
 
-def alert_filter(
+def catalog_filter(
     mols: Iterable[Union[str, rdchem.Mol]],
     catalogs: List[Union[str, FilterCatalog.FilterCatalog]],
     return_idx: bool = False,
@@ -117,7 +111,7 @@ def alert_filter(
     progress: bool = False,
     scheduler: str = "threads",
 ):
-    """Filter a list of compounds according to common toxicity alerts
+    """Filter a list of compounds according to catalog of structures alerts and patterns
 
     Args:
         mols: list of input molecules
@@ -185,12 +179,12 @@ def chemical_group_filter(
         scheduler: joblib scheduler to use
 
     Returns:
-        filtered_mask: boolean array (or index array) where true means the molecule is not toxic.
+        filtered_mask: boolean array (or index array) where true means the molecule DOES NOT MATCH the groups.
     """
 
     if isinstance(chemical_group, ChemicalGroup):
         chemical_group = chemical_group.get_catalog()
-    return alert_filter(
+    return catalog_filter(
         mols,
         [chemical_group],
         return_idx=return_idx,
@@ -198,6 +192,37 @@ def chemical_group_filter(
         progress=progress,
         scheduler=scheduler,
     )
+
+
+def rules_filter(
+    mols: Iterable[Union[str, rdchem.Mol]],
+    rules: Union[List[Any], RuleFilters],
+    return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: str = "threads",
+):
+    """Filter a list of compounds according to a chemical group instance
+
+    Args:
+        mols: list of input molecules
+        rules: list of rules to apply to the input molecules.
+        return_idx: whether to return index or a boolean mask
+        n_jobs: number of parallel job to run. Sequential by default
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
+
+    Returns:
+        filtered_mask: boolean array (or index array) where true means the molecule MATCH the rules.
+    """
+
+    if not isinstance(rules, RuleFilters):
+        rules = RuleFilters(rules, precompute_props=True)
+    df = rules(mols, n_jobs=n_jobs, progress=progress, scheduler=scheduler)
+    filtered_df = df.all(axis=1, bool_only=True)
+    if return_idx:
+        return filtered_df.index.values[filtered_df.values]
+    return filtered_df.values
 
 
 def bredt_filter(

@@ -2,11 +2,12 @@ import unittest as ut
 import datamol as dm
 import pandas as pd
 import numpy as np
+from medchem import catalog
 from medchem.filter import lead
-from medchem.alerts import ChEMBLFilters, NovartisFilters
-from rdkit.Chem.Descriptors import MolWt
-
+from medchem.alerts import AlertFilters, NovartisFilters
 from medchem.groups import ChemicalGroup
+
+from rdkit.Chem.Descriptors import MolWt
 
 
 class Test_LeadFilter(ut.TestCase):
@@ -38,10 +39,10 @@ class Test_LeadFilter(ut.TestCase):
     ] + list(data.smiles.values[:10])
 
     def test_alert_filter(self):
-        ok_mols = lead.chembl_filter(
+        ok_mols = lead.alert_filter(
             self.data.smiles.values, alerts=["Glaxo", "BMS"], n_jobs=2, return_idx=False
         )
-        ok_index_2 = lead.chembl_filter(
+        ok_index_2 = lead.alert_filter(
             self.data.smiles.values, alerts=["Glaxo", "bms"], n_jobs=2, return_idx=True
         )
         self.assertEqual(sum(ok_mols), len(ok_index_2))
@@ -49,7 +50,7 @@ class Test_LeadFilter(ut.TestCase):
 
         # test filter object
         rule_dict = dict(MW=[100, 200])
-        ok_index_3 = lead.chembl_filter(
+        ok_index_3 = lead.alert_filter(
             self.data.smiles.values,
             alerts=["Glaxo", "bms"],
             n_jobs=2,
@@ -62,7 +63,7 @@ class Test_LeadFilter(ut.TestCase):
                 for x in self.data.iloc[ok_index_3].smiles.apply(dm.to_mol).apply(MolWt)
             )
         )
-        al_filter = ChEMBLFilters(alerts_set=["BMS"])
+        al_filter = AlertFilters(alerts_set=["BMS"])
         df = al_filter(self.data.smiles.values[:10])
         expected_cols = set(
             ["_smiles", "status", "reasons", "MW", "LogP", "HBD", "HBA", "TPSA"]
@@ -71,20 +72,23 @@ class Test_LeadFilter(ut.TestCase):
             len(expected_cols.intersection(set(df.columns))) == len(expected_cols)
         )
 
-    def test_common_filter(self):
-        idx = lead.alert_filter(
+    def test_catalog_filter(self):
+        idx = lead.catalog_filter(
             self.data.smiles.values,
             catalogs=["pains"],
             return_idx=False,
         )
         self.assertTrue(sum(idx) == 632)
-        idx = lead.alert_filter(
+        idx = lead.catalog_filter(
             self.data.smiles.values,
             catalogs=["brenk"],
             return_idx=True,
         )
         # brenk should filter alkyl halide
         self.assertTrue(640 not in idx)
+        # ensure not error is raised on this
+        for catalog_name in catalog.list_named_catalogs():
+            lead.catalog_filter(self.data.smiles.values, catalogs=[catalog_name])
 
     def test_screening_filter(self):
         df = pd.DataFrame.from_records(
@@ -133,6 +137,15 @@ class Test_LeadFilter(ut.TestCase):
         output = lead.chemical_group_filter(mols, c_group)
         self.assertEqual(len(output), len(mols))
         self.assertEqual(sum(output), 622)
+
+    def test_rules_filter(self):
+        """Test rule filtering"""
+        out = lead.rules_filter(
+            self.data.smiles.values,
+            rules=["rule_of_five", "rule_of_gsk_4_400"],
+            n_jobs=2,
+        )
+        self.assertEqual(sum(out), 598)
 
 
 if __name__ == "__main__":

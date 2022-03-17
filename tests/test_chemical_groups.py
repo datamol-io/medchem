@@ -1,6 +1,7 @@
 import unittest as ut
 import datamol as dm
 from medchem.groups import ChemicalGroup
+from medchem.utils import get_data
 
 
 class Test_ChemicalGroup(ut.TestCase):
@@ -21,15 +22,22 @@ class Test_ChemicalGroup(ut.TestCase):
         out = c_group.get_matches(mol, use_smiles=False)
         self.assertEqual(out.shape[0], 2)
         self.assertSetEqual(set(out.group.unique()), {"rings_in_drugs"})
-        self.assertSetEqual(set(out.iupac.unique()), {"diazine", "1H-pyrrole"})
+        self.assertSetEqual(set(out.name.unique()), {"diazine", "1H-pyrrole"})
         # however, if we use smiles, we would have 3
         # this is a bug that needs to be fixed
         out_smiles = c_group.get_matches(mol, use_smiles=True)
         self.assertEqual(out_smiles.shape[0], 3)
         self.assertSetEqual(set(out_smiles.group.unique()), {"rings_in_drugs"})
         self.assertSetEqual(
-            set(out_smiles.iupac.unique()), {"diazine", "1H-pyrrole", "1H-pyrazole"}
+            set(out_smiles.name.unique()), {"diazine", "1H-pyrrole", "1H-pyrazole"}
         )
+
+    def test_external_bank(self):
+        c_group = ChemicalGroup(groups_db=get_data("smarts_bank.csv"))
+        mol = dm.to_mol("CCS(=O)(=O)N1CC(C1)(CC#N)N2C=C(C=N2)C3=C4C=CNC4=NC=N3")
+        out = c_group.get_matches(mol, use_smiles=False)
+        expected_match = set(["HBA", "HBD", "Hydrogen", "SP3 Nitrogen", "SP2 Carbon"])
+        self.assertTrue(expected_match.issubset(set(out["name"].values)))
 
 
 if __name__ == "__main__":

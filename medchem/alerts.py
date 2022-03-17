@@ -5,6 +5,7 @@ from typing import Union
 
 import os
 import copy
+import functools
 import pandas as pd
 import datamol as dm
 
@@ -122,19 +123,12 @@ class NovartisFilters:
         return df
 
 
-class ChEMBLFilters:
+class AlertFilters:
     """
-    Filtering class for building a library based on structural alerts provided by the ChEMBL database
+    Filtering class for building a library based on a list of structural alerts
 
-    The following set of alerts is supported:
-        * 'Glaxo'
-        * 'Dundee'
-        * 'BMS'
-        * 'PAINS'
-        * 'SureChEMBL'
-        * 'MLSMR'
-        * 'Inpharmatica'
-        * 'LINT
+    To list the available alerts, use the `list_default_available_alerts` method.
+
     """
 
     def __init__(
@@ -149,7 +143,7 @@ class ChEMBLFilters:
             alerts_db: Alerts file to use. Default is internal
         """
         if alerts_db is None:
-            alerts_db = get_data(file="rd_alerts.csv")
+            alerts_db = get_data(file="common_alert_collection.csv")
         self.rule_df = pd.read_csv(alerts_db)
         self.rule_list = []
         if alerts_set is None:
@@ -176,11 +170,27 @@ class ChEMBLFilters:
             else:
                 logger.warning(f"Error parsing SMARTS for rule {rule_id}")
 
-    def get_alert_sets(self):
+    @staticmethod
+    @functools.lru_cache()
+    def list_default_available_alerts():
         """
         Return a list of unique rule set names
         """
-        return self.rule_df.rule_set_name.unique()
+        alerts_db = get_data(file="common_alert_collection.csv")
+        rule_df = pd.read_csv(alerts_db)
+        return (
+            rule_df.groupby("rule_set_name")
+            .agg(
+                {
+                    "smarts": "count",
+                    "catalog_description": "first",
+                    "rule_set": "first",
+                    "source": "first",
+                }
+            )
+            .reset_index()
+            .sort_values("rule_set")
+        )
 
     def evaluate(self, mol: Union[str, rdchem.Mol]):
         """
@@ -236,9 +246,9 @@ class ChEMBLFilters:
             include_all_alerts: whether to include all of the alerts that match as columns
         """
         if n_jobs is not None:
-            alert_filter = copy.deepcopy(self)
+            filter_obj = copy.deepcopy(self)
             results = dm.parallelized(
-                alert_filter.evaluate, mols, n_jobs=n_jobs, progress=progress
+                filter_obj.evaluate, mols, n_jobs=n_jobs, progress=progress
             )
         else:
             iter_mols = mols

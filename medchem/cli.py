@@ -126,7 +126,7 @@ def run(
     else:
         smiles_list = df.ix[:, 0].values
     if alert_filter:
-        df["leadlike"] = lead.alert_filter(
+        df["leadlike"] = lead.catalog_filter(
             smiles_list, alerts=alerts, n_jobs=os.cpu_count()
         )
     results = score(smiles_list, **ctx.params)

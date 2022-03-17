@@ -108,8 +108,8 @@ def ring_infraction_filter(mols: Iterable, return_idx: bool = False):
 
 def num_atom_filter(
     mols: Iterable,
-    min_atoms: int = None,
-    max_atoms: int = None,
+    min_atoms: Optional[int] = None,
+    max_atoms: Optional[int] = None,
     return_idx: bool = False,
 ):
     """

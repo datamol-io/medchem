@@ -1,25 +1,22 @@
 from typing import Union
+from typing import Optional
 
 import datamol as dm
-from rdkit import Chem
-
-
-def _in_range(x, min_val: float = -float("inf"), max_val: float = float("inf")):
-    """Check if a value is in a range
-    Args:
-        x: value to check
-        min_val: minimum value
-        max_val: maximum value
-    """
-    return min_val <= x <= max_val
+from medchem.rules._utils import _in_range
+from medchem.rules._utils import _compute_ring_system
+from medchem.rules._utils import _compute_rigid_bonds
+from medchem.rules._utils import _compute_charge
+from medchem.rules._utils import _compute_refractivity
+from medchem.rules._utils import _compute_n_stereo_center
+from medchem.rules._utils import _compute_n_charged_atoms
 
 
 def rule_of_five(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hbd: float = None,
-    n_hba: float = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    n_hba: Optional[float] = None,
     **kwargs
 ):
     """Compute the Lipinski's rule-of-5 for a molecule. Also known as Pfizer's rule of five or RO5,
@@ -48,12 +45,12 @@ def rule_of_five(
 
 def rule_of_five_beyond(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hbd: float = None,
-    n_hba: float = None,
-    tpsa: float = None,
-    n_rotatable_bonds: int = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    tpsa: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
     **kwargs
 ):
     """Compute the Beyond rule-of-5 rule for a molecule. This rule illustrates the potential of compounds far beyond rule of 5 space to
@@ -100,12 +97,248 @@ def rule_of_five_beyond(
     )
 
 
+def rule_of_zinc(
+    mol: Union[dm.Mol, str],
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    tpsa: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_rings: Optional[int] = None,
+    charge: Optional[float] = None,
+    **kwargs
+):
+    """Compute the Zinc rule for a molecule. This rule is a rule of thumb to evaluate the druglikeness of a chemical compounds, based on:
+
+    Irwin & Schoichet (2005) ZINC - A Free Database of Commercially Available Compounds for Virtual Screening.
+
+    Also see: https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html
+
+    It computes: `MW in [60, 600] & logP < in [-4, 6] & HBD <= 6 & HBA <= 11 & TPSA <=150 & ROTBONDS <= 12 & RIGBONDS <= 50 & N_RINGS <= 7 & MAX_SIZE_RING <= 12 & N_CARBONS >=3 & HC_RATIO <= 2.0 & CHARGE in [-4, 4]`
+    Args:
+        mol: input molecule
+        mw: precomputed molecular weight. Defaults to None.
+        clogp: precomputed cLogP. Defaults to None.
+        n_hba: precomputed number of HBA. Defaults to None.
+        n_hbd: precomputed number of HBD. Defaults to None.
+        tpsa: precomputed TPSA. Defaults to None.
+        n_rotatable_bonds: precomputed number of rotatable bonds. Defaults to None.
+        n_rings: precomputed number of rings in the molecules. Defaults to None.
+        charge: precomputed charge. Defaults to None.
+
+    """
+    if isinstance(mol, str):
+        mol = dm.to_mol(mol)
+    mw = mw if mw is not None else dm.descriptors.mw(mol)
+    clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
+    n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
+    n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
+    tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
+    n_rotatable_bonds = (
+        n_rotatable_bonds
+        if n_rotatable_bonds is not None
+        else dm.descriptors.n_rotatable_bonds(mol)
+    )
+    n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
+    n_rigid_bonds = _compute_rigid_bonds(mol)
+    ring_system = _compute_ring_system(mol, include_spiro=False)
+    max_size_ring = 0 if len(ring_system) == 0 else max([len(x) for x in ring_system])
+    n_carbons = len([at for at in mol.GetAtoms() if at.GetSymbol() == "C"])
+    if n_carbons == 0:
+        het_carb_ratio = float("inf")
+    else:
+        het_carb_ratio = dm.descriptors.n_hetero_atoms(mol) / n_carbons
+    charge = charge if charge is not None else _compute_charge(mol)
+    return (
+        _in_range(mw, 60, 600)
+        and _in_range(clogp, -4, 6)
+        and n_hbd <= 6
+        and n_hba <= 11
+        and tpsa <= 150
+        and n_rotatable_bonds <= 12
+        and n_rigid_bonds <= 50
+        and n_rings <= 7
+        and max_size_ring <= 12
+        and n_carbons >= 3
+        and _in_range(het_carb_ratio, 0, 2.0)
+        and _in_range(charge, -4, 4)
+    )
+
+
+def rule_of_leadlike_soft(
+    mol: Union[dm.Mol, str],
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    tpsa: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_rings: Optional[int] = None,
+    n_hetero_atoms: Optional[int] = None,
+    charge: Optional[float] = None,
+    **kwargs
+):
+    """
+    Compute the Lead-Like Soft rule available in FAF-Drugs4.
+    The rules are described at https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html
+
+    It computes:
+    ```
+    MW in [150, 400] & logP < in [-3, 4] & HBD <= 4 & HBA <= 7 & TPSA <=160 & ROTBONDS <= 9 &
+    RIGBONDS <= 30 & N_RINGS <= 4 & MAX_SIZE_RING <= 18 & N_CARBONS in [3, 35] &  N_HETEROATOMS in [1, 15] &
+    HC_RATIO in [0.1, 1.1] & CHARGE in [-4, 4] & N_ATOM_CHARGE <= 4 & N_STEREO_CENTER <= 2
+    ```
+    Args:
+        mol: input molecule
+        mw: precomputed molecular weight. Defaults to None.
+        clogp: precomputed cLogP. Defaults to None.
+        n_hba: precomputed number of HBA. Defaults to None.
+        n_hbd: precomputed number of HBD. Defaults to None.
+        tpsa: precomputed TPSA. Defaults to None.
+        n_rotatable_bonds: precomputed number of rotatable bonds. Defaults to None.
+        n_rings: precomputed number of rings in the molecules. Defaults to None.
+        n_hetero_atoms: precomputed number of heteroatoms. Defaults to None.
+        charge: precomputed charge. Defaults to None.
+
+    """
+    if isinstance(mol, str):
+        mol = dm.to_mol(mol)
+    mw = mw if mw is not None else dm.descriptors.mw(mol)
+    clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
+    n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
+    n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
+    tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
+    n_rotatable_bonds = (
+        n_rotatable_bonds
+        if n_rotatable_bonds is not None
+        else dm.descriptors.n_rotatable_bonds(mol)
+    )
+    n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
+    n_hetero_atoms = (
+        n_hetero_atoms
+        if n_hetero_atoms is not None
+        else dm.descriptors.n_hetero_atoms(mol)
+    )
+    charge = charge if charge is not None else _compute_charge(mol)
+    num_charged_atom = _compute_n_charged_atoms(mol)
+    n_stereo_center = _compute_n_stereo_center(mol)
+    n_rigid_bonds = _compute_rigid_bonds(mol)
+    ring_system = _compute_ring_system(mol, include_spiro=False)
+    max_size_ring = 0 if len(ring_system) == 0 else max([len(x) for x in ring_system])
+    n_carbons = len([at for at in mol.GetAtoms() if at.GetSymbol() == "C"])
+    if n_carbons == 0:
+        het_carb_ratio = float("inf")
+    else:
+        het_carb_ratio = n_hetero_atoms / n_carbons
+    return (
+        _in_range(mw, 150, 400)
+        and _in_range(clogp, -3, 4)
+        and n_hbd <= 4
+        and n_hba <= 7
+        and tpsa <= 160
+        and n_rotatable_bonds <= 9
+        and n_rigid_bonds <= 30
+        and n_rings <= 4
+        and max_size_ring <= 18
+        and _in_range(n_carbons, 3, 35)
+        and _in_range(n_hetero_atoms, 1, 15)
+        and _in_range(het_carb_ratio, 0.1, 1.1)
+        and _in_range(charge, -4, 4)
+        and num_charged_atom <= 4
+        and n_stereo_center <= 2
+    )
+
+
+def rule_of_druglike_soft(
+    mol: Union[dm.Mol, str],
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    tpsa: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_rings: Optional[int] = None,
+    n_hetero_atoms: Optional[int] = None,
+    charge: Optional[float] = None,
+    **kwargs
+):
+    """
+    Compute the DrugLike Soft rule available in FAF-Drugs4.
+    The rules are described at https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html
+
+    It computes:
+    ```
+    MW in [100, 600] & logP < in [-3, 6] & HBD <= 7 & HBA <= 12 & TPSA <=180 & ROTBONDS <= 11 &
+    RIGBONDS <= 30 & N_RINGS <= 6 & MAX_SIZE_RING <= 18 & N_CARBONS in [3, 35] &  N_HETEROATOMS in [1, 15] &
+    HC_RATIO in [0.1, 1.1] & CHARGE in [-4, 4] & N_ATOM_CHARGE <= 4
+    ```
+    Args:
+        mol: input molecule
+        mw: precomputed molecular weight. Defaults to None.
+        clogp: precomputed cLogP. Defaults to None.
+        n_hba: precomputed number of HBA. Defaults to None.
+        n_hbd: precomputed number of HBD. Defaults to None.
+        tpsa: precomputed TPSA. Defaults to None.
+        n_rotatable_bonds: precomputed number of rotatable bonds. Defaults to None.
+        n_rings: precomputed number of rings in the molecules. Defaults to None.
+        n_hetero_atoms: precomputed number of heteroatoms. Defaults to None.
+        charge: precomputed charge. Defaults to None.
+
+    """
+    if isinstance(mol, str):
+        mol = dm.to_mol(mol)
+    mw = mw if mw is not None else dm.descriptors.mw(mol)
+    clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
+    n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
+    n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
+    tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
+    n_rotatable_bonds = (
+        n_rotatable_bonds
+        if n_rotatable_bonds is not None
+        else dm.descriptors.n_rotatable_bonds(mol)
+    )
+    n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
+    n_hetero_atoms = (
+        n_hetero_atoms
+        if n_hetero_atoms is not None
+        else dm.descriptors.n_hetero_atoms(mol)
+    )
+    charge = charge if charge is not None else _compute_charge(mol)
+    num_charged_atom = _compute_n_charged_atoms(mol)
+    n_rigid_bonds = _compute_rigid_bonds(mol)
+    ring_system = _compute_ring_system(mol, include_spiro=False)
+    max_size_ring = 0 if len(ring_system) == 0 else max([len(x) for x in ring_system])
+    n_carbons = len([at for at in mol.GetAtoms() if at.GetSymbol() == "C"])
+    n_hydrogens = sum([at.GetTotalNumHs() for at in mol.GetAtoms()])
+    if n_carbons == 0:
+        het_carb_ratio = float("inf")
+    else:
+        het_carb_ratio = n_hydrogens / n_carbons
+    return (
+        _in_range(mw, 100, 600)
+        and _in_range(clogp, -3, 6)
+        and n_hbd <= 7
+        and n_hba <= 12
+        and tpsa <= 180
+        and n_rotatable_bonds <= 11
+        and n_rigid_bonds <= 30
+        and n_rings <= 6
+        and max_size_ring <= 18
+        and _in_range(n_carbons, 3, 35)
+        and _in_range(n_hetero_atoms, 1, 15)
+        and _in_range(het_carb_ratio, 0.1, 1.1)
+        and _in_range(charge, -4, 4)
+        and num_charged_atom <= 4
+    )
+
+
 def rule_of_four(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hba: float = None,
-    n_rings: int = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_rings: Optional[int] = None,
     **kwargs
 ):
     """Compute the rule-of-4 for a molecule. The rule-of-4 define a rule of thumb for PPI inhibitors,
@@ -141,11 +374,11 @@ def rule_of_four(
 
 def rule_of_three(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hba: float = None,
-    n_hbd: float = None,
-    n_rotatable_bonds: int = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
     **kwargs
 ):
     """Compute the rule-of-3. The rule-of-three is a rule of thumb for molecular fragments (and not small molecules) published in:
@@ -153,6 +386,9 @@ def rule_of_three(
     Congreve M, Carr R, Murray C, Jhoti H. (2003) `A "rule of three" for fragment-based lead discovery?`.
 
     It computes: `MW <= 300 & logP <= 3 & HBA <= 3 & HBD <= 3 & ROTBONDS <= 3`
+
+    !!! note
+        TPSA is not used in this version of the rule of three. Other version uses `TPSA <= 60 AND logP in [-3, 3]` in addition
 
     Args:
         mol: input molecule
@@ -184,12 +420,12 @@ def rule_of_three(
 
 def rule_of_three_extended(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hba: float = None,
-    n_hbd: float = None,
-    tpsa: float = None,
-    n_rotatable_bonds: int = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    tpsa: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
     **kwargs
 ):
     """Compute the extended rule-of-3. This is an extenion of the rule of three that computes:
@@ -229,10 +465,10 @@ def rule_of_three_extended(
 
 def rule_of_two(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hba: float = None,
-    n_hbd: float = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
     **kwargs
 ):
     """
@@ -270,9 +506,9 @@ def rule_of_two(
 
 def rule_of_ghose(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    mr: float = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    mr: Optional[float] = None,
     **kwargs
 ):
     """
@@ -297,7 +533,7 @@ def rule_of_ghose(
     mw = mw if mw is not None else dm.descriptors.mw(mol)
     clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
     num_atoms = mol.GetNumAtoms()  # ghose seems to use total number of atoms not heavy
-    mr = mr if mr is not None else Chem.Crippen.MolMR(mol)
+    mr = mr if mr is not None else _compute_refractivity(mol)
     return (
         _in_range(mw, 160, 480)
         and _in_range(clogp, -0.4, 5.6)
@@ -307,7 +543,10 @@ def rule_of_ghose(
 
 
 def rule_of_veber(
-    mol: Union[dm.Mol, str], tpsa: float = None, n_rotatable_bonds: int = None, **kwargs
+    mol: Union[dm.Mol, str],
+    tpsa: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    **kwargs
 ):
     """
     Compute the Veber filter. The Veber filter is a druglike filter for orally active drugs described in:
@@ -338,13 +577,13 @@ def rule_of_veber(
 
 def rule_of_reos(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hba: float = None,
-    n_hbd: float = None,
-    charge: int = None,
-    n_rotatable_bonds: int = None,
-    n_heavy_atoms: int = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    charge: Optional[int] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_heavy_atoms: Optional[int] = None,
     **kwargs
 ):
     """
@@ -382,7 +621,7 @@ def rule_of_reos(
         if n_heavy_atoms is not None
         else dm.descriptors.n_heavy_atoms(mol)
     )
-    charge = charge if charge is not None else Chem.rdmolops.GetFormalCharge(mol)
+    charge = charge if charge is not None else _compute_charge(mol)
     return (
         _in_range(mw, 200, 500)
         and _in_range(clogp, -5, 5)
@@ -395,12 +634,12 @@ def rule_of_reos(
 
 def rule_of_chemaxon_druglikeness(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hba: float = None,
-    n_hbd: float = None,
-    n_rotatable_bonds: int = None,
-    n_rings: int = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_rings: Optional[int] = None,
     **kwargs
 ):
     """
@@ -446,7 +685,10 @@ def rule_of_chemaxon_druglikeness(
 
 
 def rule_of_egan(
-    mol: Union[dm.Mol, str], clogp: float = None, tpsa: float = None, **kwargs
+    mol: Union[dm.Mol, str],
+    clogp: Optional[float] = None,
+    tpsa: Optional[float] = None,
+    **kwargs
 ):
     """
     Compute passive intestinal absorption according to Egan Rules as described in:
@@ -476,7 +718,10 @@ def rule_of_egan(
 
 
 def rule_of_pfizer_3_75(
-    mol: Union[dm.Mol, str], clogp: float = None, tpsa: float = None, **kwargs
+    mol: Union[dm.Mol, str],
+    clogp: Optional[float] = None,
+    tpsa: Optional[float] = None,
+    **kwargs
 ):
     """
     Compute Pfizer Rule(3/75 Rule) for invivo toxicity. It has been described in:
@@ -507,7 +752,10 @@ def rule_of_pfizer_3_75(
 
 
 def rule_of_gsk_4_400(
-    mol: Union[dm.Mol, str], mw: float = None, clogp: float = None, **kwargs
+    mol: Union[dm.Mol, str],
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    **kwargs
 ):
     """
     Compute GSK Rule (4/400) for druglikeness using interpretable ADMET rule of thumb based on
@@ -539,10 +787,10 @@ def rule_of_gsk_4_400(
 
 def rule_of_oprea(
     mol: Union[dm.Mol, str],
-    n_hba: float = None,
-    n_hbd: float = None,
-    n_rotatable_bonds: int = None,
-    n_rings: int = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_rings: Optional[int] = None,
     **kwargs
 ):
     """
@@ -586,11 +834,11 @@ def rule_of_oprea(
 
 def rule_of_xu(
     mol: Union[dm.Mol, str],
-    n_hba: float = None,
-    n_hbd: float = None,
-    n_rotatable_bonds: int = None,
-    n_rings: int = None,
-    n_heavy_atoms: int = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_rings: Optional[int] = None,
+    n_heavy_atoms: Optional[int] = None,
     **kwargs
 ):
     """
@@ -641,11 +889,11 @@ def rule_of_xu(
 
 def rule_of_cns(
     mol: Union[dm.Mol, str],
-    mw: float = None,
-    clogp: float = None,
-    n_hba: float = None,
-    n_hbd: float = None,
-    tpsa: int = None,
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    tpsa: Optional[int] = None,
     **kwargs
 ):
     """
@@ -679,4 +927,59 @@ def rule_of_cns(
         and _in_range(tpsa, 3, 118)
         and n_hbd <= 3
         and n_hba <= 5
+    )
+
+
+def rule_of_respiratory(
+    mol: Union[dm.Mol, str],
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_hba: Optional[float] = None,
+    n_hbd: Optional[float] = None,
+    tpsa: Optional[int] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_rings: Optional[int] = None,
+    **kwargs
+):
+    """
+    Computes drug likeness rule for Respiratory (nasal/inhalatory) molecules as described in
+    Ritchie et al. (2009) Analysis of the Calculated Physicochemical Properties of Respiratory Drugs: Can We Design for Inhaled Drugs Yet?
+
+    It computes: `MW in [240, 520]  & logP in [-2, 4.7] & HBONDS in [6, 12] & TPSA in [51, 135] & ROTBONDS in [3,8] & RINGS in [1,5]`
+
+    Args:
+        mol: input molecule
+        mw: precomputed molecular weight. Defaults to None.
+        clogp: precomputed logP. Defaults to None.
+        n_hba: precomputed number of HBA. Defaults to None.
+        n_hbd: precomputed number of HBD. Defaults to None.
+        tpsa: precomputed TPSA. Defaults to None.
+        n_rotatable_bonds: precomputed number of rotatable bonds in the molecule. Defaults to None.
+        n_rings: precomputed number of rings. Defaults to None
+
+    Returns:
+        roc: True if molecule is compliant, False otherwise
+    """
+
+    if isinstance(mol, str):
+        mol = dm.to_mol(mol)
+    mw = mw if mw is not None else dm.descriptors.mw(mol)
+    clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
+    n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
+    n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
+    n_hbonds = n_hbd + n_hba
+    tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
+    n_rotatable_bonds = (
+        n_rotatable_bonds
+        if n_rotatable_bonds is not None
+        else dm.descriptors.n_rotatable_bonds(mol)
+    )
+    n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
+    return (
+        _in_range(mw, 240, 520)
+        and _in_range(clogp, -2, 4.7)
+        and _in_range(n_hbonds, 6, 12)
+        and _in_range(tpsa, 51, 135)
+        and _in_range(n_rotatable_bonds, 3, 8)
+        and _in_range(n_rings, 1, 5)
     )

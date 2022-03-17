@@ -207,13 +207,3 @@ class SMARTSUtils:
             smarts: smarts pattern matching patterns that are in the same component
         """
         return ".".join([f"({sm})" for sm in smarts_strs])
-
-    def build_query(clc, smarts_str: str):
-        """Build complex smarts query from a string that may contain keywords like  'NOT', 'AND', 'OR'
-
-        Args:
-            smarts_str: input query to turn into a valid smarts
-
-        Returns:
-            smarts: valid smarts pattern parsed from input query
-        """

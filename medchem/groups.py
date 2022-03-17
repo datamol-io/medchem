@@ -69,6 +69,8 @@ class ChemicalGroup:
             self.data = self.data[
                 self.data.hierarchy.str.contains("|".join(self.groups))
             ]
+        # EN: fill smiles and smarts with empty string when they are missing
+        # this prevent error in apply dm.to_mol, dm.from_smarts and building the FilterCatalog
         self.data["smiles"] = self.data["smiles"].fillna("")
         self.data["smarts"] = self.data["smarts"].fillna("")
         self._initialize_data()

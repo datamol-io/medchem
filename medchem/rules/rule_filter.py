@@ -30,7 +30,10 @@ def _compute_batch_props(mols):
 
 
 class RuleFilters:
-    """Build a filter based on a compound phychem properties"""
+    """
+    Build a filter based on a compound phychem properties. For a list of default rules, use `RuleFilters.list_available_rules()`.
+    Most of these rules have been collected from the litterature including https://fafdrugs4.rpbs.univ-paris-diderot.fr/descriptors.html
+    """
 
     def __init__(
         self,

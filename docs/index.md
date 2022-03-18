@@ -28,7 +28,7 @@ Rules used by Novartis to build their new screening deck. The rules are publishe
 
 These rules are used in lead filtering as `medchem.filter.lead.screening_filter`
 
-#### Common tox and assay interference rules
+#### Alerts filters
 
 These are filtering rules based on PAINS, BRENK, NIH and ZINC and any other catalog provided by medchem. There are used in lead filtering as `medchem.filter.lead.alert_filter` and you need to provide the list of catalog you want to use.
 
@@ -36,24 +36,6 @@ These are filtering rules based on PAINS, BRENK, NIH and ZINC and any other cata
 #### Bredt filters
 
 These are filters based on the Bredt's rules for unstable chemistry.There are used in lead filtering as `medchem.filter.lead.bredt_filter`.
-
-
-#### ChEMBL filters
-
-These are alerts rules from the ChEMBL database that have been collected from various Pharma groups and commons assays. The rule set are:
-
-| Rule Set                                                | Number of Alerts |
-| ------------------------------------------------------- | ---------------: |
-| BMS                                                     |              180 |
-| Dundee                                                  |              105 |
-| Glaxo                                                   |               55 |
-| Inpharmatica                                            |               91 |
-| LINT                                                    |               57 |
-| MLSMR                                                   |              116 |
-| [PAINS](https://pubs.acs.org/doi/abs/10.1021/jm901137j) |              479 |
-| SureChEMBL                                              |              166 |
-
-There are used in lead filtering as `medchem.filter.lead.chembl_filter`
 
 #### Generic filters
 

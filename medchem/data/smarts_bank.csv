@@ -1,0 +1,31 @@
+smarts,name,comment,smiles,hierarchy,group
+"[!$([#6,F,Cl,Br,I,o,s,nX3,#7v5,#15v5,#16v4,#16v6,*+1,*+2,*+3])]",HBA,"A H-bond acceptor is a heteroatom with no positive charge, note that negatively charged oxygen or sulphur are included. Excluded are halogens, heteroaromatic oxygen, sulphur and pyrrole N. Higher oxidation levels of N,P,S are excluded. Note P(III) is currently included. Zeneca's work would imply that (O=S=O) shoud also be excluded.",,medecinal_chemistry.custom_queries,custom_queries
+"[#6,#7;R0]=[#8]",HBA,"Only hits carbonyl and nitroso. Matches a 2-atom pattern consisting of a carbon or nitrogen not in a ring, double bonded to an oxygen.",,medecinal_chemistry.custom_queries,custom_queries
+"[!$([#6,H0,-,-2,-3])]",HBD,A H-bond donor is a non-negatively charged heteroatom with at least one H,,medecinal_chemistry.custom_queries,custom_queries
+"[!H0;#7,#8,#9]",HBD,"Must have an N-H bond, an O-H bond, or a F-H bond",,medecinal_chemistry.custom_queries,custom_queries
+"[O,N;!H0]-*~*-*=[$([C,N;R0]=O)]",IntraHBond,5 atoms smarts that encloses a valid nested SMARTS which acts syntactically like an atom-primitive in the overall SMARTS.,,medecinal_chemistry.custom_queries,custom_queries
+"[!H0;F,Cl,Br,I,N+,$([OH]-*=[!#6]),+]",Acid,Proton donor,,medecinal_chemistry.custom_queries,custom_queries
+[CX3](=O)[OX2H1],Acid,Carboxylic acid,,medecinal_chemistry.custom_queries,custom_queries
+"[CX3](=O)[OX1H0-,OX2H1]",Acid,Carboxylic acid or conjugate base.,,medecinal_chemistry.custom_queries,custom_queries
+[$([OH]-*=[!#6])],Acid,"Hydroxyl acid: An acidic hydroxyl is a hydroxyl bonded to an atom which is multiply bonded to a hetero atom, this includes carboxylic, sulphur, pho sphorous, halogen and nitrogen oxyacids",,medecinal_chemistry.custom_queries,custom_queries
+"[$(P(=[OX1])([$([OX2H]),$([OX1-]),$([OX2]P)])([$([OX2H]),$([OX1-]),$([OX2]P)])[$([OX2H]),$([OX1-]),$([OX2]P)]),$([P+]([OX1-])([$([OX2H]),$([OX1-]),$([OX2]P)])([$([OX2H]),$([OX1-]),$([OX2]P)])[$([OX2H]),$([OX1-]),$([OX2]P)])]",Acid,"Phosphoric acid: Hits orthophosphoric acid and polyphosphoric acid anhydrides. Doesn't hit monophosphoric acid anhydride esters, but will hit some polyphosphoric acid anhydride esters.Hits acid and conjugate base",,medecinal_chemistry.custom_queries,custom_queries
+"[$([#16X4](=[OX1])(=[OX1])([#6])[OX2H,OX1H0-]),$([#16X4+2]([OX1-])([OX1-])([#6])[OX2H,OX1H0-])]",Acid,Only hits carbo-sulfonic acids (Won't hit herteroatom-substituted molecules). Hits acid and conjugate base. Hits Both Depiction Forms. Hits Arene sulfonic acids.,,medecinal_chemistry.custom_queries,custom_queries
+"[CX3](=[OX1])[F,Cl,Br,I]",Acid,Acyl Halide,,medecinal_chemistry.custom_queries,custom_queries
+"[*!H0,#1]",Hydrogen,"Any atom with at least 1 H: In SMILES and SMARTS, Hydrogen is not considered an atom (unless it is specified as an isotope). The hydrogen count is instead consi dered a property of an atom. This SMARTS provides a way to effectively hit Hs themselves.",,medecinal_chemistry.custom_queries,custom_queries
+"[#6!H0,#1]",Hydrogen,Hits Hs on Carbons,,medecinal_chemistry.custom_queries,custom_queries
+"[H,#1]",Hydrogen,Any Atoms with 1 H,,medecinal_chemistry.custom_queries,custom_queries
+[r;!r3;!r4;!r5;!r6;!r7],Macrocycle,"Any macrocycle, meaning >7 ring size",,medecinal_chemistry.custom_queries,custom_queries
+*!@*,Acyclic Bonds,Any Acyclic bonds,,medecinal_chemistry.custom_queries,custom_queries
+[cR1]1[cR1][cR1][cR1][cR1][cR1]1,Benzene,"Unfused benzene rings, SMARTS of 6 aromatic carbons in a ring where each atom is only in one ring. Does not match multirings aromatics",,medecinal_chemistry.custom_queries,custom_queries
+[!$(*#*)&!D1]-!@[!$(*#*)&!D1],Rotable Bond,An atom which is not triply bonded and not one-connected by a single non-ring bond to and equivalent atom.,,medecinal_chemistry.custom_queries,custom_queries
+"[$([NX4+]),$([NX4]=*)]",Quaternary Nitrogen,Hits non-aromatic quaternary Ns,,medecinal_chemistry.custom_queries,custom_queries
+"[$([NX4+]),$([NX3]);!$(*=*)&!$(*:*)]",SP3 Nitrogen,One atom that is (a 4-connected N cation or a 3-connected N) and is not double bonded and is not aromatically bonded.,,medecinal_chemistry.custom_queries,custom_queries
+"[$([nX3](:*):*),$([nX2](:*):*),$([#7X2]=*),$([NX3](=*)=*),$([#7X3+](-*)=*),$([#7X3+H]=*)]",SP2 Nitrogen,Hits any SP2 nitrogen,,medecinal_chemistry.custom_queries,custom_queries
+"[$([cX3](:*):*),$([cX2+](:*):*),$([CX3]=*),$([CX2+]=*)]",SP2 Carbon," ""Hits Any SP2 carbons""",,medecinal_chemistry.custom_queries,custom_queries
+"[$([cX3](:*):*),$([cX2+](:*):*)]",Aromatic SP2 Carbon,Hits Aromatic SP2 carbons,,medecinal_chemistry.custom_queries,custom_queries
+"[$([#6X4@](*)(*)(*)*),$([#6X4@H](*)(*)*)]",Chiral Carbon,Matches carbons whose chirality is specified (clockwise or anticlockwise). Will not match molecules whose chirality is unspecified but that could otherwise be considered chiral,,medecinal_chemistry.custom_queries,custom_queries
+"[F,Cl,Br,I]",Halogen,Match any halogen,,medecinal_chemistry.custom_queries,custom_queries
+"[#16X2][OX2H,OX1H0-]",Sulfenic acid,Hits acid and conjugate base of sulfenic acic (sulfene),,medecinal_chemistry.custom_queries,custom_queries
+[#16X2][OX2H0],Sulfenate,Hits Sulfenate (sulfene),,medecinal_chemistry.custom_queries,custom_queries
+"[$([#16X4]([NX3])(=[OX1])(=[OX1])[OX2][#6]),$([#16X4+2]([NX3])([OX1-])([OX1-])[OX2][#6])]",Sulfamate,Hits sulfamate when oxygen is carbon-substituted (sulfamate),,medecinal_chemistry.custom_queries,custom_queries
+"[$([#16X4]([NX3])(=[OX1])(=[OX1])[OX2H,OX1H0-]),$([#16X4+2]([NX3])([OX1-])([OX1-])[OX2H,OX1H0-])]",Sulfamic acid,Hits acid and conjugate base. Hits (sulfamate),,medecinal_chemistry.custom_queries,custom_queries

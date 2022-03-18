@@ -1,15 +1,13 @@
-name: test
-
+name: release-new-version
 on:
-  push:
-    branches:
-      - "master"
-  pull_request:
-    branches:
-      - "*"
+  workflow_dispatch:
+    inputs:
+      release-version:
+        description: "A valid Semver version string"
+        required: true
 
 jobs:
-  build-test:
+  release-with-rever:
     runs-on: "ubuntu-latest"
     defaults:
       run:
@@ -27,12 +25,8 @@ jobs:
           token: ${{ secrets.VALENCE_GITHUB_TOKEN_PLATFORM }}
           path: .github/valence-actions
 
-      - name: Build and Test
-        uses: ./.github/valence-actions/build-test
+      - name: Release with rever
+        uses: ./.github/valence-actions/release-with-rever
         with:
-          env-name: medchem
-          env-file: env.yml
-          anaconda-token: ${{ secrets.INVIVOAI_ANACONDA_USER_BOT_TOKEN }}
-          test-command: pytest -x -v
-          test-cli-command: chemfilter --help
-          test-doc-command: mkdocs build
+          release-version: ${{ github.event.inputs.release-version }}
+          git-token: ${{ secrets.VALENCE_GITHUB_TOKEN_PLATFORM }}

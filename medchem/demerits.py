@@ -126,7 +126,7 @@ def score(
 
     extra_iwdemerit_options = ""
     demerit_cutoff = run_options.get("dthresh", None)
-    soft_upper_atom = run_options.get("soft_max_atoms")
+    soft_upper_atom = run_options.get("soft_max_atoms", 30)
     hard_upper_atom = run_options.get("hard_max_atoms", 50)
     max_size_rings = run_options.get("max_size_rings")
     min_num_rings = run_options.get("min_num_rings")

@@ -21,23 +21,15 @@ from medchem.utils import get_data
 
 
 def list_named_catalogs():
-    """List all available named catalogs"""
+    """
+    List all available named catalogs. This list will ignore all chemical groups
+    For a list of chemical group to be queried using NamedCatalog.chemical_groups, use `medchem.group.list_default_chemical_groups`
+    """
     return [
         x
         for x in NamedCatalogs.__dict__.keys()
-        if (not x.startswith("_") and x != "alerts")
+        if (not x.startswith("_") and x not in ["alerts", "chemical_groups"])
     ]
-
-
-def list_chemical_groups(hierachy: bool = False):
-    """List all the functional groups available
-    Args:
-        hierarchy: whether to return the full hierarchy or the group name only
-    """
-    data = get_data("chemical_groups.csv")
-    if hierachy:
-        return list(data.hierarchy.unique())
-    return list(data.group.unique())
 
 
 def merge_catalogs(*catalogs):
@@ -95,7 +87,7 @@ def from_smarts(
                 fil = FilterCatalog.SmartsMatcher(lb, sm, count)
             else:
                 fil = FilterCatalog.SmartsMatcher(lb, sm, count, maxcounts[i])
-            entry_name = lb
+            entry_name = str(lb)
             if entry_as_inds:
                 entry_name = str(i)
             catalog.AddEntry(FilterCatalog.FilterCatalogEntry(entry_name, fil))
@@ -194,14 +186,15 @@ class NamedCatalogs:
 
     @staticmethod
     def alerts(subset: Optional[Union[List[str], str]] = None):
-        """Alerts filter catalogs used in most pharma
+        """Alerts filter catalogs commonly used in molecule filtering
+
         Args:
             subset: subset of providers to consider
 
         Returns:
             catalog (FilterCatalog): filter catalog
         """
-        rd_filters = pd.read_csv(get_data("rd_alerts.csv"))
+        rd_filters = pd.read_csv(get_data("common_alert_collection.csv"))
         if subset is not None:
             if isinstance(subset, str):
                 subset = [subset]
@@ -262,6 +255,79 @@ class NamedCatalogs:
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
+    def alarm_nmr():
+        return NamedCatalogs.alerts(subset=["Alarm-NMR"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def alphascreen():
+        return NamedCatalogs.alerts(subset=["AlphaScreen-Hitters"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def gst_hitters():
+        return NamedCatalogs.alerts(subset=["GST-Hitters"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def his_hitters():
+        return NamedCatalogs.alerts(subset=["HIS-Hitters"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def luciferase():
+        return NamedCatalogs.alerts(subset=["LuciferaseInhibitor"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def dnabinder():
+        return NamedCatalogs.alerts(subset=["DNABinder"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def chelator():
+        return NamedCatalogs.alerts(subset=["Chelator"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def hitters():
+        return NamedCatalogs.alerts(subset=["Frequent-Hitter"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def electrophilic():
+        return NamedCatalogs.alerts(subset=["Electrophilic"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def carcinogen(include_non_genotoxic: bool = True):
+        catalogs = ["Genotoxic-Carcinogenicity"]
+        if include_non_genotoxic:
+            catalogs += ["Non-Genotoxic-Carcinogenicity"]
+        return NamedCatalogs.alerts(subset=catalogs)
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def ld50_oral():
+        return NamedCatalogs.alerts(subset=["LD50-Oral"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def reactive_unstable_toxic():
+        return NamedCatalogs.alerts(subset=["Reactive-Unstable-Toxic"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def skin():
+        return NamedCatalogs.alerts(subset=["Skin"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def toxicophore():
+        return NamedCatalogs.alerts(subset=["Toxicophore"])
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
     def nibr():
         """Catalog from NIBR"""
         nibr_filters = pd.read_csv(get_data("nibr.csv"))
@@ -310,13 +376,15 @@ class NamedCatalogs:
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
-    def chemicals_groups(filters: Union[str, List[str]] = "medicinal"):
-        """Unstable molecular graph to filter out especially for generative models
+    def chemical_groups(filters: Union[str, List[str]] = "medicinal"):
+        """Chemical group filter catalogs
 
         Args:
-            medchem_only: maximum severity to consider for bredt rules
+            filters: list of tag to filter the catalog on.
         """
         chemical_groups = pd.read_csv(get_data("chemical_groups.csv"))
+        # we cannot keep the nan values in the dataframe
+        chemical_groups = chemical_groups.dropna(subset=["smarts"])
         if isinstance(filters, str):
             filters = [filters]
             chemical_groups = chemical_groups[
@@ -325,6 +393,6 @@ class NamedCatalogs:
 
         return from_smarts(
             chemical_groups["smarts"].values,
-            chemical_groups["iupac"].values,
-            entry_as_inds=False,
+            chemical_groups["name"].values,
+            entry_as_inds=True,
         )

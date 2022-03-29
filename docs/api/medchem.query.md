@@ -75,6 +75,9 @@ LIKE(query:str, comparator:str, limit:float)
   * NOT operator : `NOT` or  `!` or  `~` or `not`
 
 
+
 ::: medchem.query.parser
+
 ---
+
 ::: medchem.query.eval

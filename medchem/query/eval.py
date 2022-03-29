@@ -9,6 +9,7 @@ import re
 import datamol as dm
 from functools import partial
 from lark import Lark
+from loguru import logger
 from medchem.alerts import NamedCatalogs
 from medchem.utils.loader import get_grammar
 from medchem.query.parser import QueryParser
@@ -19,18 +20,18 @@ class QueryOperator:
     def hassubstructure(
         mol: Union[dm.Mol, str],
         query: str,
+        is_smarts=False,
         operator: str = "min",
         limit: int = 1,
-        is_smarts=False,
     ):
         """Check if a molecule has substructure provided by a query
 
         Args:
             mol: input molecules
             query: input smarts query
+            is_smarts: whether this is a smarts query or not
             operator: one of min or max to specify the min or max limit
             limit: limit of substructures to be found
-            is_smarts: whether this is a smarts query or not
         """
         if is_smarts:
             query = dm.from_smarts(query)
@@ -185,9 +186,10 @@ class _EvaluableQuery:
 
     FN_PATTERN = re.compile("`(.*?)`")
 
-    def __init__(self, query: str):
+    def __init__(self, query: str, verbose: bool = False):
         """Constructor for query evaluation"""
         self.query_nodes = [_NodeEvaluator(x) for x in self.FN_PATTERN.split(query)]
+        self.verbose = verbose
 
     def __call__(self, mol: Union[dm.Mol, str], exec: bool = True):
         """Evaluate a query on an input molecule
@@ -198,6 +200,8 @@ class _EvaluableQuery:
 
         """
         query_eval = " ".join([f"{node(mol)}" for node in self.query_nodes])
+        if self.verbose:
+            logger.debug(query_eval)
         if exec:
             # EN: eval is not safe, but we are not using it
             # because ast.literal_eval cannot parse some tree structure
@@ -216,9 +220,12 @@ class QueryFilter:
             raise AttributeError("parser must be either 'earley' or 'lalr'")
         # if existing file, then load and parse it
         self.grammar = get_grammar(grammar, as_string=True)
-        self.query_parser = Lark(self.grammar, parser=parser, transformer=QueryParser())
+        self.query_parser = Lark(self.grammar, parser=parser)
+        self.transformer = QueryParser()
         self._query_str = query
-        self.query = self.query_parser.parse(self._query_str)
+        self.query = self.transformer.transform(
+            self.query_parser.parse(self._query_str)
+        )
         self._evaluable_query = _EvaluableQuery(self.query)
 
     def __repr__(self) -> str:

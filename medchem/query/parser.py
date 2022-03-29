@@ -39,7 +39,7 @@ class QueryParser(Transformer):
         return f"({bool_factor} {and_clauses})"
 
     @v_args(inline=True)
-    def hassubstructure(self, value, operator, limit, is_smarts):
+    def hassubstructure(self, value, is_smarts, operator, limit):
         """Format the substructure node in the query
 
         !!! note
@@ -47,7 +47,7 @@ class QueryParser(Transformer):
             the underlying function is supposed to handle it.
 
         """
-        return f"`fn(hassubstructure, query='{value}', operator='{operator}', limit={limit}, is_smarts={is_smarts})`"
+        return f"`fn(hassubstructure, query='{value}', is_smarts={is_smarts}, operator={operator}, limit={limit})`"
 
     @v_args(inline=True)
     def hassuperstructure(self, value):
@@ -96,14 +96,25 @@ class QueryParser(Transformer):
     # non function call
     @v_args(inline=True)
     def operator(self, value):
-        return f"{value}"
+        if value is None:
+            return "None"
+        return f"'{value}'"
 
     @v_args(inline=True)
     def comparator(self, value):
+        if value == "=":
+            # equality fix
+            value = "=="
         return f"{value}"
 
-    def is_smart(self, value):
+    def is_smarts(self, value):
         return bool(value)
+
+    def TRUE(self, _):
+        return True
+
+    def FALSE(self, _):
+        return False
 
     def NOT_OP(self, _):
         return "not"

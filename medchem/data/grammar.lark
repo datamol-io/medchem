@@ -14,7 +14,7 @@ not_bool_factor: NOT_OP bool_factor
 hasalert: "HASALERT" "(" ESCAPED_STRING ")"
 hasprop: "HASPROP" "(" ESCAPED_STRING comparator SIGNED_NUMBER ")"
 hassuperstructure: "HASSUPERSTRUCTURE" "(" ESCAPED_STRING ")"
-hassubstructure: "HASSUBSTRUCTURE" "(" ESCAPED_STRING ["," operator] ["," INT] ["," is_smarts] ")"
+hassubstructure: "HASSUBSTRUCTURE" "(" ESCAPED_STRING ["," is_smarts]  ["," operator] ["," INT]")"
 like: "LIKE" "(" ESCAPED_STRING comparator SIGNED_NUMBER ")"
 
 comparator: EQ | NE | LT | LE | GT | GE
@@ -23,21 +23,19 @@ is_smarts: TRUE | FALSE
 
 // TERMINALS
 
-EQ: "="
+EQ: "=" | "=="
 NE: "!="
 LT: "<" 
 LE: "<="
 GT: ">" 
 GE: ">=" 
-AND_OP: "AND" | "&"
-OR_OP: "OR" | "|"
-NOT_OP: "NOT" | "!"
-TRUE: "true"i
-FALSE: "false"i
-NULL: "null"i
+AND_OP: "AND" | "&" | "and" | "&&"
+OR_OP: "OR" | "|" | "or" | "||"
+NOT_OP: "NOT" | "!" | "not" | "~"
+TRUE: "true" | "True" | "TRUE"
+FALSE: "false" | "False" | "FALSE"
 MIN: "min"
 MAX: "max"
-UNSPECIFIED: "na"i | "n/a"i
 
 %import common.ESCAPED_STRING
 %import common.SIGNED_NUMBER

@@ -3,12 +3,6 @@ from typing import Optional
 
 import datamol as dm
 from medchem.rules._utils import _in_range
-from medchem.rules._utils import _compute_ring_system
-from medchem.rules._utils import _compute_rigid_bonds
-from medchem.rules._utils import _compute_charge
-from medchem.rules._utils import _compute_refractivity
-from medchem.rules._utils import _compute_n_stereo_center
-from medchem.rules._utils import _compute_n_charged_atoms
 
 
 def rule_of_five(
@@ -141,15 +135,15 @@ def rule_of_zinc(
         else dm.descriptors.n_rotatable_bonds(mol)
     )
     n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
-    n_rigid_bonds = _compute_rigid_bonds(mol)
-    ring_system = _compute_ring_system(mol, include_spiro=False)
+    n_rigid_bonds = dm.descriptors.n_rigid_bonds(mol)
+    ring_system = dm.compute_ring_system(mol, include_spiro=False)
     max_size_ring = 0 if len(ring_system) == 0 else max([len(x) for x in ring_system])
     n_carbons = len([at for at in mol.GetAtoms() if at.GetSymbol() == "C"])
     if n_carbons == 0:
         het_carb_ratio = float("inf")
     else:
         het_carb_ratio = dm.descriptors.n_hetero_atoms(mol) / n_carbons
-    charge = charge if charge is not None else _compute_charge(mol)
+    charge = charge if charge is not None else dm.descriptors.formal_charge(mol)
     return (
         _in_range(mw, 60, 600)
         and _in_range(clogp, -4, 6)
@@ -220,11 +214,11 @@ def rule_of_leadlike_soft(
         if n_hetero_atoms is not None
         else dm.descriptors.n_hetero_atoms(mol)
     )
-    charge = charge if charge is not None else _compute_charge(mol)
-    num_charged_atom = _compute_n_charged_atoms(mol)
-    n_stereo_center = _compute_n_stereo_center(mol)
-    n_rigid_bonds = _compute_rigid_bonds(mol)
-    ring_system = _compute_ring_system(mol, include_spiro=False)
+    charge = charge if charge is not None else dm.descriptors.formal_charge(mol)
+    num_charged_atom = dm.descriptors.n_charged_atoms(mol)
+    n_stereo_center = dm.descriptors.n_stereo_centers(mol)
+    n_rigid_bonds = dm.descriptors.n_rigid_bonds(mol)
+    ring_system = dm.compute_ring_system(mol, include_spiro=False)
     max_size_ring = 0 if len(ring_system) == 0 else max([len(x) for x in ring_system])
     n_carbons = len([at for at in mol.GetAtoms() if at.GetSymbol() == "C"])
     if n_carbons == 0:
@@ -304,10 +298,10 @@ def rule_of_druglike_soft(
         if n_hetero_atoms is not None
         else dm.descriptors.n_hetero_atoms(mol)
     )
-    charge = charge if charge is not None else _compute_charge(mol)
-    num_charged_atom = _compute_n_charged_atoms(mol)
-    n_rigid_bonds = _compute_rigid_bonds(mol)
-    ring_system = _compute_ring_system(mol, include_spiro=False)
+    charge = charge if charge is not None else dm.descriptors.formal_charge(mol)
+    num_charged_atom = dm.descriptors.n_charged_atoms(mol)
+    n_rigid_bonds = dm.descriptors.n_rigid_bonds(mol)
+    ring_system = dm.compute_ring_system(mol, include_spiro=False)
     max_size_ring = 0 if len(ring_system) == 0 else max([len(x) for x in ring_system])
     n_carbons = len([at for at in mol.GetAtoms() if at.GetSymbol() == "C"])
     n_hydrogens = sum([at.GetTotalNumHs() for at in mol.GetAtoms()])
@@ -533,7 +527,7 @@ def rule_of_ghose(
     mw = mw if mw is not None else dm.descriptors.mw(mol)
     clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
     num_atoms = mol.GetNumAtoms()  # ghose seems to use total number of atoms not heavy
-    mr = mr if mr is not None else _compute_refractivity(mol)
+    mr = mr if mr is not None else dm.descriptors.refractivity(mol)
     return (
         _in_range(mw, 160, 480)
         and _in_range(clogp, -0.4, 5.6)
@@ -621,7 +615,7 @@ def rule_of_reos(
         if n_heavy_atoms is not None
         else dm.descriptors.n_heavy_atoms(mol)
     )
-    charge = charge if charge is not None else _compute_charge(mol)
+    charge = charge if charge is not None else dm.descriptors.formal_charge(mol)
     return (
         _in_range(mw, 200, 500)
         and _in_range(clogp, -5, 5)

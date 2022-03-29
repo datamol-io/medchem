@@ -23,6 +23,8 @@ def _compute_batch_props(mols):
         "clogp": dm.descriptors.clogp,
         "n_hba": dm.descriptors.n_hba,
         "n_hbd": dm.descriptors.n_hbd,
+        "n_lipinski_hba": dm.descriptors.n_lipinski_hba,
+        "n_lipinski_hbd": dm.descriptors.n_lipinski_hbd,
     }
     return dm.descriptors.compute_many_descriptors(
         mols, properties_fn, add_properties=False

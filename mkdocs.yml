@@ -21,7 +21,8 @@ nav:
       - medchem.filter: api/medchem.filter.md
       - medchem.groups: api/medchem.groups.md
       - medchem.rules: api/medchem.rules.md
-      - medchem.utils: api/medchem.rules.md
+      - medchem.utils: api/medchem.utils.md
+      - medchem.query: api/medchem.query.md
   - CLI References: cli-references.md
 
 theme:

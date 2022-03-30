@@ -10,6 +10,8 @@ Although the list is as exhaustive as possible, filtering rules mainly depends o
 
 It should be noted that **systematically applying all filters is to be avoided**. For example, "PAINS C" filters are usually not very relevant, another example is the filtering are very strict and could flag important substructure for a project (example some ZBGs).
 
+`medchem` also provides a custom query language for chemical structure/property filtering. For more information on the query system, see [the relevant documentation](docs/api/medchem.query.md)
+
 ## Available Filters
 
 The following filters are available:

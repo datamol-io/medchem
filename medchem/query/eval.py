@@ -249,6 +249,14 @@ class _NodeEvaluator:
     """Representation and evaluation of a single node"""
 
     def __init__(self, node_expr: str):
+        """Initialize a node evaluator
+
+        Args:
+            node_expr: node expression to evaluate
+
+        Raises:
+            ValueError: if the node expression is not valid
+        """
         self.node_expr = node_expr
         self.node_fn = None
         if self.node_expr.startswith("fn("):
@@ -260,7 +268,7 @@ class _NodeEvaluator:
                 raise ValueError("Unknown function {}".format(node_arg_list[0]))
             _kwargs = dict(
                 (k, ast.literal_eval(v))
-                for k, v in [x.split("=") for x in node_arg_list[1:]]
+                for k, v in [x.split("=", 1) for x in node_arg_list[1:]]
             )
             self.node_fn = partial(_fn, **_kwargs)
 
@@ -271,13 +279,20 @@ class _NodeEvaluator:
 
 
 class _EvaluableQuery:
-    """Parser of a query into a list of evaluable fonction node"""
+    """Parser of a query into a list of evaluable function nodes"""
 
     FN_PATTERN = re.compile("`(.*?)`")
 
-    def __init__(self, query: str, verbose: bool = False):
-        """Constructor for query evaluation"""
-        self.query_nodes = [_NodeEvaluator(x) for x in self.FN_PATTERN.split(query)]
+    def __init__(self, parsed_query: str, verbose: bool = False):
+        """Constructor for query evaluation
+
+        Args:
+            parsed_query: query that has been parsed and transformed
+            verbose: whrther to print debug information
+        """
+        self.query_nodes = [
+            _NodeEvaluator(x) for x in self.FN_PATTERN.split(parsed_query)
+        ]
         self.verbose = verbose
 
     def __call__(self, mol: Union[dm.Mol, str], exec: bool = True):
@@ -297,6 +312,7 @@ class _EvaluableQuery:
         if exec:
             # EN: eval is not safe, but we are using it
             # because ast.literal_eval cannot parse some tree structures
+            # and also because anything remaining here is sanitized or just boolean expression
             return eval(query_eval)
         return query_eval
 
@@ -307,6 +323,13 @@ class QueryFilter:
     """
 
     def __init__(self, query: str, grammar: Optional[str] = None, parser: str = "lalr"):
+        """Constructor for query filtering system
+
+        Args:
+            query (str): input unparsed query
+            grammar: path to grammar language to use. Defaults to None, which will use the default grammar.
+            parser: which Lark language parser to use. Defaults to "lalr".
+        """
         if parser not in ["earley", "lalr"]:
             raise AttributeError("parser must be either 'earley' or 'lalr'")
         # if existing file, then load and parse it

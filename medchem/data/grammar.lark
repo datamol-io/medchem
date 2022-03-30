@@ -8,6 +8,8 @@
     | hasprop 
     | hassuperstructure 
     | hassubstructure
+    | hasgroup
+    | matchrule
     | like
     | TRUE
     | FALSE

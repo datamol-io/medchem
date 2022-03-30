@@ -1,9 +1,12 @@
 import unittest as ut
 import datamol as dm
 import operator
-from lark import Lark, Transformer, v_args, exceptions
+import numpy as np
+from lark import Lark, exceptions
 from medchem.query.parser import QueryParser
 from medchem.query.eval import QueryOperator
+from medchem.query.eval import QueryFilter
+from medchem.query.eval import _EvaluableQuery
 from medchem.utils.loader import get_grammar
 
 
@@ -173,6 +176,95 @@ class Test_QueryOperator(ut.TestCase):
         mol = "Oc1ccsc1"
         self.assertTrue(QueryOperator.hassuperstructure(mol, query))
         self.assertFalse(QueryOperator.hassuperstructure(query, mol))
+
+
+class Test_QueryFilter(ut.TestCase):
+    def test_query_eval(self):
+        mol = "Oc1cscc1-c1ccc(OC)cc1"
+        grammar = Lark(
+            get_grammar(as_string=True), parser="lalr", transformer=QueryParser()
+        )
+        queries = [
+            """HASPROP("tpsa" <= 120) AND ! HASALERT("pains") AND HASGROUP("Alcohols")""",  # False, does not match alchol
+            """HASPROP("tpsa" <= 120) AND NOT HASALERT("pains") AND HASGROUP("Ethers")""",  # False has pains alerts
+            """(HASPROP("tpsa" <= 120) AND NOT HASALERT("brenk")) AND HASGROUP("Ethers")""",  # True
+            """HASPROP("tpsa" <= 120) AND MATCHRULE("rule_of_three")""",  # False
+            """HASPROP("tpsa" <= 120) AND HASSUBSTRUCTURE("[OH]", True)""",  # True
+            """HASPROP("tpsa" <= 120) AND HASSUBSTRUCTURE("[OH]", True, 3)""",  # False
+        ]
+        parsed_queries = [grammar.parse(q) for q in queries]
+        expected_results = [False, False, True, False, True, False]
+        observed_results = []
+        observed_results_str = []
+        for q in parsed_queries:
+            evaluator = _EvaluableQuery(q)
+            observed_results.append(evaluator(mol))
+            observed_results_str.append(evaluator(mol, exec=False))
+        self.assertListEqual(expected_results, observed_results)
+
+    def test_query_filter(self):
+        queries = [
+            # complex query
+            """(HASPROP("tpsa" < 100) AND HASPROP("clogp" < 3) AND ! HASALERT("pains")) OR (HASPROP("n_heavy_atoms" >= 10) AND (HASGROUP("Alcohols") OR HASSUBSTRUCTURE("[CX3](=[OX1])O", True, 1)))""",
+            # is a rewriting of the above
+            """(HASPROP("tpsa" < 100) AND HASPROP("clogp" < 3) AND ! HASALERT("pains")) OR (HASPROP("n_heavy_atoms" >= 10) AND (HASGROUP("Alcohols") OR HASSUBSTRUCTURE("[CX3](=[OX1])O", True, min, 1)))""",
+            # is a rewriting of the above with spacing and a differentm yet equivalent bool expression
+            """
+            (
+                HASPROP("tpsa" < 100) 
+                AND 
+                HASPROP("clogp" < 3) 
+                AND 
+                ! HASALERT("pains")
+            ) 
+            OR 
+            (
+                HASPROP("n_heavy_atoms" >= 10) 
+                AND 
+                HASGROUP("Alcohols")
+            ) 
+            OR 
+            (
+                HASPROP("n_heavy_atoms" >= 10) 
+                AND 
+                HASSUBSTRUCTURE("[CX3](=[OX1])O", True)
+            )
+            """,
+            # always true
+            """(HASPROP("tpsa" < 100) AND HASPROP("clogp" < 3)) OR TRUE""",
+            # always false
+            """(HASPROP("tpsa" < 100) AND HASPROP("clogp" < 3)) AND False""",
+        ]
+
+        query_filters = [QueryFilter(q) for q in queries]
+        df = dm.cdk2()
+        df["tpsa"] = df["mol"].apply(dm.descriptors.tpsa)
+        df["clogp"] = df["mol"].apply(dm.descriptors.clogp)
+        df["n_heavy_atoms"] = df["mol"].apply(dm.descriptors.n_heavy_atoms)
+        df["has_carboxyl"] = df["mol"].apply(
+            lambda x: QueryOperator.hassubstructure(x, "[CX3](=[OX1])O", True)
+        )
+        df["has_pains"] = df["mol"].apply(lambda x: QueryOperator.hasalert(x, "pains"))
+        df["has_alcohol"] = df["mol"].apply(
+            lambda x: QueryOperator.hasgroup(x, "Alcohols")
+        )
+
+        tmp = df.query(
+            "((tpsa < 100) & (clogp < 3) & ~has_pains) | (n_heavy_atoms >= 10 & (has_carboxyl | has_alcohol))"
+        )
+        df["expected_results"] = False
+        df.loc[tmp.index, "expected_results"] = True
+
+        computed_1 = query_filters[0](df.mol, progress=False)
+        computed_2 = query_filters[1](df.mol, progress=False)
+        computed_3 = query_filters[2](df.smiles, progress=False)
+        all_true = query_filters[3](df.mol, progress=False)
+        all_false = query_filters[4](df.mol, progress=False)
+        np.testing.assert_array_equal(computed_1, computed_2)
+        np.testing.assert_array_equal(computed_1, computed_3)
+        np.testing.assert_array_equal(df.expected_results, computed_1)
+        np.testing.assert_array_equal(all_true, [True] * len(df))
+        np.testing.assert_array_equal(all_false, [False] * len(df))
 
 
 if __name__ == "__main__":

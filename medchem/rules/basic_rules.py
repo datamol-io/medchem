@@ -9,8 +9,8 @@ def rule_of_five(
     mol: Union[dm.Mol, str],
     mw: Optional[float] = None,
     clogp: Optional[float] = None,
-    n_hbd: Optional[float] = None,
-    n_hba: Optional[float] = None,
+    n_lipinski_hbd: Optional[float] = None,
+    n_lipinski_hba: Optional[float] = None,
     **kwargs
 ):
     """Compute the Lipinski's rule-of-5 for a molecule. Also known as Pfizer's rule of five or RO5,
@@ -22,8 +22,8 @@ def rule_of_five(
         mol: input molecule
         mw: precomputed molecular weight. Defaults to None.
         clogp: precomputed cLogP. Defaults to None.
-        n_hbd: precomputed number of HBD. Defaults to None.
-        n_hba: precomputed number of HBA. Defaults to None.
+        n_lipinski_hbd: precomputed number of HBD. Defaults to None.
+        n_lipinski_hba: precomputed number of HBA. Defaults to None.
 
     Returns:
         ro5: True if molecule is compliant, False otherwise
@@ -32,9 +32,17 @@ def rule_of_five(
         mol = dm.to_mol(mol)
     mw = mw if mw is not None else dm.descriptors.mw(mol)
     clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
-    n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
-    n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
-    return mw <= 500 and clogp <= 5 and n_hbd <= 5 and n_hba <= 10
+    n_lipinski_hbd = (
+        n_lipinski_hbd
+        if n_lipinski_hbd is not None
+        else dm.descriptors.n_lipinski_hbd(mol)
+    )
+    n_lipinski_hba = (
+        n_lipinski_hba
+        if n_lipinski_hba is not None
+        else dm.descriptors.n_lipinski_hba(mol)
+    )
+    return mw <= 500 and clogp <= 5 and n_lipinski_hbd <= 5 and n_lipinski_hba <= 10
 
 
 def rule_of_five_beyond(

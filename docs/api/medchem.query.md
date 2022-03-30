@@ -44,7 +44,6 @@ HASGROUP(group:str)
 ```
 
 
-
 ### MATCHRULE
 check whether a molecule match a predefined druglikeness `rule` from a catalog
 ```python 
@@ -91,7 +90,7 @@ Furthermore, since the correct argument map can be inferred when no ambiguity ar
 Whereas, this is invalid:
 * `HASSUBSTRUCTURE("CO", min, False, 1)`
   
-  
+
 ### HASPROP
 Check whether a molecule has `prop` as property within a defined limit.
 **Any comma `,` provided between arguments will be ignored**

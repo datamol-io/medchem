@@ -8,20 +8,61 @@ import functools
 import pandas as pd
 import datamol as dm
 
-from medchem.utils import get_data
 from medchem import catalog
+from medchem.utils.loader import get_data
 
 
 def list_default_chemical_groups(hierachy: bool = False):
-    """List all the functional groups available
+    """List all the chemical groups available.
+    !!! note
+        chemical groups defines how a collection of patterns are organized.
+        They do not correspond to individual pattern name.
 
     Args:
         hierarchy: whether to return the full hierarchy or the group name only
+
+    Returns:
+        List of chemical groups
     """
-    data = get_data("chemical_groups.csv")
+    data = pd.read_csv(get_data("chemical_groups.csv"))
     if hierachy:
         return list(data.hierarchy.unique())
     return list(data.group.unique())
+
+
+def list_functional_group_names(exclude_basic: bool = True):
+    """
+    List common functional group names
+
+    Args:
+        exclude_basic: whether to include the basic functional groups
+
+    Returns:
+        List of functional group names
+    """
+    data = pd.read_csv(get_data("chemical_groups.csv"))
+    data = data[data.hierarchy.str.contains("functional_groups")]
+    if exclude_basic:
+        data = data[~data.hierarchy.str.contains("basic")]
+    return list(data.name)
+
+
+@functools.lru_cache(maxsize=None)
+def _get_functional_group_map(exclude_basic: bool = True):
+    """
+    List common functional group names
+
+    Args:
+        exclude_basic: whether to include the basic functional groups
+
+    Returns:
+        List of functional group names
+    """
+    data = pd.read_csv(get_data("chemical_groups.csv"))
+    data = data[data.hierarchy.str.contains("functional_groups")]
+    if exclude_basic:
+        data = data[~data.hierarchy.str.contains("basic")]
+    return dict(zip(data["name"], data["smarts"]))
 
 
 class ChemicalGroup:

@@ -23,6 +23,8 @@ def _compute_batch_props(mols):
         "clogp": dm.descriptors.clogp,
         "n_hba": dm.descriptors.n_hba,
         "n_hbd": dm.descriptors.n_hbd,
+        "n_lipinski_hba": dm.descriptors.n_lipinski_hba,
+        "n_lipinski_hbd": dm.descriptors.n_lipinski_hbd,
     }
     return dm.descriptors.compute_many_descriptors(
         mols, properties_fn, add_properties=False
@@ -155,3 +157,14 @@ class RuleFilters:
                 query = "|".join(query)
             df = df[df["description"].str.contains(query)]
         return df
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def list_available_rules_names(query: Union[str, List[str]] = None):
+        """List only the names of the available rules"""
+        df = pd.read_csv(loader.get_data("medchem_rule_list.csv"))
+        if query is not None:
+            if isinstance(query, (list, tuple)):
+                query = "|".join(query)
+            df = df[df["description"].str.contains(query)]
+        return df["name"].tolist()

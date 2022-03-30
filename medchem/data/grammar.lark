@@ -1,0 +1,50 @@
+?start: bool_expr
+?bool_expr: bool_term (OR_OP bool_term)*
+?bool_term: bool_factor (AND_OP bool_factor)*
+?bool_factor: not_bool_factor
+              | "(" bool_expr ")"
+              | relation_expr
+?relation_expr: hasalert 
+    | hasprop 
+    | hassuperstructure 
+    | hassubstructure
+    | hasgroup
+    | matchrule
+    | like
+    | TRUE
+    | FALSE
+
+not_bool_factor: NOT_OP bool_factor
+hasalert: "HASALERT" "(" ESCAPED_STRING ")"
+hasprop: "HASPROP" "(" ESCAPED_STRING [","] comparator [","] SIGNED_NUMBER ")"
+hasgroup: "HASGROUP" "(" ESCAPED_STRING ")"
+matchrule: "MATCHRULE" "(" ESCAPED_STRING ")"
+hassuperstructure: "HASSUPERSTRUCTURE" "(" ESCAPED_STRING ")"
+hassubstructure: "HASSUBSTRUCTURE" "(" ESCAPED_STRING ["," is_smarts]  ["," operator] ["," INT]")"
+like: "LIKE" "(" ESCAPED_STRING [","] comparator [","] SIGNED_NUMBER ")"
+
+comparator: EQ | NE | LT | LE | GT | GE
+operator: MIN | MAX
+is_smarts: TRUE | FALSE
+
+// TERMINALS
+
+EQ: "=" | "=="
+NE: "!="
+LT: "<" 
+LE: "<="
+GT: ">" 
+GE: ">=" 
+AND_OP: "AND" | "&" | "and" | "&&"
+OR_OP: "OR" | "|" | "or" | "||"
+NOT_OP: "NOT" | "!" | "not" | "~"
+TRUE: "true" | "True" | "TRUE"
+FALSE: "false" | "False" | "FALSE"
+MIN: "min" | "MIN" | "\"min\"" | "\"MIN\""
+MAX: "max" | "MAX" | "\"max\"" | "\"MAX\""
+
+%import common.ESCAPED_STRING
+%import common.SIGNED_NUMBER
+%import common.INT
+%import common.WS
+%ignore WS

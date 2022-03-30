@@ -4,6 +4,28 @@ medchem Change Log
 
 .. current developments
 
+v1.3.1
+====================
+
+**Added:**
+
+* Query system for complex filtering
+
+**Changed:**
+
+* Use datamol property functions
+* update env to require `datamol>=0.7.1`
+
+**Removed:**
+
+* Local property function
+
+**Fixed:**
+
+* Error in documentation path
+
+
+
 v1.3.0
 ====================
 

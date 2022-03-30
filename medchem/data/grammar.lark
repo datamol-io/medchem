@@ -9,13 +9,17 @@
     | hassuperstructure 
     | hassubstructure
     | like
+    | TRUE
+    | FALSE
 
 not_bool_factor: NOT_OP bool_factor
 hasalert: "HASALERT" "(" ESCAPED_STRING ")"
-hasprop: "HASPROP" "(" ESCAPED_STRING comparator SIGNED_NUMBER ")"
+hasprop: "HASPROP" "(" ESCAPED_STRING [","] comparator [","] SIGNED_NUMBER ")"
+hasgroup: "HASGROUP" "(" ESCAPED_STRING ")"
+matchrule: "MATCHRULE" "(" ESCAPED_STRING ")"
 hassuperstructure: "HASSUPERSTRUCTURE" "(" ESCAPED_STRING ")"
 hassubstructure: "HASSUBSTRUCTURE" "(" ESCAPED_STRING ["," is_smarts]  ["," operator] ["," INT]")"
-like: "LIKE" "(" ESCAPED_STRING comparator SIGNED_NUMBER ")"
+like: "LIKE" "(" ESCAPED_STRING [","] comparator [","] SIGNED_NUMBER ")"
 
 comparator: EQ | NE | LT | LE | GT | GE
 operator: MIN | MAX
@@ -34,8 +38,8 @@ OR_OP: "OR" | "|" | "or" | "||"
 NOT_OP: "NOT" | "!" | "not" | "~"
 TRUE: "true" | "True" | "TRUE"
 FALSE: "false" | "False" | "FALSE"
-MIN: "min"
-MAX: "max"
+MIN: "min" | "MIN" | "\"min\"" | "\"MIN\""
+MAX: "max" | "MAX" | "\"max\"" | "\"MAX\""
 
 %import common.ESCAPED_STRING
 %import common.SIGNED_NUMBER

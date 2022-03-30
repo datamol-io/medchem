@@ -157,3 +157,14 @@ class RuleFilters:
                 query = "|".join(query)
             df = df[df["description"].str.contains(query)]
         return df
+
+    @staticmethod
+    @functools.lru_cache(maxsize=32)
+    def list_available_rules_names(query: Union[str, List[str]] = None):
+        """List only the names of the available rules"""
+        df = pd.read_csv(loader.get_data("medchem_rule_list.csv"))
+        if query is not None:
+            if isinstance(query, (list, tuple)):
+                query = "|".join(query)
+            df = df[df["description"].str.contains(query)]
+        return df["name"].tolist()

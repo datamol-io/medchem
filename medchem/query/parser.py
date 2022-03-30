@@ -24,7 +24,7 @@ class QueryParser(Transformer):
     @v_args(inline=True)
     def not_bool_factor(self, *args):
         """Define representation of a negation"""
-        return " ".join(args)
+        return " ".join([str(x) for x in args])
 
     @v_args(inline=True)
     def bool_expr(self, bool_term, *others):
@@ -58,7 +58,7 @@ class QueryParser(Transformer):
             the underlying function is supposed to handle it.
 
         """
-        return "`fn(hassuperstructure, query='{value}')`"
+        return f"`fn(hassuperstructure, query='{value}')`"
 
     @v_args(inline=True)
     def hasalert(self, value):
@@ -70,6 +70,28 @@ class QueryParser(Transformer):
 
         """
         return f"`fn(hasalert, alert='{value}')`"
+
+    @v_args(inline=True)
+    def hasgroup(self, value):
+        """Format the hasgroup node in the query
+
+        !!! note
+            The parser does not enforce any validity on the argument and
+            the underlying function is supposed to handle it.
+
+        """
+        return f"`fn(hasgroup, group='{value}')`"
+
+    @v_args(inline=True)
+    def matchrule(self, value):
+        """Format the matchrule node in the query
+
+        !!! note
+            The parser does not enforce any validity on the argument and
+            the underlying function is supposed to handle it.
+
+        """
+        return f"`fn(matchrule, rule='{value}')`"
 
     @v_args(inline=True)
     def hasprop(self, value, comparator, limit):
@@ -115,6 +137,12 @@ class QueryParser(Transformer):
 
     def FALSE(self, _):
         return False
+
+    def MIN(self, _):
+        return "min"
+
+    def MAX(self, _):
+        return "max"
 
     def NOT_OP(self, _):
         return "not"

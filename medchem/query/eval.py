@@ -1,4 +1,3 @@
-from platform import node
 from typing import Union
 from typing import Callable
 from typing import Optional
@@ -7,31 +6,52 @@ from typing import List
 import ast
 import re
 import datamol as dm
+
 from functools import partial
 from lark import Lark
 from loguru import logger
-from medchem.alerts import NamedCatalogs
+from medchem.catalog import NamedCatalogs
+from medchem.catalog import list_named_catalogs
+from medchem.groups import list_functional_group_names
+from medchem.groups import _get_functional_group_map
+from medchem.rules._utils import list_descriptors
+from medchem.rules.rule_filter import RuleFilters
+from medchem.rules import basic_rules
 from medchem.utils.loader import get_grammar
 from medchem.query.parser import QueryParser
 
 
 class QueryOperator:
+    """A class to hold all the operators that can be used in queries"""
+
+    AVAILABLES_PROPERTIES = list_descriptors()  # list of available molecular properties
+    AVAILABLE_CATALOGS = list_named_catalogs()  # list of available catalogs
+    AVAILABLE_RULES = (
+        RuleFilters.list_available_rules_names()
+    )  # list of available rules
+    AVAILABLE_FUNCTIONAL_GROUPS = (
+        list_functional_group_names()
+    )  # list of available functional groups
+
     @staticmethod
     def hassubstructure(
         mol: Union[dm.Mol, str],
         query: str,
-        is_smarts=False,
+        is_smarts: bool = False,
         operator: str = "min",
         limit: int = 1,
     ):
         """Check if a molecule has substructure provided by a query
 
         Args:
-            mol: input molecules
+            mol: input molecule
             query: input smarts query
             is_smarts: whether this is a smarts query or not
             operator: one of min or max to specify the min or max limit
             limit: limit of substructures to be found
+
+        Returns:
+            has_substructure (bool): whether the query is a subgraph of the molecule
         """
         if is_smarts:
             query = dm.from_smarts(query)
@@ -42,7 +62,7 @@ class QueryOperator:
         if operator is None:
             operator = "min"
         mol = dm.to_mol(mol)
-        matches = mol.GetSubstructMatches(query)
+        matches = mol.GetSubstructMatches(query, uniquify=True)
         coeff = -1 if operator == "min" else 1
         return len(matches) * coeff <= limit * coeff
 
@@ -52,12 +72,15 @@ class QueryOperator:
         Note that a superstructure cannot be a query (smarts)
 
         Args:
-            mol: input molecules
+            mol: input molecule
             query: input smarts query
+
+        Returns:
+            has_superstructure (bool): whether the molecule is a subgraph of the query
         """
         query = dm.to_mol(query)
         mol = dm.to_mol(mol)
-        return query.HasSubstructMatch(query)
+        return query.HasSubstructMatch(mol)
 
     @staticmethod
     def hasalert(mol: Union[dm.Mol, str], alert: str):
@@ -65,35 +88,88 @@ class QueryOperator:
         The alert catalog needs to be one supported by the medchem package.
 
         Args:
-            mol: input molecules
+            mol: input molecule
             alert: named catalog to apply as filter on the molecule
+
+        Returns:
+            has_alert (bool): whether the molecule has a given alert
         """
 
         mol = dm.to_mol(mol)
         if isinstance(alert, str):
+            if alert not in QueryOperator.AVAILABLE_CATALOGS:
+                raise ValueError(
+                    f"Alert {alert} is not supported. Available alerts are: {QueryOperator.AVAILABLE_CATALOGS}"
+                )
             alert = getattr(NamedCatalogs, alert, lambda: None)()
-            if alert is None:
-                raise ValueError("Unknown alert {}".format(alert))
-
         return alert.HasMatch(mol)
+
+    @staticmethod
+    def matchrule(mol: Union[dm.Mol, str], rule: str):
+        """Check if a molecule match a druglikeness rule
+
+        Args:
+            mol: input molecule
+            rule: druglikeness rule check on the molecule.
+
+        Returns:
+            match_rule (bool): whether the molecule match the given rule
+        """
+
+        mol = dm.to_mol(mol)
+        if isinstance(rule, str):
+            if rule not in QueryOperator.AVAILABLE_RULES:
+                raise ValueError(
+                    f"Rule {rule} is not supported. Available rules are: {QueryOperator.AVAILABLE_RULES}"
+                )
+            rule = getattr(basic_rules, rule, None)
+        return rule(mol)
+
+    @staticmethod
+    def hasgroup(mol: Union[dm.Mol, str], group: str):
+        """Check if a molecule has a specific functional group.
+        Internally, this is done fetching the smarts corresponding to the group
+        then calling `QueryOperator.hassubstructure`
+
+        Args:
+            mol: input molecule
+            group: functional group to check on the molecule.
+
+        Returns:
+            has_group (bool): whether the molecule has the given functional group
+        """
+
+        mol = dm.to_mol(mol)
+        if group not in QueryOperator.AVAILABLE_FUNCTIONAL_GROUPS:
+            raise ValueError(
+                f"Functional Group {group} is not supported. Available functional group are: {QueryOperator.AVAILABLE_FUNCTIONAL_GROUPS}"
+            )
+        group_smarts = _get_functional_group_map()[group]
+        return QueryOperator.hassubstructure(mol, group_smarts, is_smarts=True)
 
     @staticmethod
     def hasprop(mol: Union[dm.Mol, str], prop: str, comparator: Callable, limit: float):
         """Check if a molecule has a molecule property within desired range
 
         Args:
-            mol: input molecules
+            mol: input molecule
             prop: molecular property to apply as filter on the molecule
             comparator: operator function to apply to check whether the molecule property matches the expected value
             limit: limit value for determining whether the molecule property is within desired range
+
+        Returns:
+            has_property (bool): whether the molecule has a given property within a desired range
         """
 
         mol = dm.to_mol(mol)
-        prop_fn = getattr(dm.descriptors, prop, None)
-        if prop_fn is None:
-            raise ValueError("Unknown property {}".format(prop))
+        if isinstance(prop, str):
+            if prop not in QueryOperator.AVAILABLES_PROPERTIES:
+                raise ValueError(
+                    f"Property {prop} is not supported. Available properties are: {QueryOperator.AVAILABLES_PROPERTIES}"
+                )
+            prop = getattr(dm.descriptors, prop, None)
 
-        computed = prop_fn(mol)
+        computed = prop(mol)
         return comparator(computed, limit)
 
     @staticmethod
@@ -102,23 +178,29 @@ class QueryOperator:
         This is an alternative to the hasprop function, that does not enforce any comparison.
 
         Args:
-            mol: input molecules
+            mol: input molecule
             prop: molecular property to apply as filter on the molecule
+
+        Returns:
+            property (float):  computed property value
         """
 
         mol = dm.to_mol(mol)
-        prop_fn = getattr(dm.descriptors, prop, None)
-        if prop_fn is None:
-            raise ValueError("Unknown property {}".format(prop))
+        prop_fn = None
+        if isinstance(prop, str):
+            if prop not in QueryOperator.AVAILABLES_PROPERTIES:
+                raise ValueError(
+                    f"Property {prop} is not supported. Available properties are: {QueryOperator.AVAILABLES_PROPERTIES}"
+                )
+            prop_fn = getattr(dm.descriptors, prop, None)
 
-        computed = prop_fn(mol)
-        return computed
+        return prop_fn(mol)
 
     @staticmethod
     def like(
         mol: Union[dm.Mol, str],
         query: Union[dm.Mol, str],
-        comparator: Callable,
+        comparator: Callable[[float, float], bool],
         limit: float,
     ):
         """Check if a molecule is similar or distant enough from another molecule using tanimoto ECFP distance.
@@ -127,8 +209,12 @@ class QueryOperator:
         Args:
             mol: input molecule
             query: input molecule to compare with
-            comparator: operator function to apply to check whether the molecule property matches the expected value
+            comparator: operator function to apply to check whether the molecule property matches the expected value.
+                Takes computed_similarity and `limit` as arguments and returns a boolean.
             limit: limit value for determining whether the molecule property is within desired range
+
+        Returns:
+            is_similar (bool): whether the molecule is similar or distant enough from the query
         """
 
         mol = dm.to_mol(mol)
@@ -141,13 +227,16 @@ class QueryOperator:
         mol: Union[dm.Mol, str],
         query: Union[dm.Mol, str],
     ):
-        """Compute the ECFP tanimoto distance between two molecules.
+        """Compute the ECFP tanimoto similarity between two molecules.
         This is an alternative to the like function, that does not enforce any comparison,
         and is useful for letting python handles the binary comparison operators.
 
         Args:
             mol: input molecule
-            query: input molecule to compare with
+            query: input query molecule to compute similarity against
+
+        Returns:
+            similarity (float): computed similarity value between mol and query
         """
 
         mol = dm.to_mol(mol)
@@ -163,7 +252,7 @@ class _NodeEvaluator:
         self.node_expr = node_expr
         self.node_fn = None
         if self.node_expr.startswith("fn("):
-            # EN: could use a regexp here, but whatever
+            # EN: revisit this with a regexp eventually for robustness
             node_expr = node_expr[3:-1]  # remove fn( and )
             node_arg_list = node_expr.split(", ")
             _fn = getattr(QueryOperator, node_arg_list[0], None)
@@ -198,14 +287,16 @@ class _EvaluableQuery:
             mol: input molecule
             exec: whether to interpret the resulting query or not
 
+        Returns:
+            query string or boolean value corresponding to the query result
+
         """
         query_eval = " ".join([f"{node(mol)}" for node in self.query_nodes])
         if self.verbose:
             logger.debug(query_eval)
         if exec:
-            # EN: eval is not safe, but we are not using it
-            # because ast.literal_eval cannot parse some tree structure
-            # AND no chance i will write an AST parser for this xD now
+            # EN: eval is not safe, but we are using it
+            # because ast.literal_eval cannot parse some tree structures
             return eval(query_eval)
         return query_eval
 
@@ -250,21 +341,12 @@ class QueryFilter:
         if progress:
             tqdm_kwargs = {"desc": "Loading Mols", "leave": False}
 
-        if isinstance(mols[0], str):
-            mols = dm.parallelized(
-                dm.to_mol,
-                mols,
-                n_jobs=n_jobs,
-                progress=progress,
-                scheduler=scheduler,
-                tqdm_kwargs=tqdm_kwargs,
-            )
-
         results = dm.parallelized(
             self._evaluable_query,
             mols,
             n_jobs=n_jobs,
             scheduler=scheduler,
             progress=progress,
+            tqdm_kwargs=tqdm_kwargs,
         )
         return list(results)

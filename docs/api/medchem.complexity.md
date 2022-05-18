@@ -1,7 +1,7 @@
 # `medchem.rules`
 
-::: medchem.complexity.complexity_filter.py
+::: medchem.complexity.complexity_filter
 
 ---
 
-::: medchem.complexity._complexity_calc.py
+::: medchem.complexity._complexity_calc

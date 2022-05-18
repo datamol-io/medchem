@@ -47,7 +47,7 @@ def process(
     input_path: str = typer.Option(..., help="Path to the train the csv file to use."),
     output_path: str = typer.Option(..., help="Output path"),
     partition_name: str = typer.Option(..., help="Partition to use"),
-    max_rows: int = typer.Option(..., help="Maximum number of rows to process"),
+    max_rows: int = typer.Option(None, help="Maximum number of rows to process"),
 ):
 
     # Parameters

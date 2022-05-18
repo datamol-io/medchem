@@ -18,4 +18,4 @@ env_variables:
 
 machines:
   - node_selector: all
-    machine_name: greedy-pool-96-preemptible
+    machine_name: greedy-pool-32-preemptible

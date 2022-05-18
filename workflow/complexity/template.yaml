@@ -37,7 +37,6 @@ spec:
           outputs = []
           for i in range(PARTITION_START, PARTITION_END):
               outputs.append(f"PARTITION_{i:02d}")
-          # outputs = ["PARTITION_00"]
           print(json.dumps(outputs))
     - name: compute
       inputs:
@@ -47,21 +46,23 @@ spec:
         image: gcr.io/platform-iv/partner-projects-crl-angelini:main
         command: [bash, --login]
         source: |
-          set -e
           SCREENING_DB_PARTITION="{{inputs.parameters.partition}}"
           # Log to anaconda with `VALENCE_ANACONDA_TOKEN`
           valence_login_to_conda
           # Clone project dir
-          valence_clone_and_install valence-platform/medchem/ \
+          valence_clone_and_install valence-platform/medchem \
             --repo-dir $PROJECT_DIR \
             --branch $GIT_BRANCH \
             --private
           cd $PROJECT_DIR
-          pip install -e .
+          conda activate $CONDA_ENV
+          apt update
+          apt install build-essential -y
+
+          pip install --no-deps -vv  -e .
           cd $PROJECT_DIR/workflow/complexity/
           # Enable conda env
-          conda activate $CONDA_ENV
           mamba env list
           echo "Start processing partition $SCREENING_DB_PARTITION"
-          python script.py process \
-            --partition-name $SCREENING_DB_PARTITION --input-path $DATA --output-path $OUTPUT_PATH
+          python script.py \
+            --partition-name $SCREENING_DB_PARTITION --input-path $DATA --output-path $OUTPUT_PATH --max-rows 10000

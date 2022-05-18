@@ -81,7 +81,7 @@ def process(
     processed_data = pd.concat(processed_data, ignore_index=True)
     processed_data.to_csv(output_path, index=False)
 
-    processed_data = data.drop(columns=["mol"])
+    processed_data = processed_data.drop(columns=["mol"])
     processed_data.to_csv(
         output_path.format(partition_name=partition_name), index=False
     )

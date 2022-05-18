@@ -32,6 +32,8 @@ def compute_props(row):
     with dm.without_rdkit_log():
         row["mol"] = row["smiles"].apply(dm.to_mol)
         row["bertz"] = row["mol"].apply(BertzCT)
+        row["mw"] = row["mol"].apply(_silent(dm.descriptors.mw))
+        row["clogp"] = row["mol"].apply(_silent(dm.descriptors.clogp))
         row["sas"] = row["mol"].apply(_silent(dm.descriptors.sas))
         row["qed"] = row["mol"].apply(_silent(dm.descriptors.qed))
         row["whitlock"] = row["mol"].apply(_silent(calc.WhitlockCT))

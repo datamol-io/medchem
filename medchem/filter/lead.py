@@ -18,6 +18,7 @@ from medchem.alerts import NovartisFilters
 from medchem.catalog import NamedCatalogs
 from medchem.catalog import FilterCatalog
 from medchem.catalog import merge_catalogs
+from medchem.complexity.complexity_filter import ComplexityFilter
 from medchem.groups import ChemicalGroup
 from medchem.rules import RuleFilters
 
@@ -156,7 +157,7 @@ def catalog_filter(
 
     filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
     if return_idx:
-        return filtered_idx
+        return np.asarray(filtered_idx)
     return np.bitwise_not(toxic)
 
 
@@ -202,7 +203,7 @@ def rules_filter(
     progress: bool = False,
     scheduler: str = "threads",
 ):
-    """Filter a list of compounds according to a chemical group instance
+    """Filter a list of compounds according to a predefined set of rules
 
     Args:
         mols: list of input molecules
@@ -223,6 +224,61 @@ def rules_filter(
     if return_idx:
         return filtered_df.index.values[filtered_df.values]
     return filtered_df.values
+
+
+def complexity_filter(
+    mols: Iterable[Union[str, rdchem.Mol]],
+    complexity_metric: str = "bertz",
+    complexity_threshold: str = "zinc_15_available",
+    limit: str = "99",
+    return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: str = "threads",
+):
+    """Filter a list of compounds according to a chemical group instance
+
+    Args:
+        mols: list of input molecules
+        complexity_metric: complexity metric to use
+        complexity_threshold: complexity threshold statistic origin to use
+        limit: complexity outlier percentile to use
+        return_idx: whether to return index or a boolean mask
+        n_jobs: number of parallel job to run. Sequential by default
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
+
+    Returns:
+        filtered_mask: boolean array (or index array) where true means the molecule MATCH the rules.
+    """
+
+    cf = ComplexityFilter(
+        limit=limit,
+        complexity_metric=complexity_metric,
+        threshold_stats_file=complexity_threshold,
+    )
+
+    mols = dm.parallelized(
+        dm.to_mol,
+        mols,
+        n_jobs=n_jobs,
+        progress=progress,
+        tqdm_kwargs=dict(desc="To mol", leave=False),
+    )
+
+    not_complex = dm.parallelized(
+        cf,
+        mols,
+        n_jobs=n_jobs,
+        scheduler=scheduler,
+        progress=progress,
+        tqdm_kwargs=dict(desc="Complexity Eval", leave=False),
+    )
+    not_complex = np.asarray(not_complex)
+    filtered_idx = [i for i, good in enumerate(not_complex) if good]
+    if return_idx:
+        return np.asarray(filtered_idx)
+    return not_complex
 
 
 def bredt_filter(

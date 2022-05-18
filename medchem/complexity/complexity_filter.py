@@ -23,6 +23,8 @@ class ComplexityFilter:
     COMPLEXITY_FNS = {
         "bertz": GraphDescriptors.BertzCT,  # bertz complexity index
         "sas": dm.descriptors.sas,  # sas score
+        "qed": dm.descriptors.qed,  # qed score
+        "clogp": dm.descriptors.clogp,  # clogp score
         "whitlock": calc.WhitlockCT,  # whitlock complexity index
         "barone": calc.BaroneCT,  # barone complexity index
         "smcm": calc.SMCM,  # synthetic and molecular complexity
@@ -58,9 +60,9 @@ class ComplexityFilter:
         self.limit_index = limit
         self.complexity_metric = complexity_metric
         cur_df = self.threshold_df[self.threshold_df.percentile == self.limit_index]
-        self.filter_selection_df = cur_df[[self.complexity_metric, "mw"]].sort_values(
-            "mw", ascending=True
-        )
+        self.filter_selection_df = cur_df[
+            [self.complexity_metric, "mw_bins"]
+        ].sort_values("mw_bins", ascending=True)
 
     @classmethod
     def list_default_available_filters(cls):
@@ -103,7 +105,7 @@ class ComplexityFilter:
             mol: input molecule
         """
         mw = dm.descriptors.mw(mol)
-        ind = np.digitize(mw, self.filter_selection_df.mw.values, right=True)
+        ind = np.digitize(mw, self.filter_selection_df.mw_bins.values, right=True)
         fn = ComplexityFilter.COMPLEXITY_FNS[self.complexity_metric]
         threshold = self.filter_selection_df[self.complexity_metric].values[ind]
         with dm.without_rdkit_log():

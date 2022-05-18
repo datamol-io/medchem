@@ -79,8 +79,6 @@ def process(
         compute_props, np.array_split(data, n_splits), n_jobs=-1, progress=verbose
     )
     processed_data = pd.concat(processed_data, ignore_index=True)
-    processed_data.to_csv(output_path, index=False)
-
     processed_data = processed_data.drop(columns=["mol"])
     processed_data.to_csv(
         output_path.format(partition_name=partition_name), index=False

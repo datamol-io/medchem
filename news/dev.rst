@@ -1,6 +1,6 @@
 **Added:**
 
-* Bertz complexity filters
+* Add complexity filters
 
 **Changed:**
 

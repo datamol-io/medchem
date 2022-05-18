@@ -23,6 +23,7 @@ nav:
       - medchem.rules: api/medchem.rules.md
       - medchem.utils: api/medchem.utils.md
       - medchem.query: api/medchem.query.md
+      - medchem.complexity: api/medchem.complexity.md
   - CLI References: cli-references.md
 
 theme:

@@ -42,8 +42,21 @@ class ComplexityFilter:
 
         Args:
             limit: The complexity percentile outlier limit to be used (should be expressed as an integer)
-            complexity_metric: The complexity filter name to be used
-            threshold_stats_file: The path to or type the threshold file to be used
+            complexity_metric: The complexity filter name to be used.
+                Use `ComplexityFilter.list_default_available_filters` to list default filters.
+                The following complexity metrics are supported by default
+                * "bertz": bertz complexity index
+                * "sas": synthetic accessibility score  (`zinc_15_available` only)
+                * "qed": qed score  (`zinc_15_available` only)
+                * "clogp": clogp for how greasy a molecule is compared to other in the same mw range  (`zinc_15_available` only)
+                * "whitlock": whitlock complexity index
+                * "barone": barone complexity index
+                * "smcm": synthetic and molecular complexity
+                * "twc":  total walk count complexity  (`zinc_15_available` only)
+            threshold_stats_file: The path to or type the threshold file to be used.
+                The default available threshold stats files are
+                * "zinc_12"
+                * "zinc_15_available"
 
         """
         self.threshold_df = self.load_threshold_stats_file(threshold_stats_file)

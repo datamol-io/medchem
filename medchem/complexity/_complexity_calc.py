@@ -19,6 +19,8 @@ def WhitlockCT(
     has been described in : H. W. Whitlock, J. Org. Chem., 1998, 63, 7982-7989.
     Benzyls, fenyls, etc. are not treated at all.
 
+    On zinc 15 commercially available dataset, the range of this score is [0, 172] with a median of 25
+
     Args:
         mol: The input molecule.
         ringval: The contribution of rings
@@ -70,6 +72,7 @@ def BaroneCT(mol: dm.Mol, chiral: bool = False):
     Qi Huang, Lin-LiLi, Sheng-Yong Yang, J. Mol. Graph. Model. 2010, 28 (8), pp 775–787
 
     Parameter values are hardcoded as in the articles.
+    On zinc 15 commercially available dataset, the range of this score is [30, 4266] with a median of 538
 
     Args:
         mol: The input molecule.
@@ -217,8 +220,11 @@ _SMCM_SMARTSs = [
 def SMCM(mol: dm.Mol):
     """
     Compute synthetic and molecular complexity as described in:
+
     TK Allu, TI Oprea, J. Chem. Inf. Model. 2005, 45(5), pp. 1237-1243.
     https://sci-hub.ee/10.1021/ci0501387
+
+    On zinc 15 commercially available dataset, the range of this score is [1.93, 192.00] with a median of 42.23
 
     Args:
         mol: the input molecule
@@ -269,6 +275,8 @@ def TWC(mol, log10: bool = True):
     Compute total walk count in a molecules as proxy for complexity. This score is described in:
     `twc = 1/2 sum(k=1..n-1,sum(i=atoms,awc(k,i)))`
     Gerta Rucker and Christoph Rucker, J. Chem. Inf. Comput. Sci. 1993, 33, 683-695
+
+    On zinc 15 commercially available dataset, the range of this score is [1.20, 39.08] with a median of 10.65
 
     Args:
         mol: the input molecule

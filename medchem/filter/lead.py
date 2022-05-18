@@ -241,6 +241,16 @@ def complexity_filter(
     Args:
         mols: list of input molecules
         complexity_metric: complexity metric to use
+            Use `ComplexityFilter.list_default_available_filters` to list default filters.
+            The following complexity metrics are supported by default
+            * "bertz": bertz complexity index
+            * "sas": synthetic accessibility score  (`zinc_15_available` only)
+            * "qed": qed score  (`zinc_15_available` only)
+            * "clogp": clogp for how greasy a molecule is compared to other in the same mw range  (`zinc_15_available` only)
+            * "whitlock": whitlock complexity index
+            * "barone": barone complexity index
+            * "smcm": synthetic and molecular complexity
+            * "twc":  total walk count complexity  (`zinc_15_available` only)
         threshold_stats_file: complexity threshold statistic origin to use
         limit: complexity outlier percentile to use
         return_idx: whether to return index or a boolean mask
@@ -248,6 +258,8 @@ def complexity_filter(
         progress: whether to show progress bar
         scheduler: joblib scheduler to use
 
+    Also see:
+        medchem.complexity.ComplexityFilter
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule MATCH the rules.
     """

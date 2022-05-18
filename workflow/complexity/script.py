@@ -46,7 +46,8 @@ def compute_props(row):
 def process(
     input_path: str = typer.Option(..., help="Path to the train the csv file to use."),
     output_path: str = typer.Option(..., help="Output path"),
-    partition_name: int = typer.Option(..., help="Partition to use"),
+    partition_name: str = typer.Option(..., help="Partition to use"),
+    max_rows: int = typer.Option(..., help="Maximum number of rows to process"),
 ):
 
     # Parameters
@@ -63,6 +64,8 @@ def process(
         columns=columns,
     )
 
+    if max_rows is not None:
+        data = data.iloc[:max_rows]
     # Load data
     logger.info("Build molecule objects")
     data["mol"] = dm.parallelized(

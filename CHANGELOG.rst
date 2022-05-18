@@ -4,6 +4,15 @@ medchem Change Log
 
 .. current developments
 
+v1.3.2
+====================
+
+**Added:**
+
+* Add complexity filters
+
+
+
 v1.3.1
 ====================
 

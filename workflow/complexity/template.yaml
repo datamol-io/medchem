@@ -65,4 +65,4 @@ spec:
           mamba env list
           echo "Start processing partition $SCREENING_DB_PARTITION"
           python script.py \
-            --partition-name $SCREENING_DB_PARTITION --input-path $DATA --output-path $OUTPUT_PATH --max-rows 10000
+            --partition-name $SCREENING_DB_PARTITION --input-path $DATA --output-path $OUTPUT_PATH

@@ -35,7 +35,7 @@ class ComplexityFilter:
         self,
         limit: str = "99",
         complexity_metric: str = "bertz",
-        threshold_stats_file: Optional[str] = "zinc_12",
+        threshold_stats_file: Optional[str] = "zinc_15_available",
     ):
         """
         Default complexity limit is set on at least 1 exceeding metric on the 999th permille level
@@ -91,7 +91,7 @@ class ComplexityFilter:
             path = "complexity/zinc_12_stats.csv"
             path = get_data(path)
         elif path == "zinc_15_available":
-            path = "complexity/zinc_15_stats.csv"
+            path = "complexity/zinc_15_available_stats.csv"
             path = get_data(path)
         data = pd.read_csv(path)
         return data

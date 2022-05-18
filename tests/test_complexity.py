@@ -72,7 +72,7 @@ class Test_Complexity(ut.TestCase):
         self.assertListEqual(outputs, expected_outputs)
 
     def test_complexity_filter(self):
-        cf = ComplexityFilter()
+        cf = ComplexityFilter(threshold_stats_file="zinc_12")
         smiles = dm.data.cdk2().smiles.iloc[:10].values
         expected_outputs = [
             False,
@@ -87,8 +87,28 @@ class Test_Complexity(ut.TestCase):
             False,
         ]
         outputs = [cf(dm.to_mol(x)) for x in smiles]
-        output_filters = complexity_filter(smiles, complexity_threshold="zinc_12")
+        cf2 = ComplexityFilter(
+            limit="99",
+            complexity_metric="sas",
+            threshold_stats_file="zinc_15_available",
+        )
+        _ = [cf2(dm.to_mol(x)) for x in smiles]
+        cf3 = ComplexityFilter(
+            limit="max",
+            complexity_metric="clogp",
+            threshold_stats_file="zinc_15_available",
+        )
+        _ = [cf3(dm.to_mol(x)) for x in smiles]
+
+        cf4 = ComplexityFilter(
+            limit="999",
+            complexity_metric="whitlock",
+            threshold_stats_file="zinc_15_available",
+        )
+        _ = [cf4(dm.to_mol(x)) for x in smiles]
+        output_filters = complexity_filter(smiles, threshold_stats_file="zinc_12")
         self.assertListEqual(outputs, expected_outputs)
+        self.assertListEqual(outputs, list(output_filters))
 
     def test_available_list_cf(self):
         listed = set(ComplexityFilter.list_default_available_filters())
@@ -97,8 +117,10 @@ class Test_Complexity(ut.TestCase):
         with self.assertRaises(ValueError):
             cf = ComplexityFilter(limit="fake")
         with self.assertRaises(ValueError):
-            # sas is not defined for the default
-            cf = ComplexityFilter(limit="99", complexity_metric="sas")
+            # sas is not defined for the zinc_filter
+            cf = ComplexityFilter(
+                limit="99", complexity_metric="sas", threshold_stats_file="zinc_12"
+            )
 
 
 if __name__ == "__main__":

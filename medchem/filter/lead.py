@@ -229,7 +229,7 @@ def rules_filter(
 def complexity_filter(
     mols: Iterable[Union[str, rdchem.Mol]],
     complexity_metric: str = "bertz",
-    complexity_threshold: str = "zinc_15_available",
+    threshold_stats_file: str = "zinc_15_available",
     limit: str = "99",
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
@@ -241,7 +241,7 @@ def complexity_filter(
     Args:
         mols: list of input molecules
         complexity_metric: complexity metric to use
-        complexity_threshold: complexity threshold statistic origin to use
+        threshold_stats_file: complexity threshold statistic origin to use
         limit: complexity outlier percentile to use
         return_idx: whether to return index or a boolean mask
         n_jobs: number of parallel job to run. Sequential by default
@@ -255,7 +255,7 @@ def complexity_filter(
     cf = ComplexityFilter(
         limit=limit,
         complexity_metric=complexity_metric,
-        threshold_stats_file=complexity_threshold,
+        threshold_stats_file=threshold_stats_file,
     )
 
     mols = dm.parallelized(

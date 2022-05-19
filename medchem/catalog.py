@@ -356,7 +356,11 @@ class NamedCatalogs:
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def bredt():
-        """Bredt fitler rules"""
+        """Bredt fitler rules
+        Also see example of usage by surge's
+        https://github.com/StructureGenerator/SURGE/blob/main/doc/surge1_0.pdf
+
+        """
         bredt_df = pd.read_csv(get_data("bredt.csv"))
         return from_smarts(
             bredt_df["smarts"].values,

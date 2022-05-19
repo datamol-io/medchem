@@ -5,6 +5,8 @@ from typing import Optional
 import warnings
 import functools
 
+from loguru import logger
+
 import pandas as pd
 import numpy as np
 import datamol as dm
@@ -93,6 +95,8 @@ def from_smarts(
 
             if fil.IsValid():
                 catalog.AddEntry(FilterCatalog.FilterCatalogEntry(entry_name, fil))
+            else:
+                logger.warning(f"It seem like the SMARTS {sm} is invalid")
     return catalog
 
 

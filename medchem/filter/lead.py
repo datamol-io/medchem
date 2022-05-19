@@ -320,6 +320,7 @@ def bredt_filter(
     n_jobs: Optional[int] = None,
     progress: bool = False,
     scheduler: str = "threads",
+    batch_size: int = 100,
 ):
     """Filter a list of compounds according to Bredt's rules
     https://en.wikipedia.org/wiki/Bredt%27s_rule
@@ -330,6 +331,8 @@ def bredt_filter(
         n_jobs: number of parallel job to run. Sequential by default
         progress: whether to show progress bar
         scheduler: joblib scheduler to use
+        batch_size: batch size for parallel processing. Note that `batch_size` should be
+            increased if the number of used CPUs gets very large.
 
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule is not toxic.
@@ -342,6 +345,7 @@ def bredt_filter(
         n_jobs=n_jobs,
         progress=progress,
         scheduler=scheduler,
+        batch_size=batch_size,
     )
 
 

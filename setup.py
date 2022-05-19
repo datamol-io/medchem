@@ -16,7 +16,7 @@ MEDCHEM_PATH = os.path.join(BASEPATH, "medchem/lilly")
 
 # define project information
 NAME = "medchem"
-VERSION = "1.3.3"
+VERSION = "1.3.4"
 DESCRIPTION = "Molecule filtering code for medchem"
 
 

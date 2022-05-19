@@ -315,7 +315,7 @@ def complexity_filter(
 
 
 def bredt_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Sequence[Union[str, dm.Mol]],
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,
@@ -335,27 +335,14 @@ def bredt_filter(
         filtered_mask: boolean array (or index array) where true means the molecule is not toxic.
     """
 
-    catalog = NamedCatalogs.bredt()
-    # molecules needs to be kekulized for bredt
-    mols = dm.parallelized(
-        partial(dm.to_mol, kekulize=True),
-        mols,
+    return catalog_filter(
+        mols=mols,
+        catalogs=["bredt"],
+        return_idx=return_idx,
         n_jobs=n_jobs,
         progress=progress,
-        tqdm_kwargs=dict(desc="To mol", leave=False),
-    )
-    toxic = dm.parallelized(
-        catalog.HasMatch,
-        mols,
-        n_jobs=n_jobs,
         scheduler=scheduler,
-        progress=progress,
-        tqdm_kwargs=dict(desc="Match", leave=False),
     )
-    filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
-    if return_idx:
-        return filtered_idx
-    return np.bitwise_not(toxic)
 
 
 def molecular_graph_filter(

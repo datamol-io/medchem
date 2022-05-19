@@ -90,7 +90,9 @@ def from_smarts(
             entry_name = str(lb)
             if entry_as_inds:
                 entry_name = str(i)
-            catalog.AddEntry(FilterCatalog.FilterCatalogEntry(entry_name, fil))
+
+            if fil.IsValid():
+                catalog.AddEntry(FilterCatalog.FilterCatalogEntry(entry_name, fil))
     return catalog
 
 

@@ -222,7 +222,7 @@ def rules_filter(
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,
-    scheduler: str = "threads",
+    scheduler: str = "processes",
 ):
     """Filter a list of compounds according to a predefined set of rules
 
@@ -255,7 +255,7 @@ def complexity_filter(
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,
-    scheduler: str = "threads",
+    scheduler: str = "processes",
 ):
     """Filter a list of compounds according to a chemical group instance
 

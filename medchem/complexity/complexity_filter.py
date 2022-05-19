@@ -12,7 +12,7 @@ from medchem.complexity import _complexity_calc as calc
 
 class ComplexityFilter:
     """
-    Complexicity filters derived from nonpher:
+    Complexity filters derived from nonpher:
     https://github.com/lich-uct/nonpher/blob/master/nonpher/nonpher.py
 
     To recover the original complexity score, use `threshold_stats_file = "zinc_12"`.

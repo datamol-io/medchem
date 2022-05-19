@@ -133,6 +133,10 @@ def catalog_filter(
     # Build and merge the catalogs
     named_catalogs = []
     for catalog in catalogs:
+        if catalog == "bredt":
+            logger.warning(
+                "It is not recommended to use the 'bredt' catalog here. Please use the `bredt_filter` function instead or be sure to use kekulized molecules as inputs."
+            )
         if isinstance(catalog, str):
             catalog_fn = getattr(NamedCatalogs, catalog, None)
             if catalog_fn is None:
@@ -338,6 +342,14 @@ def bredt_filter(
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule is not toxic.
     """
+
+    mols = dm.parallelized(
+        partial(dm.to_mol, kekulize=True),
+        mols,
+        n_jobs=n_jobs,
+        progress=progress,
+        tqdm_kwargs=dict(desc="To mol", leave=False),
+    )
 
     return catalog_filter(
         mols=mols,

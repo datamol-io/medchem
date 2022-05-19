@@ -4,7 +4,7 @@ smarts,labels,description,severity
 "[*]1[*]2@!-[*]1[*]2",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
 "[*]1[*]2[*][*]@!-[*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
 "[*]1[*]2@!-[*]1[*][*]2",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
-"[*]1[*][*]2@![*][*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
+"[*]1[*][*]2@!-[*][*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
 "[*]1[*]2[*][*][*]@!-[*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
 "[*]1[*]2@!-[*]1[*][*][*]2",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
 "[*]1[*][*]2@!-[*][*][*]12",B2,"Bridge bond and any ring bond linked to a bridge atom should be single in specific configuration",10
@@ -16,7 +16,7 @@ smarts,labels,description,severity
 "[*]1[*]2[*][*]1@!-[*]-2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
 "[*]1[*]2[*][*]1@!-[*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
 "[*]1[*]2[*][*][*]1@!-[*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
-"[*]1[*]2[*][*]1@![*][*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
+"[*]1[*]2[*][*]1@!-[*][*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
 "[*]1[*]2[*][*][*][*]1@!-[*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
 "[*]1[*][*]2@!-[*][*][*]1[*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10
 "[*]1[*][*]2@!-[*][*]1[*][*]2",B3,"In ring pair that share two bonds, certains configuration are disabled",10

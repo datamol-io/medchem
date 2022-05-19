@@ -161,7 +161,7 @@ def catalog_filter(
 
     # Batch the inputs
     n_batches = len(mols) // batch_size
-    n_batches = min(n_batches, 1)
+    n_batches = max(n_batches, 1)
     mols_batches = np.array_split(mols, n_batches)
 
     # Run the matching

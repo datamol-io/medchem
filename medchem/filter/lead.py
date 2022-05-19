@@ -4,6 +4,7 @@ from typing import Optional
 from typing import Dict
 from typing import Union
 from typing import Any
+from typing import Sequence
 
 import os
 import numpy as np
@@ -105,12 +106,13 @@ def screening_filter(
 
 
 def catalog_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Sequence[Union[str, dm.Mol]],
     catalogs: List[Union[str, FilterCatalog.FilterCatalog]],
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,
-    scheduler: str = "threads",
+    scheduler: str = "processes",
+    batch_size: int = 100,
 ):
     """Filter a list of compounds according to catalog of structures alerts and patterns
 
@@ -121,11 +123,14 @@ def catalog_filter(
         n_jobs: number of parallel job to run. Sequential by default
         progress: whether to show progress bar
         scheduler: joblib scheduler to use
+        batch_size: batch size for parallel processing. Note that `batch_size` should be
+            increased if the number of used CPUs gets very large.
 
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule is not found in the catalog.
     """
 
+    # Build and merge the catalogs
     named_catalogs = []
     for catalog in catalogs:
         if isinstance(catalog, str):
@@ -138,22 +143,38 @@ def catalog_filter(
             named_catalogs.append(catalog)
     if len(named_catalogs) < 1:
         raise ValueError("Please provide at least one catalog !")
+
     catalog = merge_catalogs(*named_catalogs)
-    mols = dm.parallelized(
-        dm.to_mol,
-        mols,
-        n_jobs=n_jobs,
-        progress=progress,
-        tqdm_kwargs=dict(desc="To mol", leave=False),
-    )
+
+    # Serialize the catalog
+    catalog_state = catalog.Serialize()
+
+    def _fn(mols_chunk):
+        # Init the catalog from the serialized state
+        catalog = FilterCatalog.FilterCatalog(catalog_state)
+
+        # To mols
+        mols = [dm.to_mol(m) for m in mols_chunk]
+
+        # Match the mols
+        return [catalog.HasMatch(m) for m in mols]
+
+    # Batch the inputs
+    n_batches = len(mols) // batch_size
+    mols_batches = np.array_split(mols, n_batches)
+
+    # Run the matching
     toxic = dm.parallelized(
-        catalog.HasMatch,
-        mols,
+        _fn,
+        mols_batches,
         n_jobs=n_jobs,
         scheduler=scheduler,
         progress=progress,
-        tqdm_kwargs=dict(desc="Match", leave=False),
+        tqdm_kwargs=dict(desc="Match", leave=True),
     )
+
+    # Flatten the results
+    toxic = [item for sublist in toxic for item in sublist]
 
     filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
     if return_idx:

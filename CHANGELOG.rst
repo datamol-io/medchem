@@ -4,6 +4,15 @@ medchem Change Log
 
 .. current developments
 
+v1.3.4
+====================
+
+**Fixed:**
+
+* Non-kekulized molecules used for bredt filters
+
+
+
 v1.3.3
 ====================
 

@@ -124,9 +124,26 @@ class Test_LeadFilter(ut.TestCase):
         """Test whether the input molecules pass all bredt filters"""
 
         output = lead.bredt_filter(self.bredt_test_set, n_jobs=2)
-        expected_results = [False, False, False, True, False, False, True, False] + [
-            True
-        ] * 10
+        expected_results = [
+            False,
+            False,
+            False,
+            True,
+            False,
+            False,
+            True,
+            False,
+            False,
+            True,
+            True,
+            False,
+            True,
+            False,
+            True,
+            True,
+            True,
+            True,
+        ]
         np.testing.assert_array_equal(output, expected_results)
 
     def test_chemical_groups(self):

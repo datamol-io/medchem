@@ -154,10 +154,10 @@ def catalog_filter(
         catalog = FilterCatalog.FilterCatalog(catalog_state)
 
         # To mols
-        mols = [dm.to_mol(m) for m in mols_chunk]
+        mols_chunk = [dm.to_mol(m) for m in mols_chunk]
 
         # Match the mols
-        return [catalog.HasMatch(m) for m in mols]
+        return [catalog.HasMatch(m) for m in mols_chunk]
 
     # Batch the inputs
     n_batches = len(mols) // batch_size

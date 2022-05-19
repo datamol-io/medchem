@@ -4,6 +4,15 @@ medchem Change Log
 
 .. current developments
 
+v1.3.3
+====================
+
+**Changed:**
+
+* Make `lead.catalog_filter` much faster using batching.
+
+
+
 v1.3.2
 ====================
 

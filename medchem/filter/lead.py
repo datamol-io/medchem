@@ -135,7 +135,7 @@ def catalog_filter(
     for catalog in catalogs:
         if catalog == "bredt":
             logger.warning(
-                "It is not recommended to use the 'bredt' catalog here. Please use the `bredt_filter` function instead"
+                "It is not recommended to use the 'bredt' catalog here. Please use the `bredt_filter` function instead or be sure to use kekulized molecules as inputs."
             )
         if isinstance(catalog, str):
             catalog_fn = getattr(NamedCatalogs, catalog, None)

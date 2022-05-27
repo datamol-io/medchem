@@ -114,15 +114,6 @@ class SMARTSUtils:
         return f"[$({smarts_str1})]-,=!:[r][r][r][r]-,=!:[$({smarts_str2})]"
 
     @classmethod
-    def convert_extended_smarts(cls, query: str):
-        """Convert extended smarts to normal smarts supported by rdkit
-
-        Args:
-            query: smarts query to convert
-        """
-        pass
-
-    @classmethod
     def aliphatic_chain(
         cls,
         min_size: int = 6,

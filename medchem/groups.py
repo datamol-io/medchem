@@ -116,17 +116,35 @@ class ChemicalGroup:
         self.data["smarts"] = self.data["smarts"].fillna("")
         self._initialize_data()
 
+    def filter(self, names: List[str], fuzzy: bool = False):
+        """Filter the group to restrict to only the name in input
+        Args:
+            names: list of names to use for filters
+            fuzzy: whether to use exact of fuzzy matching
+        """
+        if names is None or len(names) == 0:
+            return self
+        if fuzzy:
+            self.data = self.data[self.data.name.str.contains("|".join(names))]
+        else:
+            self.data = self.data[self.data.name.isin(names)]
+        return self
+
     def _initialize_data(self):
         """Initialize the data by precomputing some features"""
-        self.data["mol_smarts"] = dm.parallelized(
-            dm.from_smarts,
-            self.data["smarts"].values,
-            n_jobs=self.n_jobs,
-            progress=False,
-        )
-        self.data["mol"] = dm.parallelized(
-            dm.to_mol, self.data["smiles"].values, n_jobs=self.n_jobs, progress=False
-        )
+        with dm.without_rdkit_log():
+            self.data["mol_smarts"] = dm.parallelized(
+                dm.from_smarts,
+                self.data["smarts"].values,
+                n_jobs=self.n_jobs,
+                progress=False,
+            )
+            self.data["mol"] = dm.parallelized(
+                dm.to_mol,
+                self.data["smiles"].values,
+                n_jobs=self.n_jobs,
+                progress=False,
+            )
 
     def __len__(self):
         return len(self.data)

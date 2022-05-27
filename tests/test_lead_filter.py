@@ -164,6 +164,22 @@ class Test_LeadFilter(ut.TestCase):
         )
         self.assertEqual(sum(out), 598)
 
+    def test_protecting_group_filters(self):
+        """Test rule filtering"""
+        smiles = [
+            # this matches
+            "C1=CC=C(C=C1)C[C@@H](C(=O)O)NC(=O)OCC2C3=CC=CC=C3C4=CC=CC=C24",
+            "COc1ccc2nc(NC(=O)OC(C)(C)C)cc([C@H](O)[C@H]3C[C@@H]4CCN3C[C@@H]4C=C)c2c1",
+        ]
+        smiles += list(self.data.smiles.values[:10])
+
+        out = list(
+            lead.protecting_groups_filter(
+                smiles,
+            )
+        )
+        self.assertListEqual([False] * 2 + [True] * 10, out)
+
 
 if __name__ == "__main__":
     ut.main()

@@ -1,14 +1,40 @@
 from multiprocessing.sharedctypes import Value
 from typing import Any, Optional
 import datamol as dm
+import re
+
+ATTACHMENT_POINT_TOKEN = re.escape("*")
+# The following allows discovering and extracting valid dummy atoms in smiles/smarts.
+ATTACHMENT_POINTS = [
+    # parse any * not preceeded by "[" or ":"" and not followed by "]" or ":" as attachment
+    r"(?<![:\[]){0}(?![:\]])".format(ATTACHMENT_POINT_TOKEN),
+    # fix some edge cases of the above for attachment in the "()" environment or in SMARTS notation
+    r"(?<![\[(\[\w)]){0}".format(ATTACHMENT_POINT_TOKEN),
+    # parse attachment in optionally mapped isotope smarts atoms. eg. [1*:3]
+    r"\[(\d*){}:?(\d*)\]".format(ATTACHMENT_POINT_TOKEN),
+]
 
 
 class SMARTSUtils:
     """Collections of utils to build complex SMARTS query more efficiently for non experienced user"""
 
     @classmethod
+    def standardize_attachment(cls, smiles, attach_tokens: str = "[*:1]"):
+        """Standardize an attachment point in a smiles
+
+        Args:
+            smiles (str): SMILES string
+            attach_tokens (str): Attachment point token to use as standard token
+        """
+        if not smiles:
+            return smiles
+        for attach_regex in ATTACHMENT_POINTS:
+            smiles = re.sub(attach_regex, attach_tokens, smiles)
+        return smiles
+
+    @classmethod
     def ortho(
-        clc,
+        cls,
         smarts_str1: str,
         smarts_str2: str,
         aromatic_only: bool = False,
@@ -35,7 +61,7 @@ class SMARTSUtils:
 
     @classmethod
     def meta(
-        clc,
+        cls,
         smarts_str1: str,
         smarts_str2: str,
         aromatic_only: bool = False,
@@ -62,7 +88,7 @@ class SMARTSUtils:
 
     @classmethod
     def para(
-        clc,
+        cls,
         smarts_str1: str,
         smarts_str2: str,
         aromatic_only: bool = False,
@@ -88,8 +114,17 @@ class SMARTSUtils:
         return f"[$({smarts_str1})]-,=!:[r][r][r][r]-,=!:[$({smarts_str2})]"
 
     @classmethod
+    def convert_extended_smarts(cls, query: str):
+        """Convert extended smarts to normal smarts supported by rdkit
+
+        Args:
+            query: smarts query to convert
+        """
+        pass
+
+    @classmethod
     def aliphatic_chain(
-        clc,
+        cls,
         min_size: int = 6,
         unbranched: bool = False,
         unsaturated_bondtype: Optional[str] = None,
@@ -131,7 +166,7 @@ class SMARTSUtils:
 
     @classmethod
     def atom_in_env(
-        clc, *smarts_strs, include_atoms: bool = False, union: bool = False
+        cls, *smarts_strs, include_atoms: bool = False, union: bool = False
     ):
         """
         Returns a recursive/group smarts to find an atom that fits in the environments as defined by all the input smarts
@@ -163,7 +198,7 @@ class SMARTSUtils:
         return query
 
     @classmethod
-    def different_fragment(clc, *smarts_strs):
+    def different_fragment(cls, *smarts_strs):
         """
         Returns a new query that match patterns that are in different fragments.
 
@@ -188,7 +223,7 @@ class SMARTSUtils:
         return query
 
     @classmethod
-    def same_fragment(clc, *smarts_strs):
+    def same_fragment(cls, *smarts_strs):
         """
         Returns a new query that match patterns that are in THE SAME fragment (component)
 

@@ -4,6 +4,7 @@ import datamol as dm
 from medchem.filter import lead
 from medchem.catalog import merge_catalogs, NamedCatalogs
 from medchem.utils.smarts import SMARTSUtils
+from medchem.utils.matches import Constraints
 
 
 class Test_Utils(ut.TestCase):
@@ -21,6 +22,37 @@ class Test_Utils(ut.TestCase):
         toxic1 = [tox.HasMatch(m) for m in mols]
         toxic2 = [merged_tox.HasMatch(m) for m in mols]
         self.assertEqual(toxic1, toxic2)
+
+
+class TestConstraints(ut.TestCase):
+    def test_constraints(self):
+        def my_constraints(mol):
+            # we want to either (have phenol) OR (have less than 7 atoms and not ring)
+            return mol.HasSubstructMatch(dm.to_mol("Oc1ccccc1")) or (
+                mol.GetNumAtoms() < 7 and dm.descriptors.n_rings(mol) < 1
+            )
+
+        smiles = [
+            "CN(C)C(=O)c1cncc(C)c1",  # match, n_atoms < 7 and no ring
+            "Cc1cncc(CC2CCCCC2)c1",  # not match, n_atoms < 7 but ring
+            "Cc1cncc(c1)-c1ccc(O)cc1",  # match phenol
+            "Cc1cncc(c1)-c1cccc2nc[nH]c12",  # no match n_atoms >= 7
+        ]
+        expected_results = []
+        mols = [dm.to_mol(x) for x in smiles]
+        core = dm.from_smarts("[C;H3]c1cncc([*:1])c1")
+
+        # now let's set the constraints query
+        for atom in core.GetAtoms():
+            if (
+                atom.GetAtomMapNum() == 1
+            ):  # we add a recursive query to check again on any match that starts with this atom position
+                atom.SetProp("query", "my_constraints")
+        constraint_fns = dict(my_constraints=my_constraints)
+        constraint = Constraints(core, constraint_fns)
+        matches = [constraint(mol) for mol in mols]
+        expected_results = [True, False, True, False]
+        self.assertListEqual(expected_results, matches)
 
 
 class Test_SMARTSUtils(ut.TestCase):

@@ -5,15 +5,22 @@ from typing import Callable
 from typing import List
 import datamol as dm
 from rdkit import Chem
+from loguru import logger
 
 
 class Constraints:
     """Complex query system for matches with additional constraints
 
     !!! example
-        >>> import datamol as dm
-        >>> mol = dm.from_smiles('CC(=O)O')
-        >>> core =
+
+        >>> mol1 = dm.to_mol("CN(C)C(=O)c1cncc(C)c1")
+        >>> mol2 = dm.to_mol("c1ccc(cc1)-c1cccnc1")
+        >>> core = dm.from_smarts("c1cncc([*:1])c1")
+        >>> [atom.SetProp("query", "my_constraints") for atom in core.GetAtoms() if atom.GetAtomMapNum() == 1]
+        >>> constraint_fns = dict(my_constraints=lambda x: dm.descriptors.n_aromatic_atoms(x) > 0)
+        >>> constraint = Constraints(core, constraint_fns)
+        >>> matches = [constraint(mol1), constraint(mol2)] # False, True
+
     """
 
     def __init__(
@@ -23,6 +30,7 @@ class Constraints:
         prop_name: str = "query",
     ):
         """Initialize the constraint matcher
+
         Args:
             core: the scaffold/query molecule to match against. Needs to be a molecule
             constraint_fns: a dictionary of constraints functions
@@ -31,7 +39,7 @@ class Constraints:
         """
         self.core = core
         self.prop_name = prop_name
-        self.constraint_fns = self._get_constraints(constraint_fns)
+        self.constraint_fns = constraint_fns
         self.atom_to_query = self._initialize()
 
     def _initialize(self):
@@ -40,22 +48,10 @@ class Constraints:
         for a in self.core.GetAtoms():
             if (
                 a.HasProp(self.prop_name)
-                and a.GetProp(self.prop_name) in self.constraint_fns
+                and str(a.GetProp(self.prop_name)) in self.constraint_fns
             ):
                 atom_to_query[a.GetIdx()] = a.GetProp(self.prop_name)
         return atom_to_query
-
-    @classmethod
-    def _get_constraints(cls, constraint_fns):
-        """Get constraints list for current instance
-
-        Args:
-            constraint_fns: list of constraint functions (callable)
-        """
-        constraint_fns = dict()
-        if constraint_fns and isinstance(constraint_fns, Mapping):
-            constraint_fns.update(constraint_fns)
-        return constraint_fns
 
     @staticmethod
     def validate(mol, constraints: List[Constraints]):
@@ -75,20 +71,37 @@ class Constraints:
                 return False
         return True
 
-    def match(self, mol):
+    def get_matches(self, mol: dm.Mol, multiple: bool = True):
+        """Get matches that respect the constraints in the molecules
+
+        Args:
+            mol: input molecule
+            multiple: if True, return all the matches, if False, return the first match
+        """
+        if not isinstance(mol, Chem.Mol):
+            mol = dm.to_mol(mol)
+        params = Chem.SubstructMatchParameters()
+        params.setExtraFinalCheck(self._check_final)
+        matches = mol.GetSubstructMatches(self.core, params)
+        return matches
+
+    def has_match(self, mol: dm.Mol):
         """Check if input molecule respect the constraints
 
         Args:
             mol: input molecule
         """
-        if not isinstance(mol, Chem.Mol):
-            mol = dm.to_mol(mol)
-        params = Chem.SubstructMatchParameters()
-        params.setExtraFinalCheck(self)
-        matches = mol.GetSubstructMatches(self.core, params)
-        return matches
+        return len(self.get_matches(mol, multiple=False)) > 0
 
-    def __call__(self, mol: dm.Mol, vect: List[int]):
+    def __call__(self, mol):
+        """Check if input molecule respect the constraints
+
+        Args:
+            mol: input molecule
+        """
+        return self.has_match(mol)
+
+    def _check_final(self, mol: dm.Mol, vect: List[int]):
         """
         Perform a breadth search over current matches.
 
@@ -99,7 +112,7 @@ class Constraints:
 
         Args:
             mol: input molecule
-            vecte: list of atom indexes to check
+            vect: list of atom indexes to check
 
         """
         seen = [0] * mol.GetNumAtoms()
@@ -127,9 +140,11 @@ class Constraints:
                 submol = dm.to_mol(
                     Chem.MolFragmentToSmiles(mol, atomsToUse=connected_atoms)
                 )
-                is_ok = all(self.constraint_fns[qfn].applyFunctions(submol))
-            except:
-                pass
+                is_ok = self.constraint_fns[qfn](submol)
+            except Exception as e:
+                logger.error(e)
+                # we can't raise here
+
             if not is_ok:
                 return False
         return True

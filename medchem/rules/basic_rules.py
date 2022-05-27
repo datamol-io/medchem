@@ -991,7 +991,6 @@ def rule_of_respiratory(
 
 
 def rule_of_generative_design(
-    self,
     mol: Union[dm.Mol, str],
     mw: Optional[float] = None,
     clogp: Optional[float] = None,

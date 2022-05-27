@@ -24,6 +24,16 @@ class Test_Utils(ut.TestCase):
 
 
 class Test_SMARTSUtils(ut.TestCase):
+    def test_standard_attachment(self):
+        smiles = [
+            "C1CC(C)C(O)CC1[1*]",  # ortho
+            "c1c(C)cc(O)cc1[*:2]",  # meta + aromatic
+            "c1(C)ccc(O)cc1[*]",  # para + aromat
+        ]
+        
+        out = [SMARTSUtils.standardize_attachment(sm, "[*:1]") for sm in smiles]
+        self.assertTrue(all('[*:1]' in x for x in out))
+        
     def test_ortho_meta_para(self):
         smiles = [
             "C1CC(C)C(O)CC1",  # ortho

@@ -3,6 +3,9 @@ from typing import Optional
 
 import datamol as dm
 from medchem.rules._utils import _in_range
+from medchem.rules._utils import n_fused_aromatic_rings
+from medchem.rules._utils import n_heavy_metals
+from medchem.rules._utils import has_flagels
 
 
 def rule_of_five(
@@ -984,4 +987,111 @@ def rule_of_respiratory(
         and _in_range(tpsa, 51, 135)
         and _in_range(n_rotatable_bonds, 3, 8)
         and _in_range(n_rings, 1, 5)
+    )
+
+
+def rule_of_generative_design(
+    mol: Union[dm.Mol, str],
+    mw: Optional[float] = None,
+    clogp: Optional[float] = None,
+    n_lipinski_hba: Optional[float] = None,
+    n_lipinski_hbd: Optional[float] = None,
+    tpsa: Optional[float] = None,
+    n_rotatable_bonds: Optional[int] = None,
+    n_hetero_atoms: Optional[int] = None,
+    charge: Optional[float] = None,
+    **kwargs
+):
+    """
+    Compute druglikeness rule of generative design.
+
+    This set of rules are proprietary of Valence Discovery and have been curated to better filters molecules
+    suggested by generative models
+
+    It computes:
+
+    ```
+    MW in [200, 600] & logP < in [-3, 6] & HBD <= 7  & HBA <= 12 & TPSA in [40, 180] &
+    ROTBONDS <= 11 & RIGID BONDS <= 30 & N_AROMATIC_RINGS <= 5 & N_FUSED_AROMATIC_RINGS_TOGETHER <= 2 &
+    MAX_SIZE_RING_SYSTEM <= 18  & N_CARBONS in [3, 35] & N_HETEROATOMS in [1, 15] & CHARGE in [-2, 2] &
+    N_ATOM_CHARGE <= 2 & N_TOTAL_ATOMS < 70 & N_HEAVY_METALS < 1 & HAS_NO_SPIDER_SIDE_CHAINS
+    ```
+
+    Args:
+        mol: input molecule
+        mw: precomputed molecular weight. Defaults to None.
+        clogp: precomputed cLogP. Defaults to None.
+        n_lipinski_hba: precomputed number of HBA. Defaults to None.
+        n_lipinski_hbd: precomputed number of HBD. Defaults to None.
+        tpsa: precomputed TPSA. Defaults to None.
+        n_rotatable_bonds: precomputed number of rotatable bonds. Defaults to None.
+        n_hetero_atoms: precomputed number of heteroatoms. Defaults to None.
+        charge: precomputed charge. Defaults to None.
+
+    """
+    if isinstance(mol, str):
+        mol = dm.to_mol(mol)
+    mol = dm.sanitize_mol(mol)
+    if mol is None:  # return false on invalid molecule
+        return False
+    mw = mw if mw is not None else dm.descriptors.mw(mol)
+    clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
+    n_lipinski_hba = (
+        n_lipinski_hba
+        if n_lipinski_hba is not None
+        else dm.descriptors.n_lipinski_hba(mol)
+    )
+    n_lipinski_hbd = (
+        n_lipinski_hbd
+        if n_lipinski_hbd is not None
+        else dm.descriptors.n_lipinski_hbd(mol)
+    )
+    tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
+    n_rotatable_bonds = (
+        n_rotatable_bonds
+        if n_rotatable_bonds is not None
+        else dm.descriptors.n_rotatable_bonds(mol)
+    )
+    n_hetero_atoms = (
+        n_hetero_atoms
+        if n_hetero_atoms is not None
+        else dm.descriptors.n_hetero_atoms(mol)
+    )
+    # reionize first before computing charge
+    standard_mol = dm.standardize_mol(mol, reionize=True, uncharge=False, stereo=False)
+    charge = (
+        charge if charge is not None else dm.descriptors.formal_charge(standard_mol)
+    )
+    num_charged_atom = dm.descriptors.n_charged_atoms(standard_mol)
+    n_rigid_bonds = dm.descriptors.n_rigid_bonds(mol)
+    ring_system = dm.compute_ring_system(mol, include_spiro=False)
+    max_size_ring = 0 if len(ring_system) == 0 else max([len(x) for x in ring_system])
+    n_carbons = len([at for at in mol.GetAtoms() if at.GetSymbol() == "C"])
+    n_aromatic_rings = dm.descriptors.n_aromatic_rings(mol)
+    n_fused_aro_rings = n_fused_aromatic_rings(
+        mol, require_all_aromatic=True, pairwise=False
+    )
+    n_total_atoms = mol.GetNumAtoms()
+    n_heavy_mets = n_heavy_metals(mol)
+    has_spider_flagels = has_flagels(mol)
+    # check flagel like molecules
+
+    return (
+        _in_range(mw, 200, 600)
+        and _in_range(clogp, -3, 6)
+        and n_lipinski_hbd <= 7
+        and n_lipinski_hba <= 12
+        and _in_range(tpsa, 40, 180)
+        and n_rotatable_bonds <= 11
+        and n_rigid_bonds <= 30
+        and n_aromatic_rings <= 5
+        and n_fused_aro_rings <= 2
+        and max_size_ring <= 18
+        and _in_range(n_carbons, 3, 35)
+        and _in_range(n_hetero_atoms, 1, 15)
+        and _in_range(charge, -2, 2)
+        and num_charged_atom <= 2
+        and n_total_atoms < 70
+        and n_heavy_mets < 1
+        and not has_spider_flagels
     )

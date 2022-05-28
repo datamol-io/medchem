@@ -195,7 +195,12 @@ def chemical_group_filter(
     progress: bool = False,
     scheduler: str = "threads",
 ):
-    """Filter a list of compounds according to a chemical group instance
+    """Filter a list of compounds according to a chemical group instance.
+
+    !!! note
+        This function will return the list of molecules that DO NOT match the chemical group
+
+
 
     Args:
         mols: list of input molecules
@@ -461,3 +466,43 @@ def lilly_demerit_filter(
     if return_idx:
         return filtered_idx
     return filtered_mask
+
+
+def protecting_groups_filter(
+    mols: Iterable[Union[str, rdchem.Mol]],
+    return_idx: bool = False,
+    protecting_groups: str = [
+        "fmoc",
+        "tert-butoxymethyl",
+        "tert-butyl carbamate",
+        "tert-butyloxycarbonyl",
+    ],
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: str = "threads",
+):
+    """Filter a list of compounds according to match to  known protecting groups.
+    Note that is a syntaxic sugar for calling chemical_group_filter with the protecting groups subset
+
+    Args:
+        mols: list of input molecules
+        protecting_groups: type of protection group to consider if not provided, will use all (not advised)
+        return_idx: whether to return index or a boolean mask
+        n_jobs: number of parallel job to run. Sequential by default
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
+
+    Returns:
+        filtered_mask: boolean array (or index array) where true means the molecule DOES NOT MATCH the groups.
+    """
+
+    chemical_group = ChemicalGroup("protecting_groups")
+    chemical_group = chemical_group.filter(protecting_groups)
+    return chemical_group_filter(
+        mols,
+        chemical_group,
+        return_idx=return_idx,
+        n_jobs=n_jobs,
+        progress=progress,
+        scheduler=scheduler,
+    )

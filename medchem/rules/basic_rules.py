@@ -1153,4 +1153,4 @@ def rule_of_generative_design_no_long_chain(
     )
     has_spider_flagels = has_spider_chains(mol)
     good_fraction_ring_system = fraction_atom_in_scaff(mol) >= 0.25
-    return generative_rule and  good_fraction_ring_system and not has_spider_flagels
+    return generative_rule and good_fraction_ring_system and not has_spider_flagels

@@ -1,11 +1,17 @@
 import unittest as ut
 import datamol as dm
+import numpy as np
 from medchem.rules import RuleFilters
 from medchem.rules import basic_rules
-from medchem.rules._utils import n_fused_aromatic_rings, n_heavy_metals, has_flagels
+from medchem.rules._utils import (
+    n_fused_aromatic_rings,
+    n_heavy_metals,
+    has_spider_chains,
+    fraction_atom_in_scaff,
+)
 
 
-def test_has_flagels():
+def test_has_spider_chains():
     mols_with_flagels = [
         "CCNCC1CCC(CNC(C)C)C1",
         "CCCCC1=CN(C=C1CCC)C1=CC(=CC=C1)C(C)CCO",
@@ -20,11 +26,26 @@ def test_has_flagels():
     ]
 
     assert all(
-        has_flagels(dm.to_mol(x)) for x in mols_with_flagels
+        has_spider_chains(dm.to_mol(x)) for x in mols_with_flagels
     ), "Fail flagel test for mols with flagels"
     assert all(
-        not has_flagels(dm.to_mol(x)) for x in mols_without_flagels
+        not has_spider_chains(dm.to_mol(x)) for x in mols_without_flagels
     ), "Fail flagel test for mols without flagels"
+
+
+def test_fraction_ring_system():
+    mols = [
+        "CCNCC1CCC(CNC(C)C)C1",
+        "CCCCC1=CN(C=C1CCC)C1=CC(=CC=C1)C(C)CCO",
+        "CCCCC1=CN(C=C1CCC)C1=CC(=CC=C1)C(C)CCCCC1CCO1",
+        "CC(C)C(O)C(O)C(N)=O",
+        "C1CCCCCC1",
+    ]
+    mols = [dm.to_mol(x) for x in mols]
+    expected_results = [5 / 14, 11 / 23, 20 / 28, 0, 1]  # n_atoms_rings / n_atoms
+    np.testing.assert_allclose(
+        expected_results, [fraction_atom_in_scaff(x) for x in mols]
+    )
 
 
 def test_n_fused_aromatic_rings():

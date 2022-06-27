@@ -94,7 +94,7 @@ def n_heavy_metals(
     return len(heavy_metals)
 
 
-def has_flagels(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4):
+def has_spider_chains(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4):
     """Check whether a molecule has multiple flagel like
     Args:
         mol: input molecule
@@ -190,6 +190,28 @@ def n_fused_aromatic_rings(
             n_aromatic_fused_rings += any(aromatic_system)
 
     return n_aromatic_fused_rings
+
+
+def fraction_atom_in_scaff(
+    mol: dm.Mol,
+):
+    """Compute the fraction of atoms that belong to any ring system of the molecule
+    as defined by the scaffold
+
+    Args:
+        mol: input molecule
+    """
+    n_heavy_atoms = mol.GetNumHeavyAtoms()
+    if n_heavy_atoms < 1:
+        return 0
+    n_heavy_scaffold_atoms = 0
+    scaffold = MurckoScaffold.GetScaffoldForMol(mol)
+    try:
+        scaffold = dm.sanitize_mol(scaffold)
+        n_heavy_scaffold_atoms = scaffold.GetNumHeavyAtoms()
+    except:
+        pass
+    return n_heavy_scaffold_atoms / n_heavy_atoms
 
 
 def list_descriptors():

@@ -16,7 +16,7 @@
 
 **Fixed:**
 
-* <news item>
+* Typo in docs
 
 **Security:**
 

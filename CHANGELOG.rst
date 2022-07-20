@@ -4,6 +4,23 @@ medchem Change Log
 
 .. current developments
 
+v1.3.6
+====================
+
+**Added:**
+
+* Alternative rule of generative design
+
+**Changed:**
+
+* Behaviour of default rule of generative design
+
+**Fixed:**
+
+* Typo in docs
+
+
+
 v1.3.5
 ====================
 

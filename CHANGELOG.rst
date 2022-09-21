@@ -4,6 +4,19 @@ medchem Change Log
 
 .. current developments
 
+v1.3.7
+====================
+
+**Added:**
+
+* Support for hinge binders groups in chemical groups
+
+**Removed:**
+
+* Rdkit from conda env
+
+
+
 v1.3.6
 ====================
 

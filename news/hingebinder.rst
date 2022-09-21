@@ -12,7 +12,7 @@
 
 **Removed:**
 
-* <news item>
+* Rdkit from conda env
 
 **Fixed:**
 

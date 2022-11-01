@@ -302,3 +302,23 @@ def halogenicity_filter(
         progress=progress,
         scheduler=scheduler,
     )
+
+
+def symmetry_filter(
+    mols: Iterable[Union[str, dm.Mol]],
+    symmetry_threshold: float = 1,
+    return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: Optional[str] = None,
+):
+    """Find molecules that are not symmetrical, given a simmetry threshold
+
+    Args:
+        mols: list of input molecules
+        symmetry_threshold: Relative threshold parameter used for symmetry detection. Defaults to 1.
+        return_idx: whether to return index or a boolean mask
+        n_jobs: number of parallel job to run. Sequential by default
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
+    """

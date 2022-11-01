@@ -17,11 +17,13 @@ class Test_GenericFilter(ut.TestCase):
         "C[C@H](Nc1ncc(-c2noc(C(F)(F)F)n2)cc1Cl)c1ccncc1",
         # macrocycle, num_atom_filter
         "NC1=NOC2=CC(C3=NOC(=N3)C(F)(F)F)=C3CCCCCCCC3=C12",
+        # ring infraction, macrocycle at 10, num_atom_filter at 20
+        "Nc1noc2c(cc(cc12)C1NCO1)C1CCCCCCCCC1",
     ]
 
     def test_num_atom_filter(self):
         mols = [dm.to_mol(x) for x in self.data.smiles.values]
-        passing_idx = [i for i, m in enumerate(mols) if m.GetNumAtoms() <= 20]
+        passing_idx = [i for i, m in enumerate(mols) if m.GetNumAtoms() < 20]
         idx = generic.num_atom_filter(
             self.data.smiles.values, max_atoms=20, return_idx=True
         )
@@ -35,17 +37,20 @@ class Test_GenericFilter(ut.TestCase):
         out = generic.macrocycle_filter(
             self.smiles_with_issues, max_cycle_size=7, return_idx=False
         )
-        self.assertListEqual(out, [True, True, True, False])
+        out = list(out)
+        self.assertListEqual(out, [True, True, True, False, False])
 
     def test_atom_list_filter(self):
         out = generic.atom_list_filter(
             self.smiles_with_issues, unwanted_atom_list=["B"], return_idx=True
         )
-        self.assertListEqual([0, 2, 3], out)
+        out = list(out)
+        self.assertListEqual([0, 2, 3, 4], out)
 
     def test_halogenicity_filter(self):
         out = generic.halogenicity_filter(self.smiles_with_issues, return_idx=True)
-        self.assertListEqual([0, 2, 3], out)
+        out = list(out)
+        self.assertListEqual([0, 2, 3, 4], out)
 
 
 if __name__ == "__main__":

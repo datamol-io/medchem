@@ -52,6 +52,26 @@ class Test_GenericFilter(ut.TestCase):
         out = list(out)
         self.assertListEqual([0, 2, 3, 4], out)
 
+    def test_symmetry_filter(self):
+        symmetric_mols = [
+            "O=C(O)c1cc(-n2ccnc2)cc(-n2ccnc2)c1",
+            "CC(C)(C)[C@@H]1COC(C2(C3=N[C@H](C(C)(C)C)CO3)Cc3ccccc3C2)=N1",
+            "c1ccc2oc(-c3ccc(-c4nc5ccccc5o4)s3)nc2c1",
+            "Cc1cc(O)c(C(c2ccc(Cl)cc2)c2c(O)cc(C)[nH]c2=O)c(=O)[nH]1",
+        ]
+
+        random_mols = [
+            "CCn1cc(S(=O)(=O)n2cc(Cl)cn2)cn1",
+            "Cc1cc(C)c(S(=O)(=O)Nc2cc(C)ccc2C)c(C)c1",
+            "c1ccc(CCC2CCN(CCC3COCCO3)CC2)cc1",
+            "CCCC1CCC([C@H]2CC[C@H](C(=O)O)CC2)CC1",
+        ]
+        symmetric = generic.symmetry_filter(symmetric_mols, symmetry_threshold=0.8)
+        np.testing.assert_array_equal(symmetric, [False] * len(symmetric))
+
+        not_symmetric = generic.symmetry_filter(random_mols, symmetry_threshold=0.8)
+        np.testing.assert_array_equal(not_symmetric, [True] * len(not_symmetric))
+
 
 if __name__ == "__main__":
     ut.main()

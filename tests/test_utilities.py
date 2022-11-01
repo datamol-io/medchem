@@ -1,10 +1,10 @@
 import unittest as ut
 import datamol as dm
 import datamol as dm
-from medchem.filter import lead
 from medchem.catalog import merge_catalogs, NamedCatalogs
 from medchem.utils.smarts import SMARTSUtils
 from medchem.utils.matches import Constraints
+from medchem.utils.graph import score_symmetry
 
 
 class Test_Utils(ut.TestCase):
@@ -22,6 +22,43 @@ class Test_Utils(ut.TestCase):
         toxic1 = [tox.HasMatch(m) for m in mols]
         toxic2 = [merged_tox.HasMatch(m) for m in mols]
         self.assertEqual(toxic1, toxic2)
+
+
+class TestGraph(ut.TestCase):
+    test_mols = [
+        ("O=C(O)c1cc(-n2ccnc2)cc(-n2ccnc2)c1", False),  # high symmetry ~0.857
+        # fully symmetric
+        ("OC(O)c1cc(-n2ccnc2)cc(-n2ccnc2)c1", True),
+        (  # symmetry should be 1, modif of above
+            "CC(C)(C)[C@@H]1COC(C2(C3=N[C@H](C(C)(C)C)CO3)Cc3ccccc3C2)=N1",
+            True,
+        ),
+        ("c1ccc2oc(-c3ccc(-c4nc5ccccc5o4)s3)nc2c1", True),
+        # symmetrical star graph
+        ("CC(C)(C)", True),
+        ("NC(C)(N)C", True),
+        # non symmetrical
+        ("NC(C)(C)C", False),
+        ("CCCC1=CNC(CC)=C1C", False),  # modification of the above  # not symmetrical
+        # disconnection does not prevent symmetric detection
+        ("Cl.[O-]C(=O)CC([O-])=O.CCCC1=CNC=C1CCC", True),
+        ("Cl.CC([O-])=O.CCCC1=CNC=C1CCC", True),  # regular salt, should be symmetrical
+        (
+            "[O-]C(=O)C1=CC=CC=C1.CCCC1=CNC=C1CCC",
+            False,
+        ),  # not a salt, should not be symmetrical
+    ]
+
+    def test_symmetry(self):
+        mols, expected_vals = zip(*self.test_mols)
+        scores = [score_symmetry(x, exclude_self_mapped_edged=False) for x in mols]
+        fully_symmetrical = [x == 1 for x in scores]
+        self.assertListEqual(list(expected_vals), fully_symmetrical)
+
+        # if we don't exclude self_mapped edges, then we will have non symmetrical here
+        expected_mol2 = score_symmetry(mols[1], exclude_self_mapped_edged=True)
+        self.assertLess(expected_mol2, 1)
+        self.assertGreater(expected_mol2, 0.8)
 
 
 class TestConstraints(ut.TestCase):

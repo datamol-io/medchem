@@ -335,7 +335,12 @@ class NamedCatalogs:
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def nibr():
-        """Catalog from NIBR"""
+        """Catalog from NIBR
+
+        !!! warning
+            This includes all the compounds in the catalog, regardless of severity (FLAG, EXCLUDE, ANNOTATION)
+            You likely don't want to use this for blind prioritization
+        """
         nibr_filters = pd.read_csv(get_data("nibr.csv"))
         mincount = np.maximum(nibr_filters["mincount"], 1).astype(int)
         labels = nibr_filters.apply(

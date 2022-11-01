@@ -81,6 +81,9 @@ def screening_filter(
     Schuffenhauer, A. et al. Evolution of Novartis' small molecule screening deck design, J. Med. Chem. (2020)
     DOI. https://dx.doi.org/10.1021/acs.jmedchem.0c01332
 
+    !!! note
+        The severity argument corresponds to the accumulated severity for a compounds accross all pattern in the
+        catalog.
     Args:
         mols: list of input molecules
         n_jobs: number of parallel job to run. Sequential by default
@@ -135,6 +138,10 @@ def catalog_filter(
         if catalog == "bredt":
             logger.warning(
                 "It is not recommended to use the 'bredt' catalog here. Please use the `bredt_filter` function instead or be sure to use kekulized molecules as inputs."
+            )
+        if catalog.lower() == "nibr":
+            logger.warning(
+                "It is not recommended to use the 'NIBR' catalog here. Please use the `screening_filter` function instead."
             )
         elif catalog == "bredt-kekulized":
             catalog = "bredt"

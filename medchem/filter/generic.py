@@ -139,7 +139,7 @@ def atom_list_filter(
 
 def ring_infraction_filter(
     mols: Iterable[Union[str, dm.Mol]],
-    hetcycle_min_size: int = 5,
+    hetcycle_min_size: int = 4,
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,

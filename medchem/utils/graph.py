@@ -60,7 +60,11 @@ def automorphism(
     return dict(graph=graph, matches=matches, mol=mol)
 
 
-def score_symmetry(mol, exclude_self_mapped_edged: bool = False, **automorphism_kwargs):
+def score_symmetry(
+    mol: Union[dm.Mol, str],
+    exclude_self_mapped_edged: bool = False,
+    **automorphism_kwargs
+):
     """Provide a symmetry score for a given input molecule
 
     !!! note

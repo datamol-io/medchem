@@ -17,7 +17,7 @@ with warnings.catch_warnings():
     # `<frozen importlib._bootstrap>:219: RuntimeWarning: to-Python converter for boost::shared_ptr<RDKit::FilterCatalogEntry const> already registered; second conversion method ignored.`
     warnings.simplefilter("ignore")
 
-    from rdkit.Chem import FilterCatalog
+    from rdkit.Chem import rdfiltercatalog
 
 from medchem.utils import get_data
 
@@ -42,14 +42,14 @@ def merge_catalogs(*catalogs):
     """
     if len(catalogs) == 1:
         return catalogs[0]
-    params = FilterCatalog.FilterCatalogParams()
+    params = rdfiltercatalog.FilterCatalogParams()
     missing_catalogs = []
     for catlg in catalogs:
-        if isinstance(catlg, FilterCatalog.FilterCatalogParams.FilterCatalogs):
+        if isinstance(catlg, rdfiltercatalog.FilterCatalogParams.FilterCatalogs):
             params.AddCatalog(catlg)
         else:
             missing_catalogs.append(catlg)
-    parameterized_catalogs = FilterCatalog.FilterCatalog(params)
+    parameterized_catalogs = rdfiltercatalog.FilterCatalog(params)
     for catlg in missing_catalogs:
         for entry_nums in range(catlg.GetNumEntries()):
             entry = catlg.GetEntryWithIdx(entry_nums)
@@ -78,7 +78,7 @@ def from_smarts(
     """
 
     with dm.without_rdkit_log():
-        catalog = FilterCatalog.FilterCatalog()
+        catalog = rdfiltercatalog.FilterCatalog()
         if labels is None:
             labels = smarts
         if mincounts is None:
@@ -86,15 +86,15 @@ def from_smarts(
 
         for i, (sm, lb, count) in enumerate(zip(smarts, labels, mincounts)):
             if maxcounts is None:
-                fil = FilterCatalog.SmartsMatcher(lb, sm, count)
+                fil = rdfiltercatalog.SmartsMatcher(lb, sm, count)
             else:
-                fil = FilterCatalog.SmartsMatcher(lb, sm, count, maxcounts[i])
+                fil = rdfiltercatalog.SmartsMatcher(lb, sm, count, maxcounts[i])
             entry_name = str(lb)
             if entry_as_inds:
                 entry_name = str(i)
 
             if fil.IsValid():
-                catalog.AddEntry(FilterCatalog.FilterCatalogEntry(entry_name, fil))
+                catalog.AddEntry(rdfiltercatalog.FilterCatalogEntry(entry_name, fil))
             else:
                 logger.warning(f"It seem like the SMARTS {sm} is invalid")
     return catalog
@@ -127,67 +127,67 @@ class NamedCatalogs:
         """
         catalogs = []
         if pains_a:
-            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_A)
+            catalogs.append(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_A)
         if pains_b:
-            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_B)
+            catalogs.append(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_B)
         if pains_c:
-            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_C)
+            catalogs.append(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_C)
         if brenk:
-            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.BRENK)
+            catalogs.append(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.BRENK)
         if nih:
-            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.NIH)
+            catalogs.append(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.NIH)
         if zinc:
-            catalogs.append(FilterCatalog.FilterCatalogParams.FilterCatalogs.ZINC)
+            catalogs.append(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.ZINC)
         catalog = merge_catalogs(*catalogs)
         return catalog
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def pains():
-        return FilterCatalog.FilterCatalog(
-            FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS
+        return rdfiltercatalog.FilterCatalog(
+            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS
         )
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def pains_a():
-        return FilterCatalog.FilterCatalog(
-            FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_A
+        return rdfiltercatalog.FilterCatalog(
+            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_A
         )
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def pains_b():
-        return FilterCatalog.FilterCatalog(
-            FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_B
+        return rdfiltercatalog.FilterCatalog(
+            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_B
         )
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def pains_c():
-        return FilterCatalog.FilterCatalog(
-            FilterCatalog.FilterCatalogParams.FilterCatalogs.PAINS_C
+        return rdfiltercatalog.FilterCatalog(
+            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_C
         )
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def nih():
-        return FilterCatalog.FilterCatalog(
-            FilterCatalog.FilterCatalogParams.FilterCatalogs.NIH
+        return rdfiltercatalog.FilterCatalog(
+            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.NIH
         )
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def zinc():
-        return FilterCatalog.FilterCatalog(
-            FilterCatalog.FilterCatalogParams.FilterCatalogs.ZINC
+        return rdfiltercatalog.FilterCatalog(
+            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.ZINC
         )
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def brenk():
-        return FilterCatalog.FilterCatalog(
-            FilterCatalog.FilterCatalogParams.FilterCatalogs.BRENK
+        return rdfiltercatalog.FilterCatalog(
+            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.BRENK
         )
 
     @staticmethod

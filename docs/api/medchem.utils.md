@@ -4,7 +4,7 @@
 
 ---
 
-::: medchem.utils.match
+::: medchem.utils.matches
 
 ---
 

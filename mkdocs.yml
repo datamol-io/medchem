@@ -12,7 +12,7 @@ docs_dir: "docs"
 nav:
   - Overview: index.md
   - Tutorials:
-      Getting Started: tutorials/getting-started.ipynb
+      - Getting Started: tutorials/getting-started.ipynb
 
   - API:
       - medchem.alerts: api/medchem.alerts.md
@@ -42,7 +42,6 @@ markdown_extensions:
   - admonition
   - markdown_include.include
   - pymdownx.emoji
-  - pymdownx.highlight
   - pymdownx.magiclink
   - pymdownx.superfences
   - pymdownx.tabbed
@@ -51,6 +50,7 @@ markdown_extensions:
   - mkdocs-click
   - toc:
       permalink: true
+      toc_depth: 4
 
 plugins:
   - search
@@ -70,5 +70,5 @@ plugins:
             heading_level: 3
             show_if_no_docstring: true
   - mkdocs-jupyter:
-      execute: False
+      execute: false
       # kernel_name: python3

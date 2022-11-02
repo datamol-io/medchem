@@ -12,11 +12,11 @@ import datamol as dm
 
 from functools import partial
 from loguru import logger
+from rdkit.Chem.rdfiltercatalog import FilterCatalog
 from medchem import demerits
 from medchem.alerts import AlertFilters
 from medchem.alerts import NovartisFilters
 from medchem.catalog import NamedCatalogs
-from medchem.catalog import FilterCatalog
 from medchem.catalog import merge_catalogs
 from medchem.complexity.complexity_filter import ComplexityFilter
 from medchem.groups import ChemicalGroup
@@ -109,7 +109,7 @@ def screening_filter(
 
 def catalog_filter(
     mols: Sequence[Union[str, dm.Mol]],
-    catalogs: List[Union[str, FilterCatalog.FilterCatalog]],
+    catalogs: List[Union[str, FilterCatalog]],
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,
@@ -163,7 +163,7 @@ def catalog_filter(
 
     def _fn(mols_chunk):
         # Init the catalog from the serialized state
-        catalog = FilterCatalog.FilterCatalog(catalog_state)
+        catalog = FilterCatalog(catalog_state)
 
         # To mols
         mols_chunk = [dm.to_mol(m) for m in mols_chunk]

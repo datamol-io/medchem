@@ -52,6 +52,18 @@ class Test_GenericFilter(ut.TestCase):
         out = list(out)
         self.assertListEqual([0, 2, 3, 4], out)
 
+    def test_n_stereo_center(self):
+
+        smiles = [
+            "CC(C)(O)C(O)[C@H](O)C(O)CO",  # fail, too many undefined stereocenter
+            "C1[C@H]([C@@H]([C@H]([C@H](O1)O)O)O)O",  # fail, too many stereocenter
+            "C[C@@H]1CC[C@H]([C@@H](C1)O)C(C)C",  # pass
+        ]
+
+        out = generic.num_stereo_center_filter(smiles, return_idx=False)
+        out = list(out)
+        self.assertListEqual([False, False, True], out)
+
     def test_symmetry_filter(self):
         symmetric_mols = [
             "O=C(O)c1cc(-n2ccnc2)cc(-n2ccnc2)c1",

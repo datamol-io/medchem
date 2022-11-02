@@ -1059,7 +1059,10 @@ def rule_of_generative_design(
         else dm.descriptors.n_hetero_atoms(mol)
     )
     # reionize first before computing charge
-    standard_mol = dm.standardize_mol(mol, reionize=True, uncharge=False, stereo=False)
+    with dm.without_rdkit_log():
+        standard_mol = dm.standardize_mol(
+            mol, reionize=True, uncharge=False, stereo=False
+        )
     charge = (
         charge if charge is not None else dm.descriptors.formal_charge(standard_mol)
     )
@@ -1095,7 +1098,7 @@ def rule_of_generative_design(
     )
 
 
-def rule_of_generative_design_no_long_chain(
+def rule_of_generative_design_strict(
     mol: Union[dm.Mol, str],
     mw: Optional[float] = None,
     clogp: Optional[float] = None,
@@ -1119,7 +1122,8 @@ def rule_of_generative_design_no_long_chain(
     MW in [200, 600] & logP < in [-3, 6] & HBD <= 7  & HBA <= 12 & TPSA in [40, 180] &
     ROTBONDS <= 15 & RIGID BONDS <= 30 & N_AROMATIC_RINGS <= 5 & N_FUSED_AROMATIC_RINGS_TOGETHER <= 2 &
     MAX_SIZE_RING_SYSTEM <= 18  & N_CARBONS in [3, 40] & N_HETEROATOMS in [1, 15] & CHARGE in [-2, 2] &
-    N_ATOM_CHARGE <= 2 & N_TOTAL_ATOMS < 70 & N_HEAVY_METALS < 1 & HAS_NO_SPIDER_SIDE_CHAINS & FRACTION_RING_SYSTEM >= 0.25
+    N_ATOM_CHARGE <= 2 & N_TOTAL_ATOMS < 70 & N_HEAVY_METALS < 1 & N_STEREO_CENTER <= 3 &
+    HAS_NO_SPIDER_SIDE_CHAINS & FRACTION_RING_SYSTEM >= 0.25
     ```
 
     By default SPIDER_SIDE_CHAINS are defined as having at least 2 'chains' of  >=4 consecutif atoms in side chains (not part of any ring system)
@@ -1139,6 +1143,9 @@ def rule_of_generative_design_no_long_chain(
     """
 
     mol = dm.to_mol(mol)
+    mol = dm.sanitize_mol(mol)
+    if mol is None:  # return false on invalid molecule
+        return False
     generative_rule = rule_of_generative_design(
         mol=mol,
         mw=mw,
@@ -1151,6 +1158,12 @@ def rule_of_generative_design_no_long_chain(
         charge=charge,
         **kwargs
     )
+    n_stereo_center = dm.descriptors.n_stereo_centers(mol)
     has_spider_flagels = has_spider_chains(mol)
     good_fraction_ring_system = fraction_atom_in_scaff(mol) >= 0.25
-    return generative_rule and good_fraction_ring_system and not has_spider_flagels
+    return (
+        generative_rule
+        and good_fraction_ring_system
+        and not has_spider_flagels
+        and n_stereo_center <= 3
+    )

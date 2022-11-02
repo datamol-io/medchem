@@ -1,19 +1,34 @@
-name: test
+name: weekly-test
 
 on:
-  push:
-    branches:
-      - "main"
   pull_request:
     branches:
       - "*"
+      - "!gh-pages"
+  push:
+    branches:
+      - "main"
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 4 * * MON"
 
 jobs:
   build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10"]
+        rdkit-version: ["2021.09", "2022.03", "2022.09"]
+
     runs-on: "ubuntu-latest"
+
     defaults:
       run:
         shell: bash -l {0}
+
+    name: |
+      python=${{ matrix.python-version }} -
+      rdkit=${{ matrix.rdkit-version }} -
 
     steps:
       - name: Checkout the code
@@ -33,6 +48,10 @@ jobs:
           env-name: medchem
           env-file: env.yml
           anaconda-token: ${{ secrets.INVIVOAI_ANACONDA_USER_BOT_TOKEN }}
+          install-editable: true # require for pytest-cov to work...
           test-command: pytest -x -v
           test-cli-command: chemfilter --help
           test-doc-command: mkdocs build
+          extra-specs: |
+            python=${{ matrix.python-version }}
+            rdkit=${{ matrix.rdkit-version }}

@@ -86,6 +86,21 @@ def test_n_heavy_metals():
     assert output == expected_output, "Fail heavy atom test"
 
 
+def test_rule_of_generative_stereo_case():
+    smiles = [
+        "CCC(O)C1=CC=C(C=C1)S(=O)(=O)C1CCNC(C)C1",
+        "CC(F)C(O)C1=CC=C(C=C1)S(=O)(=O)C1CCNC(C)C1",
+    ]
+    mols = [dm.to_mol(x) for x in smiles]
+    output = [basic_rules.rule_of_generative_design(x) for x in mols]
+    excepted_output = [True, True]
+    assert output == excepted_output, "Fail simple rule of generative"
+
+    output = [basic_rules.rule_of_generative_design_strict(x) for x in mols]
+    excepted_output = [True, False]  # second molecule fails due to n_stereo_center
+    assert output == excepted_output, "Fail rule of generative stereo center test"
+
+
 class Test_Rules(ut.TestCase):
 
     data = dm.data.freesolv()

@@ -41,7 +41,7 @@ def _parse_output(rowlist):
     )
     flux = StringIO(content)
     df = pd.read_csv(
-        flux, sep="\s+", doublequote=True, names=["_smiles", "ID", "reasons"]
+        flux, sep=r"\s+", doublequote=True, names=["_smiles", "ID", "reasons"]
     )
     df["ID"] = pd.to_numeric(df["ID"])
     df["reasons"] = df["reasons"].apply(

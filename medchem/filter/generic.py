@@ -6,6 +6,7 @@ from typing import Union
 import itertools
 import numpy as np
 import datamol as dm
+from rdkit.Chem import rdMolDescriptors
 from medchem.utils.graph import score_symmetry
 
 
@@ -239,6 +240,50 @@ def num_atom_filter(
         num_atoms = mol.GetNumAtoms()
         return (min_atoms is not None and num_atoms <= min_atoms) or (
             max_atoms is not None and num_atoms >= max_atoms
+        )
+
+    return _generic_filter(
+        mols,
+        reject_fn,
+        return_idx=return_idx,
+        n_jobs=n_jobs,
+        progress=progress,
+        scheduler=scheduler,
+    )
+
+
+def num_stereo_center_filter(
+    mols: Iterable[Union[str, dm.Mol]],
+    max_stereo_centers: Optional[int] = 4,
+    max_undefined_stereo_centers: Optional[int] = 2,
+    return_idx: bool = False,
+    n_jobs: Optional[int] = None,
+    progress: bool = False,
+    scheduler: Optional[str] = None,
+):
+    """
+    Find a molecule that match the number of stereo center constraints.
+    Returning True means the molecule is fine
+
+    Args:
+        mols: list of input molecules
+        max_stereo_center: strict maximum number of stereo centers (<). Default is 4
+        max_undefined_stereo_centers: strict maximum number of undefined stereo centers (<). Default is 2
+        return_idx: whether to return index or a boolean mask
+        n_jobs: number of parallel job to run. Sequential by default
+        progress: whether to show progress bar
+        scheduler: joblib scheduler to use
+
+    Returns:
+        filtered_mask: boolean array (or index array) where true means the molecule is ok.
+    """
+
+    def reject_fn(mol):
+        if mol is None:
+            return True
+        return (dm.descriptors.n_stereo_centers(mol) >= max_stereo_centers) or (
+            rdMolDescriptors.CalcNumUnspecifiedAtomStereoCenters(mol)
+            >= max_undefined_stereo_centers
         )
 
     return _generic_filter(

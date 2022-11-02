@@ -88,7 +88,13 @@ class Test_LeadFilter(ut.TestCase):
         self.assertTrue(640 not in idx)
         # ensure not error is raised on this
         for catalog_name in catalog.list_named_catalogs():
-            lead.catalog_filter(self.data.smiles.values, catalogs=[catalog_name])
+            if catalog_name == "nibr":
+                with self.assertRaises(ValueError):
+                    lead.catalog_filter(
+                        self.data.smiles.values, catalogs=[catalog_name]
+                    )
+            else:
+                lead.catalog_filter(self.data.smiles.values, catalogs=[catalog_name])
 
     def test_screening_filter(self):
         df = pd.DataFrame.from_records(

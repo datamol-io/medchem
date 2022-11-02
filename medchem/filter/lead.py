@@ -139,7 +139,7 @@ def catalog_filter(
             logger.warning(
                 "It is not recommended to use the 'bredt' catalog here. Please use the `bredt_filter` function instead or be sure to use kekulized molecules as inputs."
             )
-        if catalog.lower() == "nibr":
+        if catalog == "nibr":
             logger.warning(
                 "It is not recommended to use the 'NIBR' catalog here. Please use the `screening_filter` function instead."
             )

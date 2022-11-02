@@ -10,7 +10,6 @@ import os
 import numpy as np
 import datamol as dm
 
-from rdkit.Chem import rdchem
 from functools import partial
 from loguru import logger
 from medchem import demerits
@@ -25,7 +24,7 @@ from medchem.rules import RuleFilters
 
 
 def alert_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Iterable[Union[str, dm.Mol]],
     alerts: List[str],
     alerts_db: Optional[os.PathLike] = None,
     n_jobs: Optional[int] = 1,
@@ -72,7 +71,7 @@ def alert_filter(
 
 
 def screening_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Iterable[Union[str, dm.Mol]],
     n_jobs: Optional[int] = None,
     max_severity: int = 10,
     return_idx: bool = False,
@@ -82,6 +81,9 @@ def screening_filter(
     Schuffenhauer, A. et al. Evolution of Novartis' small molecule screening deck design, J. Med. Chem. (2020)
     DOI. https://dx.doi.org/10.1021/acs.jmedchem.0c01332
 
+    !!! note
+        The severity argument corresponds to the accumulated severity for a compounds accross all pattern in the
+        catalog.
     Args:
         mols: list of input molecules
         n_jobs: number of parallel job to run. Sequential by default
@@ -137,6 +139,12 @@ def catalog_filter(
             logger.warning(
                 "It is not recommended to use the 'bredt' catalog here. Please use the `bredt_filter` function instead or be sure to use kekulized molecules as inputs."
             )
+        if catalog == "nibr":
+            raise ValueError(
+                "You shouldn't use the nibr catalog here. Please use the `screening_filter` function instead."
+            )
+        elif catalog == "bredt-kekulized":
+            catalog = "bredt"
         if isinstance(catalog, str):
             catalog_fn = getattr(NamedCatalogs, catalog, None)
             if catalog_fn is None:
@@ -188,7 +196,7 @@ def catalog_filter(
 
 
 def chemical_group_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Iterable[Union[str, dm.Mol]],
     chemical_group: ChemicalGroup,
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
@@ -199,8 +207,6 @@ def chemical_group_filter(
 
     !!! note
         This function will return the list of molecules that DO NOT match the chemical group
-
-
 
     Args:
         mols: list of input molecules
@@ -227,7 +233,7 @@ def chemical_group_filter(
 
 
 def rules_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Iterable[Union[str, dm.Mol]],
     rules: Union[List[Any], RuleFilters],
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
@@ -258,7 +264,7 @@ def rules_filter(
 
 
 def complexity_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Iterable[Union[str, dm.Mol]],
     complexity_metric: str = "bertz",
     threshold_stats_file: str = "zinc_15_available",
     limit: str = "99",
@@ -358,7 +364,7 @@ def bredt_filter(
 
     return catalog_filter(
         mols=mols,
-        catalogs=["bredt"],
+        catalogs=["bredt-kekulized"],  # already kekulized mols
         return_idx=return_idx,
         n_jobs=n_jobs,
         progress=progress,
@@ -368,7 +374,7 @@ def bredt_filter(
 
 
 def molecular_graph_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Iterable[Union[str, dm.Mol]],
     max_severity: int = 5,
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
@@ -387,6 +393,7 @@ def molecular_graph_filter(
         mols: list of input molecules
         max_severity: maximum acceptable severity (1-10). Default is <5
         return_idx: whether to return index or a boolean mask
+        n_jobs: number of parallel job to run. Sequential by default
         progress: whether to show progress bar
         scheduler: joblib scheduler to use
 
@@ -469,7 +476,7 @@ def lilly_demerit_filter(
 
 
 def protecting_groups_filter(
-    mols: Iterable[Union[str, rdchem.Mol]],
+    mols: Iterable[Union[str, dm.Mol]],
     return_idx: bool = False,
     protecting_groups: str = [
         "fmoc",

@@ -41,8 +41,9 @@ def _parse_output(rowlist):
     )
     flux = StringIO(content)
     df = pd.read_csv(
-        flux, sep="\s+", doublequote=True, names=["_smiles", "ID", "reasons"]
+        flux, sep=r"\s+", doublequote=True, names=["_smiles", "ID", "reasons"]
     )
+    df["ID"] = pd.to_numeric(df["ID"])
     df["reasons"] = df["reasons"].apply(
         lambda x: x.strip("'") if x and isinstance(x, str) else x
     )
@@ -329,6 +330,7 @@ def score(
         data_list.append(df)
         i += 1
     final_df = pd.concat(data_list).sort_values("ID").reset_index(drop=True)
+    # Postprocessing
     final_df["status"] = final_df["rejected"].apply(lambda x: "Exclude" if x else "Ok")
     final_df.loc[
         ((final_df.demerit_score > 0) & (~final_df.rejected)), "status"

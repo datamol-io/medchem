@@ -156,9 +156,7 @@ class SMARTSUtils:
         return query
 
     @classmethod
-    def atom_in_env(
-        cls, *smarts_strs, include_atoms: bool = False, union: bool = False
-    ):
+    def atom_in_env(cls, *smarts_strs, include_atoms: bool = False, union: bool = False):
         """
         Returns a recursive/group smarts to find an atom that fits in the environments as defined by all the input smarts
 

@@ -55,12 +55,7 @@ def WhitlockCT(
             n_hetero += 1
 
     n_rings = len(bonds) - len(atoms) + len(Chem.GetMolFrags(mol))
-    complexity = (
-        ringval * n_rings
-        + unsatval * n_unsat
-        + heteroval * n_hetero
-        + chiralval * n_chiral
-    )
+    complexity = ringval * n_rings + unsatval * n_unsat + heteroval * n_hetero + chiralval * n_chiral
     return complexity
 
 
@@ -253,9 +248,7 @@ def SMCM(mol: dm.Mol):
         )
 
     chiral_a = len(Chem.FindPotentialStereo(mol)) * 2
-    mot_score = sum(
-        [0] + [len(mol.GetSubstructMatches(patt)) for patt in _SMCM_SMARTSs]
-    )
+    mot_score = sum([0] + [len(mol.GetSubstructMatches(patt)) for patt in _SMCM_SMARTSs])
     score = a_score + b_score + chiral_a - mot_score
 
     return round(score, 3)

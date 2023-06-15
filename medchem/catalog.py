@@ -12,7 +12,6 @@ import numpy as np
 import datamol as dm
 
 with warnings.catch_warnings():
-
     # Remove annoying `RuntimeWarnings`:
     # `<frozen importlib._bootstrap>:219: RuntimeWarning: to-Python converter for boost::shared_ptr<RDKit::FilterCatalogEntry const> already registered; second conversion method ignored.`
     warnings.simplefilter("ignore")
@@ -144,51 +143,37 @@ class NamedCatalogs:
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def pains():
-        return rdfiltercatalog.FilterCatalog(
-            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS
-        )
+        return rdfiltercatalog.FilterCatalog(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS)
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def pains_a():
-        return rdfiltercatalog.FilterCatalog(
-            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_A
-        )
+        return rdfiltercatalog.FilterCatalog(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_A)
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def pains_b():
-        return rdfiltercatalog.FilterCatalog(
-            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_B
-        )
+        return rdfiltercatalog.FilterCatalog(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_B)
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def pains_c():
-        return rdfiltercatalog.FilterCatalog(
-            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_C
-        )
+        return rdfiltercatalog.FilterCatalog(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.PAINS_C)
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def nih():
-        return rdfiltercatalog.FilterCatalog(
-            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.NIH
-        )
+        return rdfiltercatalog.FilterCatalog(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.NIH)
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def zinc():
-        return rdfiltercatalog.FilterCatalog(
-            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.ZINC
-        )
+        return rdfiltercatalog.FilterCatalog(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.ZINC)
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
     def brenk():
-        return rdfiltercatalog.FilterCatalog(
-            rdfiltercatalog.FilterCatalogParams.FilterCatalogs.BRENK
-        )
+        return rdfiltercatalog.FilterCatalog(rdfiltercatalog.FilterCatalogParams.FilterCatalogs.BRENK)
 
     @staticmethod
     def alerts(subset: Optional[Union[List[str], str]] = None):
@@ -354,9 +339,7 @@ class NamedCatalogs:
             ),
             axis=1,
         )
-        return from_smarts(
-            nibr_filters["smarts"].values, labels, mincount, entry_as_inds=False
-        )
+        return from_smarts(nibr_filters["smarts"].values, labels, mincount, entry_as_inds=False)
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
@@ -402,9 +385,7 @@ class NamedCatalogs:
         chemical_groups = chemical_groups.dropna(subset=["smarts"])
         if isinstance(filters, str):
             filters = [filters]
-            chemical_groups = chemical_groups[
-                chemical_groups.hierarchy.str.contains("|".join(filters))
-            ]
+            chemical_groups = chemical_groups[chemical_groups.hierarchy.str.contains("|".join(filters))]
 
         return from_smarts(
             chemical_groups["smarts"].values,

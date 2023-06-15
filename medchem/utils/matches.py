@@ -46,10 +46,7 @@ class Constraints:
         """Initialize the constraint matcher"""
         atom_to_query = dict()
         for a in self.core.GetAtoms():
-            if (
-                a.HasProp(self.prop_name)
-                and str(a.GetProp(self.prop_name)) in self.constraint_fns
-            ):
+            if a.HasProp(self.prop_name) and str(a.GetProp(self.prop_name)) in self.constraint_fns:
                 atom_to_query[a.GetIdx()] = a.GetProp(self.prop_name)
         return atom_to_query
 
@@ -63,9 +60,7 @@ class Constraints:
         mol = dm.to_mol(mol)
         for cons in constraints:
             if not isinstance(cons, Constraints):
-                raise ValueError(
-                    "Input constraint should be an instance of Constraints"
-                )
+                raise ValueError("Input constraint should be an instance of Constraints")
             valid = len(cons.match(mol)) > 0
             if not valid:
                 return False
@@ -137,9 +132,7 @@ class Constraints:
                         stack.append(neigh)
             is_ok = False
             try:
-                submol = dm.to_mol(
-                    Chem.MolFragmentToSmiles(mol, atomsToUse=connected_atoms)
-                )
+                submol = dm.to_mol(Chem.MolFragmentToSmiles(mol, atomsToUse=connected_atoms))
                 is_ok = self.constraint_fns[qfn](submol)
             except Exception as e:
                 logger.error(e)

@@ -6,7 +6,6 @@ from medchem.filter import generic
 
 
 class Test_GenericFilter(ut.TestCase):
-
     data = dm.data.freesolv()
     smiles_with_issues = [
         # none
@@ -24,9 +23,7 @@ class Test_GenericFilter(ut.TestCase):
     def test_num_atom_filter(self):
         mols = [dm.to_mol(x) for x in self.data.smiles.values]
         passing_idx = [i for i, m in enumerate(mols) if m.GetNumAtoms() < 20]
-        idx = generic.num_atom_filter(
-            self.data.smiles.values, max_atoms=20, return_idx=True
-        )
+        idx = generic.num_atom_filter(self.data.smiles.values, max_atoms=20, return_idx=True)
         np.testing.assert_array_equal(idx, passing_idx)
 
     def test_ring_infraction_filter(self):
@@ -34,16 +31,12 @@ class Test_GenericFilter(ut.TestCase):
         self.assertListEqual([0, 2, 3], out)
 
     def test_macrocycle_filter(self):
-        out = generic.macrocycle_filter(
-            self.smiles_with_issues, max_cycle_size=7, return_idx=False
-        )
+        out = generic.macrocycle_filter(self.smiles_with_issues, max_cycle_size=7, return_idx=False)
         out = list(out)
         self.assertListEqual(out, [True, True, True, False, False])
 
     def test_atom_list_filter(self):
-        out = generic.atom_list_filter(
-            self.smiles_with_issues, unwanted_atom_list=["B"], return_idx=True
-        )
+        out = generic.atom_list_filter(self.smiles_with_issues, unwanted_atom_list=["B"], return_idx=True)
         out = list(out)
         self.assertListEqual([0, 2, 3, 4], out)
 
@@ -53,7 +46,6 @@ class Test_GenericFilter(ut.TestCase):
         self.assertListEqual([0, 2, 3, 4], out)
 
     def test_n_stereo_center(self):
-
         smiles = [
             "CC(C)(O)C(O)[C@H](O)C(O)CO",  # fail, too many undefined stereocenter
             "C1[C@H]([C@@H]([C@H]([C@H](O1)O)O)O)O",  # fail, too many stereocenter

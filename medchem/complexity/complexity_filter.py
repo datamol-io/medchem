@@ -63,19 +63,15 @@ class ComplexityFilter:
         if limit not in self.threshold_df.percentile.unique():
             raise ValueError(f"Invalid value {limit}")
 
-        available_filters = set(self.list_default_available_filters()).intersection(
-            self.threshold_df.columns
-        )
+        available_filters = set(self.list_default_available_filters()).intersection(self.threshold_df.columns)
         if complexity_metric not in available_filters:
-            raise ValueError(
-                f"Invalid value {complexity_metric}. Should be one of {available_filters}"
-            )
+            raise ValueError(f"Invalid value {complexity_metric}. Should be one of {available_filters}")
         self.limit_index = limit
         self.complexity_metric = complexity_metric
         cur_df = self.threshold_df[self.threshold_df.percentile == self.limit_index]
-        self.filter_selection_df = cur_df[
-            [self.complexity_metric, "mw_bins"]
-        ].sort_values("mw_bins", ascending=True)
+        self.filter_selection_df = cur_df[[self.complexity_metric, "mw_bins"]].sort_values(
+            "mw_bins", ascending=True
+        )
 
     @classmethod
     def list_default_available_filters(cls):

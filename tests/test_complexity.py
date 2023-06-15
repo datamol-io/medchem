@@ -118,9 +118,7 @@ class Test_Complexity(ut.TestCase):
             cf = ComplexityFilter(limit="fake")
         with self.assertRaises(ValueError):
             # sas is not defined for the zinc_filter
-            cf = ComplexityFilter(
-                limit="99", complexity_metric="sas", threshold_stats_file="zinc_12"
-            )
+            cf = ComplexityFilter(limit="99", complexity_metric="sas", threshold_stats_file="zinc_12")
 
 
 if __name__ == "__main__":

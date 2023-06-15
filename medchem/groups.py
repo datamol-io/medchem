@@ -107,9 +107,7 @@ class ChemicalGroup:
         if "hierarchy" not in self.data.columns:
             self.data["hierarchy"] = self.data["group"]
         if self.groups:
-            self.data = self.data[
-                self.data.hierarchy.str.contains("|".join(self.groups))
-            ]
+            self.data = self.data[self.data.hierarchy.str.contains("|".join(self.groups))]
         # EN: fill smiles and smarts with empty string when they are missing
         # this prevent error in apply dm.to_mol, dm.from_smarts and building the FilterCatalog
         self.data["smiles"] = self.data["smiles"].fillna("")
@@ -214,9 +212,7 @@ class ChemicalGroup:
             return mol.GetSubstructMatches(query) or None
 
         if use_smiles:
-            matches = dm.parallelized(
-                matcher, self.data.mol.values, n_jobs=self.n_jobs, progress=False
-            )
+            matches = dm.parallelized(matcher, self.data.mol.values, n_jobs=self.n_jobs, progress=False)
         else:
             matches = dm.parallelized(
                 matcher, self.data.mol_smarts.values, n_jobs=self.n_jobs, progress=False

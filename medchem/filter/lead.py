@@ -463,9 +463,7 @@ def lilly_demerit_filter(
         )
 
     df = demerits.batch_score(smiles, n_jobs=n_jobs, progress=progress, **kwargs)
-    df = df[
-        (~df.rejected) & ((df.demerit_score.isna()) | (df.demerit_score < max_demerits))
-    ]
+    df = df[(~df.rejected) & ((df.demerit_score.isna()) | (df.demerit_score < max_demerits))]
 
     filtered_idx = df["ID"].values.astype(int)
     filtered_mask = np.zeros(len(smiles), dtype=bool)

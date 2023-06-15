@@ -28,9 +28,7 @@ class Test_ChemicalGroup(ut.TestCase):
         out_smiles = c_group.get_matches(mol, use_smiles=True)
         self.assertEqual(out_smiles.shape[0], 3)
         self.assertSetEqual(set(out_smiles.group.unique()), {"rings_in_drugs"})
-        self.assertSetEqual(
-            set(out_smiles.name.unique()), {"diazine", "1H-pyrrole", "1H-pyrazole"}
-        )
+        self.assertSetEqual(set(out_smiles.name.unique()), {"diazine", "1H-pyrrole", "1H-pyrazole"})
 
     def test_external_bank(self):
         c_group = ChemicalGroup(groups_db=get_data("smarts_bank.csv"))

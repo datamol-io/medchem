@@ -170,9 +170,7 @@ def ring_infraction_filter(
     def reject_fn(mol):
         if mol is None:
             return True
-        rejected = mol.HasSubstructMatch(ring_allene) or mol.HasSubstructMatch(
-            double_bond_small_ring
-        )
+        rejected = mol.HasSubstructMatch(ring_allene) or mol.HasSubstructMatch(double_bond_small_ring)
         if rejected:
             return True
         rinfo = mol.GetRingInfo()
@@ -182,16 +180,12 @@ def ring_infraction_filter(
             r_bond_types = [b.GetBondType() for b in r_bonds]
             r_atom_content = set(
                 itertools.chain(
-                    *[
-                        (b.GetBeginAtom().GetSymbol(), b.GetEndAtom().GetSymbol())
-                        for b in r_bonds
-                    ]
+                    *[(b.GetBeginAtom().GetSymbol(), b.GetEndAtom().GetSymbol()) for b in r_bonds]
                 )
             )
             n_ring_heteroatoms = sum([at not in ["C", "H"] for at in r_atom_content])
             if len(r) <= hetcycle_min_size and (
-                n_ring_heteroatoms > 1
-                or any(btype != dm.SINGLE_BOND for btype in r_bond_types)
+                n_ring_heteroatoms > 1 or any(btype != dm.SINGLE_BOND for btype in r_bond_types)
             ):
                 # too many heteroatoms in low ring size OR
                 # alkene, allen or aromatic in small rings
@@ -282,8 +276,7 @@ def num_stereo_center_filter(
         if mol is None:
             return True
         return (dm.descriptors.n_stereo_centers(mol) >= max_stereo_centers) or (
-            rdMolDescriptors.CalcNumUnspecifiedAtomStereoCenters(mol)
-            >= max_undefined_stereo_centers
+            rdMolDescriptors.CalcNumUnspecifiedAtomStereoCenters(mol) >= max_undefined_stereo_centers
         )
 
     return _generic_filter(
@@ -329,15 +322,9 @@ def halogenicity_filter(
     def reject_fn(mol):
         if mol is None:
             return True
-        fluorine_saturation = (
-            len(mol.GetSubstructMatches(fluorine_smarts, uniquify=True)) > thresh_F
-        )
-        bromine_saturation = (
-            len(mol.GetSubstructMatches(bromine_smarts, uniquify=True)) > thresh_Br
-        )
-        chlorine_saturation = (
-            len(mol.GetSubstructMatches(chlorine_smarts, uniquify=True)) > thresh_Cl
-        )
+        fluorine_saturation = len(mol.GetSubstructMatches(fluorine_smarts, uniquify=True)) > thresh_F
+        bromine_saturation = len(mol.GetSubstructMatches(bromine_smarts, uniquify=True)) > thresh_Br
+        chlorine_saturation = len(mol.GetSubstructMatches(chlorine_smarts, uniquify=True)) > thresh_Cl
         return fluorine_saturation or bromine_saturation or chlorine_saturation
 
     return _generic_filter(

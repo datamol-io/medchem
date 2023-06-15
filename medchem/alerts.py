@@ -52,9 +52,7 @@ class NovartisFilters:
         catalog = NamedCatalogs.nibr()
         if n_jobs is not None:
             if isinstance(mols[0], str):
-                mols = dm.parallelized(
-                    dm.to_mol, mols, n_jobs=n_jobs, progress=progress
-                )
+                mols = dm.parallelized(dm.to_mol, mols, n_jobs=n_jobs, progress=progress)
             matches = dm.parallelized(
                 catalog.GetMatches,
                 mols,
@@ -157,12 +155,8 @@ class AlertFilters:
         """
         Build the rule sets defined in alerts_set for this object
         """
-        self.rule_df = self.rule_df[
-            self.rule_df.rule_set_name.str.lower().isin(self.alerts_set)
-        ]
-        tmp_rule_list = self.rule_df[
-            ["rule_id", "smarts", "mincount", "description"]
-        ].values.tolist()
+        self.rule_df = self.rule_df[self.rule_df.rule_set_name.str.lower().isin(self.alerts_set)]
+        tmp_rule_list = self.rule_df[["rule_id", "smarts", "mincount", "description"]].values.tolist()
         for rule_id, smarts, mincount, desc in tmp_rule_list:
             smarts_mol = dm.from_smarts(smarts)
             if smarts_mol:
@@ -205,9 +199,7 @@ class AlertFilters:
         if isinstance(mol, str):
             mol = dm.to_mol(mol)
         if mol is None:
-            return [mol, "Exclude", -999, -999, -999, -999, -999] + [1] * len(
-                self.rule_list
-            )
+            return [mol, "Exclude", -999, -999, -999, -999, -999] + [1] * len(self.rule_list)
 
         desc_list = [
             MolWt(mol),
@@ -217,16 +209,13 @@ class AlertFilters:
             TPSA(mol),
         ]
         alerts = [
-            int(len(mol.GetSubstructMatches(patt)) >= mincount)
-            for patt, mincount, desc in self.rule_list
+            int(len(mol.GetSubstructMatches(patt)) >= mincount) for patt, mincount, desc in self.rule_list
         ]
         status = "Ok"
         reasons = None
         if any(alerts):
             status = "Exclude"
-            reasons = "; ".join(
-                [x[-1] for i, x in enumerate(self.rule_list) if alerts[i]]
-            )
+            reasons = "; ".join([x[-1] for i, x in enumerate(self.rule_list) if alerts[i]])
 
         return [dm.to_smiles(mol), status, reasons] + desc_list + alerts
 
@@ -247,9 +236,7 @@ class AlertFilters:
         """
         if n_jobs is not None:
             filter_obj = copy.deepcopy(self)
-            results = dm.parallelized(
-                filter_obj.evaluate, mols, n_jobs=n_jobs, progress=progress
-            )
+            results = dm.parallelized(filter_obj.evaluate, mols, n_jobs=n_jobs, progress=progress)
         else:
             iter_mols = mols
             if progress:
@@ -271,7 +258,5 @@ class AlertFilters:
             + [str(x[-1]) for x in self.rule_list],
         )
         if not include_all_alerts:
-            df = df[
-                ["_smiles", "status", "reasons", "MW", "LogP", "HBD", "HBA", "TPSA"]
-            ]
+            df = df[["_smiles", "status", "reasons", "MW", "LogP", "HBD", "HBA", "TPSA"]]
         return df

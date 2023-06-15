@@ -5,7 +5,6 @@ from medchem import demerits
 
 
 class Test_DemeritsFilter(ut.TestCase):
-
     test_config = {
         "output": "test",
         "min_atoms": 7,
@@ -95,9 +94,7 @@ class Test_DemeritsFilter(ut.TestCase):
         self.assertTrue(res.shape[0] > 0)
 
     def test_batch_demerits(self):
-        res = demerits.batch_score(
-            self.smiles_list, n_jobs=4, batch_size=5, **self.test_config
-        )
+        res = demerits.batch_score(self.smiles_list, n_jobs=4, batch_size=5, **self.test_config)
         self.assertTrue(res.shape[0] > 0)
 
 

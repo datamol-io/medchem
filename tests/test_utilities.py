@@ -8,14 +8,11 @@ from medchem.utils.graph import score_symmetry
 
 
 class Test_Utils(ut.TestCase):
-
     data = dm.data.freesolv()
 
     def test_catalog_merge(self):
         mols = self.data["smiles"].apply(dm.to_mol).values
-        tox = NamedCatalogs.tox(
-            pains_a=False, pains_b=False, pains_c=False, nih=True, brenk=True
-        )
+        tox = NamedCatalogs.tox(pains_a=False, pains_b=False, pains_c=False, nih=True, brenk=True)
         nih = NamedCatalogs.nih()
         brenk = NamedCatalogs.brenk()
         merged_tox = merge_catalogs(nih, brenk)
@@ -113,9 +110,7 @@ class Test_SMARTSUtils(ut.TestCase):
         sm1 = "[#6;!R]"
         sm2 = "[#8]"
         ortho_query = dm.from_smarts(SMARTSUtils.ortho(sm1, sm2))
-        ortho_aro_query = dm.from_smarts(
-            SMARTSUtils.ortho(sm1, sm2, aromatic_only=True)
-        )
+        ortho_aro_query = dm.from_smarts(SMARTSUtils.ortho(sm1, sm2, aromatic_only=True))
         meta_query = dm.from_smarts(SMARTSUtils.meta(sm1, sm2))
         para_query = dm.from_smarts(SMARTSUtils.para(sm1, sm2))
         expected_output = [True, True, True, False, False]
@@ -140,13 +135,9 @@ class Test_SMARTSUtils(ut.TestCase):
         ]
         mols = [dm.to_mol(x) for x in smiles]
 
-        chain1 = dm.from_smarts(
-            SMARTSUtils.aliphatic_chain(min_size=5, unsaturated_bondtype=None)
-        )
+        chain1 = dm.from_smarts(SMARTSUtils.aliphatic_chain(min_size=5, unsaturated_bondtype=None))
         chain2 = dm.from_smarts(
-            SMARTSUtils.aliphatic_chain(
-                min_size=6, unbranched=True, unsaturated_bondtype=dm.SINGLE_BOND
-            )
+            SMARTSUtils.aliphatic_chain(min_size=6, unbranched=True, unsaturated_bondtype=dm.SINGLE_BOND)
         )
         chain3 = dm.from_smarts(
             SMARTSUtils.aliphatic_chain(
@@ -179,12 +170,8 @@ class Test_SMARTSUtils(ut.TestCase):
         mol = dm.to_mol("c1[c:1](OC)cc(F)cc1")
         # we are trying to match the carbon with atom map 1
         # these queries should be equivalent
-        atom_id = tuple(
-            [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomMapNum() == 1]
-        )
-        query1 = SMARTSUtils.atom_in_env(
-            "[#6;r6]", "[*][OD2][C&D1]", "[c]aa[F]", union=False
-        )
+        atom_id = tuple([atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomMapNum() == 1])
+        query1 = SMARTSUtils.atom_in_env("[#6;r6]", "[*][OD2][C&D1]", "[c]aa[F]", union=False)
         query2 = SMARTSUtils.atom_in_env("[#6;r6][OD2][C&D1]", "[c]aa[F]", union=False)
         res1 = mol.GetSubstructMatch(dm.from_smarts(query1))
         res2 = mol.GetSubstructMatch(dm.from_smarts(query2))

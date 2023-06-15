@@ -11,7 +11,6 @@ from rdkit.Chem.Descriptors import MolWt
 
 
 class Test_LeadFilter(ut.TestCase):
-
     data = dm.data.freesolv()
     screening_smiles_set = [
         # smiles, covalent, special, severity
@@ -65,12 +64,8 @@ class Test_LeadFilter(ut.TestCase):
         )
         al_filter = AlertFilters(alerts_set=["BMS"])
         df = al_filter(self.data.smiles.values[:10])
-        expected_cols = set(
-            ["_smiles", "status", "reasons", "MW", "LogP", "HBD", "HBA", "TPSA"]
-        )
-        self.assertTrue(
-            len(expected_cols.intersection(set(df.columns))) == len(expected_cols)
-        )
+        expected_cols = set(["_smiles", "status", "reasons", "MW", "LogP", "HBD", "HBA", "TPSA"])
+        self.assertTrue(len(expected_cols.intersection(set(df.columns))) == len(expected_cols))
 
     def test_catalog_filter(self):
         idx = lead.catalog_filter(
@@ -90,9 +85,7 @@ class Test_LeadFilter(ut.TestCase):
         for catalog_name in catalog.list_named_catalogs():
             if catalog_name == "nibr":
                 with self.assertRaises(ValueError):
-                    lead.catalog_filter(
-                        self.data.smiles.values, catalogs=[catalog_name]
-                    )
+                    lead.catalog_filter(self.data.smiles.values, catalogs=[catalog_name])
             else:
                 lead.catalog_filter(self.data.smiles.values, catalogs=[catalog_name])
 
@@ -101,9 +94,7 @@ class Test_LeadFilter(ut.TestCase):
             self.screening_smiles_set,
             columns=["smiles", "covalent", "special_mol", "severity"],
         )
-        idx = lead.screening_filter(
-            df.smiles, n_jobs=2, max_severity=5, return_idx=True
-        )
+        idx = lead.screening_filter(df.smiles, n_jobs=2, max_severity=5, return_idx=True)
         expected_idx = list(df[df.severity < 5].index)
         self.assertEqual(len(set(idx).difference(set(expected_idx))), 0)
 
@@ -119,9 +110,7 @@ class Test_LeadFilter(ut.TestCase):
                 "special_mol",
             ]
         )
-        self.assertTrue(
-            len(expected_cols.intersection(set(out.columns))) == len(expected_cols)
-        )
+        self.assertTrue(len(expected_cols.intersection(set(out.columns))) == len(expected_cols))
         np.testing.assert_array_equal(df.severity, out.severity)
         np.testing.assert_array_equal(df.covalent, out.covalent)
         np.testing.assert_array_equal(df.special_mol, out.special_mol)

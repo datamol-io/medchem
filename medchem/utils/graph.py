@@ -45,13 +45,9 @@ def automorphism(
 
     node_match, edge_match = None, None
     if node_attrs:
-        node_match = nx.algorithms.isomorphism.categorical_node_match(
-            node_attrs, [0] * len(node_attrs)
-        )
+        node_match = nx.algorithms.isomorphism.categorical_node_match(node_attrs, [0] * len(node_attrs))
     if edge_attrs:
-        edge_match = nx.algorithms.isomorphism.categorical_edge_match(
-            edge_attrs, [0] * len(node_attrs)
-        )
+        edge_match = nx.algorithms.isomorphism.categorical_edge_match(edge_attrs, [0] * len(node_attrs))
 
     graph_matcher = nx.algorithms.isomorphism.GraphMatcher(
         graph, graph_copy, node_match=node_match, edge_match=edge_match
@@ -60,11 +56,7 @@ def automorphism(
     return dict(graph=graph, matches=matches, mol=mol)
 
 
-def score_symmetry(
-    mol: Union[dm.Mol, str],
-    exclude_self_mapped_edged: bool = False,
-    **automorphism_kwargs
-):
+def score_symmetry(mol: Union[dm.Mol, str], exclude_self_mapped_edged: bool = False, **automorphism_kwargs):
     """Provide a symmetry score for a given input molecule
 
     !!! note
@@ -80,9 +72,7 @@ def score_symmetry(
         automorphism_kwargs: keyword for determining automorphism
     """
     mol_automorphism = automorphism(mol, **automorphism_kwargs)
-    _is_self_mapped = lambda mapping: all(
-        node1 == node2 for node1, node2 in mapping.items()
-    )
+    _is_self_mapped = lambda mapping: all(node1 == node2 for node1, node2 in mapping.items())
     # We check and filter for identity mapping x->x for all nodes
     graph = mol_automorphism["graph"]
     graphmol = mol_automorphism["mol"]
@@ -108,9 +98,9 @@ def score_symmetry(
                 # we only accept those when at least some neighbors of the nodse in the edge map to each other
                 neighbors1 = set(graph.neighbors(edge[0]))
                 neighbors2 = set(graph.neighbors(edge[1]))
-                if any(
-                    (mapping.get(x) in neighbors1 - {x}) for x in neighbors1
-                ) and any((mapping.get(x) in neighbors2 - {x}) for x in neighbors2):
+                if any((mapping.get(x) in neighbors1 - {x}) for x in neighbors1) and any(
+                    (mapping.get(x) in neighbors2 - {x}) for x in neighbors2
+                ):
                     is_covered = True
                     break
         arc_transitivity.append(is_covered)

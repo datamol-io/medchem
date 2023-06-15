@@ -11,9 +11,7 @@ from medchem.utils.loader import get_grammar
 
 
 class Test_QueryParser(ut.TestCase):
-    grammar = Lark(
-        get_grammar(as_string=True), parser="lalr", transformer=QueryParser()
-    )
+    grammar = Lark(get_grammar(as_string=True), parser="lalr", transformer=QueryParser())
 
     def test_language(self):
         bad_queries = [
@@ -46,15 +44,11 @@ class Test_QueryParser(ut.TestCase):
             """HASPROP("tpsa" > 120) OR HASSUBSTRUCTURE("[OH]", True, 1)""",  # this is correct but bad practice
         ]
         for query in bad_queries:
-            with self.assertRaises(
-                (exceptions.UnexpectedToken, KeyError, exceptions.UnexpectedCharacters)
-            ):
+            with self.assertRaises((exceptions.UnexpectedToken, KeyError, exceptions.UnexpectedCharacters)):
                 print(query)
                 self.grammar.parse(query)
 
-        valid_results = [
-            self.grammar.parse(query) is not None for query in valid_queries
-        ]
+        valid_results = [self.grammar.parse(query) is not None for query in valid_queries]
         self.assertListEqual(valid_results, [True] * len(valid_queries))
 
     def test_query_equivalence(self):
@@ -72,14 +66,9 @@ class Test_QueryParser(ut.TestCase):
             """HASPROP("tpsa" =   120)   OR ! HASSUBSTRUCTURE("CO")""",  # change in space
         ]
         different_query = """( ! HASPROP("tpsa" > 120) OR HASSUBSTRUCTURE("CO"))"""
-        same_results = [
-            self.grammar.parse(equivalent_queries[i])
-            for i in range(len(equivalent_queries))
-        ]
+        same_results = [self.grammar.parse(equivalent_queries[i]) for i in range(len(equivalent_queries))]
 
-        expected_equivalent_results = [
-            same_results[i] == same_results[0] for i in range(len(same_results))
-        ]
+        expected_equivalent_results = [same_results[i] == same_results[0] for i in range(len(same_results))]
         expected_different_results = self.grammar.parse(different_query)
         self.assertListEqual(expected_equivalent_results, [True] * len(same_results))
         self.assertNotEqual(expected_different_results, same_results[0])
@@ -103,9 +92,7 @@ class Test_QueryOperator(ut.TestCase):
         self.assertTrue(QueryOperator.hasprop(mol, "tpsa", operator.le, 120))
 
     def test_alert(self):
-        mol = dm.to_mol(
-            "Oc1cscc1-c1ccc(O)cc1"
-        )  # contains tiophene hydroxy should match pains
+        mol = dm.to_mol("Oc1cscc1-c1ccc(O)cc1")  # contains tiophene hydroxy should match pains
         self.assertTrue(QueryOperator.hasalert(mol, "pains"))
         self.assertFalse(QueryOperator.hasalert(mol, "brenk"))
         with self.assertRaises(Exception):
@@ -118,31 +105,15 @@ class Test_QueryOperator(ut.TestCase):
         self.assertTrue(QueryOperator.hassubstructure(mol, substruct1, is_smarts=True))
         self.assertTrue(QueryOperator.hassubstructure(mol, substruct2, is_smarts=True))
         self.assertTrue(QueryOperator.hassubstructure(mol, substruct2, is_smarts=False))
-        self.assertTrue(
-            QueryOperator.hassubstructure(mol, substruct2, True, "min", limit=1)
-        )
-        self.assertFalse(
-            QueryOperator.hassubstructure(mol, substruct2, True, "min", limit=2)
-        )
-        self.assertFalse(
-            QueryOperator.hassubstructure(mol, substruct2, True, None, limit=2)
-        )
-        self.assertTrue(
-            QueryOperator.hassubstructure(mol, substruct2, True, "max", limit=2)
-        )
+        self.assertTrue(QueryOperator.hassubstructure(mol, substruct2, True, "min", limit=1))
+        self.assertFalse(QueryOperator.hassubstructure(mol, substruct2, True, "min", limit=2))
+        self.assertFalse(QueryOperator.hassubstructure(mol, substruct2, True, None, limit=2))
+        self.assertTrue(QueryOperator.hassubstructure(mol, substruct2, True, "max", limit=2))
 
-        self.assertTrue(
-            QueryOperator.hassubstructure(mol, substruct2, False, "min", limit=1)
-        )
-        self.assertTrue(
-            QueryOperator.hassubstructure(mol, substruct2, False, "min", limit=2)
-        )
-        self.assertTrue(
-            QueryOperator.hassubstructure(mol, substruct2, False, None, limit=2)
-        )
-        self.assertFalse(
-            QueryOperator.hassubstructure(mol, substruct2, False, "max", limit=2)
-        )
+        self.assertTrue(QueryOperator.hassubstructure(mol, substruct2, False, "min", limit=1))
+        self.assertTrue(QueryOperator.hassubstructure(mol, substruct2, False, "min", limit=2))
+        self.assertTrue(QueryOperator.hassubstructure(mol, substruct2, False, None, limit=2))
+        self.assertFalse(QueryOperator.hassubstructure(mol, substruct2, False, "max", limit=2))
 
     def test_rule(self):
         mol = "Oc1cscc1-c1ccc(OC)cc1"
@@ -158,9 +129,7 @@ class Test_QueryOperator(ut.TestCase):
         # should normally match an alcohol, but how the group as defined, the specificity is high
         # so another more specific group should match and not alcohol for the tiophene hydroxy
         self.assertFalse(QueryOperator.hasgroup(mol, "Alcohols"))
-        self.assertTrue(
-            QueryOperator.hasgroup(mol, "Hydroxy compounds: alcohols or phenols")
-        )
+        self.assertTrue(QueryOperator.hasgroup(mol, "Hydroxy compounds: alcohols or phenols"))
         with self.assertRaises(Exception):
             QueryOperator.hasgroup(mol, "fake")
 
@@ -181,9 +150,7 @@ class Test_QueryOperator(ut.TestCase):
 class Test_QueryFilter(ut.TestCase):
     def test_query_eval(self):
         mol = "Oc1cscc1-c1ccc(OC)cc1"
-        grammar = Lark(
-            get_grammar(as_string=True), parser="lalr", transformer=QueryParser()
-        )
+        grammar = Lark(get_grammar(as_string=True), parser="lalr", transformer=QueryParser())
         queries = [
             """HASPROP("tpsa" <= 120) AND ! HASALERT("pains") AND HASGROUP("Alcohols")""",  # False, does not match alchol
             """HASPROP("tpsa" <= 120) AND NOT HASALERT("pains") AND HASGROUP("Ethers")""",  # False has pains alerts
@@ -245,9 +212,7 @@ class Test_QueryFilter(ut.TestCase):
             lambda x: QueryOperator.hassubstructure(x, "[CX3](=[OX1])O", True)
         )
         df["has_pains"] = df["mol"].apply(lambda x: QueryOperator.hasalert(x, "pains"))
-        df["has_alcohol"] = df["mol"].apply(
-            lambda x: QueryOperator.hasgroup(x, "Alcohols")
-        )
+        df["has_alcohol"] = df["mol"].apply(lambda x: QueryOperator.hasgroup(x, "Alcohols"))
 
         tmp = df.query(
             "((tpsa < 100) & (clogp < 3) & ~has_pains) | (n_heavy_atoms >= 10 & (has_carboxyl | has_alcohol))"

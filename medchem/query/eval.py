@@ -26,12 +26,8 @@ class QueryOperator:
 
     AVAILABLES_PROPERTIES = list_descriptors()  # list of available molecular properties
     AVAILABLE_CATALOGS = list_named_catalogs()  # list of available catalogs
-    AVAILABLE_RULES = (
-        RuleFilters.list_available_rules_names()
-    )  # list of available rules
-    AVAILABLE_FUNCTIONAL_GROUPS = (
-        list_functional_group_names()
-    )  # list of available functional groups
+    AVAILABLE_RULES = RuleFilters.list_available_rules_names()  # list of available rules
+    AVAILABLE_FUNCTIONAL_GROUPS = list_functional_group_names()  # list of available functional groups
 
     @staticmethod
     def hassubstructure(
@@ -266,10 +262,7 @@ class _NodeEvaluator:
             _fn = getattr(QueryOperator, node_arg_list[0], None)
             if _fn is None:
                 raise ValueError("Unknown function {}".format(node_arg_list[0]))
-            _kwargs = dict(
-                (k, ast.literal_eval(v))
-                for k, v in [x.split("=", 1) for x in node_arg_list[1:]]
-            )
+            _kwargs = dict((k, ast.literal_eval(v)) for k, v in [x.split("=", 1) for x in node_arg_list[1:]])
             self.node_fn = partial(_fn, **_kwargs)
 
     def __call__(self, *args, **kwargs):
@@ -290,9 +283,7 @@ class _EvaluableQuery:
             parsed_query: query that has been parsed and transformed
             verbose: whrther to print debug information
         """
-        self.query_nodes = [
-            _NodeEvaluator(x) for x in self.FN_PATTERN.split(parsed_query)
-        ]
+        self.query_nodes = [_NodeEvaluator(x) for x in self.FN_PATTERN.split(parsed_query)]
         self.verbose = verbose
 
     def __call__(self, mol: Union[dm.Mol, str], exec: bool = True):
@@ -337,9 +328,7 @@ class QueryFilter:
         self.query_parser = Lark(self.grammar, parser=parser)
         self.transformer = QueryParser()
         self._query_str = query
-        self.query = self.transformer.transform(
-            self.query_parser.parse(self._query_str)
-        )
+        self.query = self.transformer.transform(self.query_parser.parse(self._query_str))
         self._evaluable_query = _EvaluableQuery(self.query)
 
     def __repr__(self) -> str:

@@ -15,7 +15,7 @@ def rule_of_five(
     clogp: Optional[float] = None,
     n_lipinski_hbd: Optional[float] = None,
     n_lipinski_hba: Optional[float] = None,
-    **kwargs
+    **kwargs,
 ):
     """Compute the Lipinski's rule-of-5 for a molecule. Also known as Pfizer's rule of five or RO5,
     this rule is a rule of thumb to evaluate the druglikeness of a chemical compounds
@@ -36,16 +36,8 @@ def rule_of_five(
         mol = dm.to_mol(mol)
     mw = mw if mw is not None else dm.descriptors.mw(mol)
     clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
-    n_lipinski_hbd = (
-        n_lipinski_hbd
-        if n_lipinski_hbd is not None
-        else dm.descriptors.n_lipinski_hbd(mol)
-    )
-    n_lipinski_hba = (
-        n_lipinski_hba
-        if n_lipinski_hba is not None
-        else dm.descriptors.n_lipinski_hba(mol)
-    )
+    n_lipinski_hbd = n_lipinski_hbd if n_lipinski_hbd is not None else dm.descriptors.n_lipinski_hbd(mol)
+    n_lipinski_hba = n_lipinski_hba if n_lipinski_hba is not None else dm.descriptors.n_lipinski_hba(mol)
     return mw <= 500 and clogp <= 5 and n_lipinski_hbd <= 5 and n_lipinski_hba <= 10
 
 
@@ -57,7 +49,7 @@ def rule_of_five_beyond(
     n_hba: Optional[float] = None,
     tpsa: Optional[float] = None,
     n_rotatable_bonds: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """Compute the Beyond rule-of-5 rule for a molecule. This rule illustrates the potential of compounds far beyond rule of 5 space to
     modulate novel and difficult target classes that have large, flat, and groove-shaped binding sites and has been described in:
@@ -89,9 +81,7 @@ def rule_of_five_beyond(
     n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
     tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     return (
         mw <= 1000
@@ -113,7 +103,7 @@ def rule_of_zinc(
     n_rotatable_bonds: Optional[int] = None,
     n_rings: Optional[int] = None,
     charge: Optional[float] = None,
-    **kwargs
+    **kwargs,
 ):
     """Compute the Zinc rule for a molecule. This rule is a rule of thumb to evaluate the druglikeness of a chemical compounds, based on:
 
@@ -142,9 +132,7 @@ def rule_of_zinc(
     n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
     tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
     n_rigid_bonds = dm.descriptors.n_rigid_bonds(mol)
@@ -183,7 +171,7 @@ def rule_of_leadlike_soft(
     n_rings: Optional[int] = None,
     n_hetero_atoms: Optional[int] = None,
     charge: Optional[float] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Compute the Lead-Like Soft rule available in FAF-Drugs4.
@@ -216,16 +204,10 @@ def rule_of_leadlike_soft(
     n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
     tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
-    n_hetero_atoms = (
-        n_hetero_atoms
-        if n_hetero_atoms is not None
-        else dm.descriptors.n_hetero_atoms(mol)
-    )
+    n_hetero_atoms = n_hetero_atoms if n_hetero_atoms is not None else dm.descriptors.n_hetero_atoms(mol)
     charge = charge if charge is not None else dm.descriptors.formal_charge(mol)
     num_charged_atom = dm.descriptors.n_charged_atoms(mol)
     n_stereo_center = dm.descriptors.n_stereo_centers(mol)
@@ -267,7 +249,7 @@ def rule_of_druglike_soft(
     n_rings: Optional[int] = None,
     n_hetero_atoms: Optional[int] = None,
     charge: Optional[float] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Compute the DrugLike Soft rule available in FAF-Drugs4.
@@ -300,16 +282,10 @@ def rule_of_druglike_soft(
     n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
     tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
-    n_hetero_atoms = (
-        n_hetero_atoms
-        if n_hetero_atoms is not None
-        else dm.descriptors.n_hetero_atoms(mol)
-    )
+    n_hetero_atoms = n_hetero_atoms if n_hetero_atoms is not None else dm.descriptors.n_hetero_atoms(mol)
     charge = charge if charge is not None else dm.descriptors.formal_charge(mol)
     num_charged_atom = dm.descriptors.n_charged_atoms(mol)
     n_rigid_bonds = dm.descriptors.n_rigid_bonds(mol)
@@ -345,7 +321,7 @@ def rule_of_four(
     clogp: Optional[float] = None,
     n_hba: Optional[float] = None,
     n_rings: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """Compute the rule-of-4 for a molecule. The rule-of-4 define a rule of thumb for PPI inhibitors,
     which are typically larger and more lipophilic than inhibitors of more standard binding sites. It has been published in:
@@ -385,7 +361,7 @@ def rule_of_three(
     n_hba: Optional[float] = None,
     n_hbd: Optional[float] = None,
     n_rotatable_bonds: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """Compute the rule-of-3. The rule-of-three is a rule of thumb for molecular fragments (and not small molecules) published in:
 
@@ -415,13 +391,7 @@ def rule_of_three(
     n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
     n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
     n_rotatable_bonds = dm.descriptors.n_rotatable_bonds(mol)
-    return (
-        mw <= 300
-        and clogp <= 3
-        and n_hbd <= 3
-        and n_hba <= 3
-        and n_rotatable_bonds <= 3
-    )
+    return mw <= 300 and clogp <= 3 and n_hbd <= 3 and n_hba <= 3 and n_rotatable_bonds <= 3
 
 
 def rule_of_three_extended(
@@ -432,7 +402,7 @@ def rule_of_three_extended(
     n_hbd: Optional[float] = None,
     tpsa: Optional[float] = None,
     n_rotatable_bonds: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """Compute the extended rule-of-3. This is an extenion of the rule of three that computes:
 
@@ -475,7 +445,7 @@ def rule_of_two(
     clogp: Optional[float] = None,
     n_hba: Optional[float] = None,
     n_hbd: Optional[float] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Computes rules-of-2 for reagent (building block design). It aims for prioritization of reagents that typically
@@ -515,7 +485,7 @@ def rule_of_ghose(
     mw: Optional[float] = None,
     clogp: Optional[float] = None,
     mr: Optional[float] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Compute the Ghose filter. The Ghose filter is a drug-like filter described in:
@@ -549,10 +519,7 @@ def rule_of_ghose(
 
 
 def rule_of_veber(
-    mol: Union[dm.Mol, str],
-    tpsa: Optional[float] = None,
-    n_rotatable_bonds: Optional[int] = None,
-    **kwargs
+    mol: Union[dm.Mol, str], tpsa: Optional[float] = None, n_rotatable_bonds: Optional[int] = None, **kwargs
 ):
     """
     Compute the Veber filter. The Veber filter is a druglike filter for orally active drugs described in:
@@ -573,9 +540,7 @@ def rule_of_veber(
     if isinstance(mol, str):
         mol = dm.to_mol(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
     return n_rotatable_bonds <= 10 and tpsa <= 140
@@ -590,7 +555,7 @@ def rule_of_reos(
     charge: Optional[int] = None,
     n_rotatable_bonds: Optional[int] = None,
     n_heavy_atoms: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Compute the REOS filter. The REOS filter is a filter designed to filter out unuseful compounds from HTS screening results.
@@ -618,15 +583,9 @@ def rule_of_reos(
     n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
     n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
-    n_heavy_atoms = (
-        n_heavy_atoms
-        if n_heavy_atoms is not None
-        else dm.descriptors.n_heavy_atoms(mol)
-    )
+    n_heavy_atoms = n_heavy_atoms if n_heavy_atoms is not None else dm.descriptors.n_heavy_atoms(mol)
     charge = charge if charge is not None else dm.descriptors.formal_charge(mol)
     return (
         _in_range(mw, 200, 500)
@@ -646,7 +605,7 @@ def rule_of_chemaxon_druglikeness(
     n_hbd: Optional[float] = None,
     n_rotatable_bonds: Optional[int] = None,
     n_rings: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Compute the drug likeness filter according to chemaxon:
@@ -674,27 +633,15 @@ def rule_of_chemaxon_druglikeness(
     n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
     n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
 
-    return (
-        mw < 400
-        and clogp < 5
-        and n_hbd <= 5
-        and n_hba <= 10
-        and n_rotatable_bonds < 5
-        and n_rings > 0
-    )
+    return mw < 400 and clogp < 5 and n_hbd <= 5 and n_hba <= 10 and n_rotatable_bonds < 5 and n_rings > 0
 
 
 def rule_of_egan(
-    mol: Union[dm.Mol, str],
-    clogp: Optional[float] = None,
-    tpsa: Optional[float] = None,
-    **kwargs
+    mol: Union[dm.Mol, str], clogp: Optional[float] = None, tpsa: Optional[float] = None, **kwargs
 ):
     """
     Compute passive intestinal absorption according to Egan Rules as described in:
@@ -724,10 +671,7 @@ def rule_of_egan(
 
 
 def rule_of_pfizer_3_75(
-    mol: Union[dm.Mol, str],
-    clogp: Optional[float] = None,
-    tpsa: Optional[float] = None,
-    **kwargs
+    mol: Union[dm.Mol, str], clogp: Optional[float] = None, tpsa: Optional[float] = None, **kwargs
 ):
     """
     Compute Pfizer Rule(3/75 Rule) for invivo toxicity. It has been described in:
@@ -758,10 +702,7 @@ def rule_of_pfizer_3_75(
 
 
 def rule_of_gsk_4_400(
-    mol: Union[dm.Mol, str],
-    mw: Optional[float] = None,
-    clogp: Optional[float] = None,
-    **kwargs
+    mol: Union[dm.Mol, str], mw: Optional[float] = None, clogp: Optional[float] = None, **kwargs
 ):
     """
     Compute GSK Rule (4/400) for druglikeness using interpretable ADMET rule of thumb based on
@@ -797,7 +738,7 @@ def rule_of_oprea(
     n_hbd: Optional[float] = None,
     n_rotatable_bonds: Optional[int] = None,
     n_rings: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Computes Oprea's rule of drug likeness obtained by comparing drug vs non drug compounds across multiple datasets.
@@ -824,9 +765,7 @@ def rule_of_oprea(
     n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
     n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
 
@@ -845,7 +784,7 @@ def rule_of_xu(
     n_rotatable_bonds: Optional[int] = None,
     n_rings: Optional[int] = None,
     n_heavy_atoms: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Computes Xu's rule of drug likeness as described in:
@@ -874,16 +813,10 @@ def rule_of_xu(
     n_hba = n_hba if n_hba is not None else dm.descriptors.n_hba(mol)
     n_hbd = n_hbd if n_hbd is not None else dm.descriptors.n_hbd(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
-    n_heavy_atoms = (
-        n_heavy_atoms
-        if n_heavy_atoms is not None
-        else dm.descriptors.n_heavy_atoms(mol)
-    )
+    n_heavy_atoms = n_heavy_atoms if n_heavy_atoms is not None else dm.descriptors.n_heavy_atoms(mol)
     return (
         n_hba <= 10
         and n_hbd <= 5
@@ -900,7 +833,7 @@ def rule_of_cns(
     n_hba: Optional[float] = None,
     n_hbd: Optional[float] = None,
     tpsa: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Computes drug likeness rule for CNS penetrant molecules as described in:
@@ -945,7 +878,7 @@ def rule_of_respiratory(
     tpsa: Optional[int] = None,
     n_rotatable_bonds: Optional[int] = None,
     n_rings: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Computes drug likeness rule for Respiratory (nasal/inhalatory) molecules as described in
@@ -976,9 +909,7 @@ def rule_of_respiratory(
     n_hbonds = n_hbd + n_hba
     tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
     n_rings = n_rings if n_rings is not None else dm.descriptors.n_rings(mol)
     return (
@@ -1001,7 +932,7 @@ def rule_of_generative_design(
     n_rotatable_bonds: Optional[int] = None,
     n_hetero_atoms: Optional[int] = None,
     charge: Optional[float] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Compute druglikeness rule of generative design.
@@ -1037,44 +968,24 @@ def rule_of_generative_design(
         return False
     mw = mw if mw is not None else dm.descriptors.mw(mol)
     clogp = clogp if clogp is not None else dm.descriptors.clogp(mol)
-    n_lipinski_hba = (
-        n_lipinski_hba
-        if n_lipinski_hba is not None
-        else dm.descriptors.n_lipinski_hba(mol)
-    )
-    n_lipinski_hbd = (
-        n_lipinski_hbd
-        if n_lipinski_hbd is not None
-        else dm.descriptors.n_lipinski_hbd(mol)
-    )
+    n_lipinski_hba = n_lipinski_hba if n_lipinski_hba is not None else dm.descriptors.n_lipinski_hba(mol)
+    n_lipinski_hbd = n_lipinski_hbd if n_lipinski_hbd is not None else dm.descriptors.n_lipinski_hbd(mol)
     tpsa = tpsa if tpsa is not None else dm.descriptors.tpsa(mol)
     n_rotatable_bonds = (
-        n_rotatable_bonds
-        if n_rotatable_bonds is not None
-        else dm.descriptors.n_rotatable_bonds(mol)
+        n_rotatable_bonds if n_rotatable_bonds is not None else dm.descriptors.n_rotatable_bonds(mol)
     )
-    n_hetero_atoms = (
-        n_hetero_atoms
-        if n_hetero_atoms is not None
-        else dm.descriptors.n_hetero_atoms(mol)
-    )
+    n_hetero_atoms = n_hetero_atoms if n_hetero_atoms is not None else dm.descriptors.n_hetero_atoms(mol)
     # reionize first before computing charge
     with dm.without_rdkit_log():
-        standard_mol = dm.standardize_mol(
-            mol, reionize=True, uncharge=False, stereo=False
-        )
-    charge = (
-        charge if charge is not None else dm.descriptors.formal_charge(standard_mol)
-    )
+        standard_mol = dm.standardize_mol(mol, reionize=True, uncharge=False, stereo=False)
+    charge = charge if charge is not None else dm.descriptors.formal_charge(standard_mol)
     num_charged_atom = dm.descriptors.n_charged_atoms(standard_mol)
     n_rigid_bonds = dm.descriptors.n_rigid_bonds(mol)
     ring_system = dm.compute_ring_system(mol, include_spiro=False)
     max_size_ring = 0 if len(ring_system) == 0 else max([len(x) for x in ring_system])
     n_carbons = len([at for at in mol.GetAtoms() if at.GetSymbol() == "C"])
     n_aromatic_rings = dm.descriptors.n_aromatic_rings(mol)
-    n_fused_aro_rings = n_fused_aromatic_rings(
-        mol, require_all_aromatic=True, pairwise=False
-    )
+    n_fused_aro_rings = n_fused_aromatic_rings(mol, require_all_aromatic=True, pairwise=False)
     n_total_atoms = mol.GetNumAtoms()
     n_heavy_mets = n_heavy_metals(mol)
 
@@ -1108,7 +1019,7 @@ def rule_of_generative_design_strict(
     n_rotatable_bonds: Optional[int] = None,
     n_hetero_atoms: Optional[int] = None,
     charge: Optional[float] = None,
-    **kwargs
+    **kwargs,
 ):
     """
     Compute druglikeness rule of generative design.
@@ -1156,14 +1067,9 @@ def rule_of_generative_design_strict(
         n_rotatable_bonds=n_rotatable_bonds,
         n_hetero_atoms=n_hetero_atoms,
         charge=charge,
-        **kwargs
+        **kwargs,
     )
     n_stereo_center = dm.descriptors.n_stereo_centers(mol)
     has_spider_flagels = has_spider_chains(mol)
     good_fraction_ring_system = fraction_atom_in_scaff(mol) >= 0.25
-    return (
-        generative_rule
-        and good_fraction_ring_system
-        and not has_spider_flagels
-        and n_stereo_center <= 3
-    )
+    return generative_rule and good_fraction_ring_system and not has_spider_flagels and n_stereo_center <= 3

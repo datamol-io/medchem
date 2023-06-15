@@ -51,9 +51,7 @@ def _in_range(x, min_val: float = -float("inf"), max_val: float = float("inf")):
     return min_val <= x <= max_val
 
 
-def n_heavy_metals(
-    mol: dm.Mol, allowed_metals: List[str] = ["Li", "Be", "K", "Na", "Ca", "Mg"]
-):
+def n_heavy_metals(mol: dm.Mol, allowed_metals: List[str] = ["Li", "Be", "K", "Na", "Ca", "Mg"]):
     """Count the number of heavy metals in a molecule
 
     Metal are defined using the M notation in marvinjs. It's quicker to exclude atoms than to list all metals
@@ -112,9 +110,7 @@ def has_spider_chains(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4)
         if side_chains is not None:
             side_chains = list(Chem.GetMolFrags(side_chains, asMols=True))
             side_chains = [dm.to_smiles(x) for x in side_chains]
-            side_chains = [
-                SMARTSUtils.standardize_attachment(x, "[1*]") for x in side_chains
-            ]
+            side_chains = [SMARTSUtils.standardize_attachment(x, "[1*]") for x in side_chains]
             side_chains = [dm.to_mol(x) for x in side_chains]
             flagel_query = "[1*]-,=" + flagel_query
         else:
@@ -128,9 +124,7 @@ def has_spider_chains(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4)
     return sum(matches) >= min_flagel
 
 
-def n_fused_aromatic_rings(
-    mol: dm.Mol, require_all_aromatic: bool = True, pairwise: bool = False
-):
+def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairwise: bool = False):
     """Count the number of fused aromatic rings in a molecule
 
     !!! warning
@@ -173,17 +167,13 @@ def n_fused_aromatic_rings(
         for _, ring_ids in enumerate(ring_map):
             for ring_1, ring_2 in itertools.combinations(ring_ids, 2):
                 if set(simple_rings[ring_1]) & set(simple_rings[ring_2]):
-                    fused_ring = set.union(
-                        set(simple_rings[ring_1]), (simple_rings[ring_2])
-                    )
+                    fused_ring = set.union(set(simple_rings[ring_1]), (simple_rings[ring_2]))
                     fused_rings.append(fused_ring)
     else:
         fused_rings = [r for i, r in enumerate(rings) if len(ring_map[i]) >= 2]
     n_aromatic_fused_rings = 0
     for i, fused_ring_bonds in enumerate(fused_rings):
-        aromatic_system = [
-            mol.GetBondWithIdx(bond_id).GetIsAromatic() for bond_id in fused_ring_bonds
-        ]
+        aromatic_system = [mol.GetBondWithIdx(bond_id).GetIsAromatic() for bond_id in fused_ring_bonds]
         if require_all_aromatic:
             n_aromatic_fused_rings += all(aromatic_system)
         else:

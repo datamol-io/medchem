@@ -43,9 +43,7 @@ def test_fraction_ring_system():
     ]
     mols = [dm.to_mol(x) for x in mols]
     expected_results = [5 / 14, 11 / 23, 20 / 28, 0, 1]  # n_atoms_rings / n_atoms
-    np.testing.assert_allclose(
-        expected_results, [fraction_atom_in_scaff(x) for x in mols]
-    )
+    np.testing.assert_allclose(expected_results, [fraction_atom_in_scaff(x) for x in mols])
 
 
 def test_n_fused_aromatic_rings():
@@ -62,16 +60,10 @@ def test_n_fused_aromatic_rings():
     expected_results_no_all_aro = [0, 1, 1, 2, 2]
     results = [n_fused_aromatic_rings(x) for x in mols]
     results_pairwise = [n_fused_aromatic_rings(x, pairwise=True) for x in mols]
-    results_no_all_aro = [
-        n_fused_aromatic_rings(x, require_all_aromatic=False) for x in mols
-    ]
+    results_no_all_aro = [n_fused_aromatic_rings(x, require_all_aromatic=False) for x in mols]
     assert results == expected_results, "Fail fused aromatic ring test"
-    assert (
-        expected_results_pairwise == results_pairwise
-    ), "Fail pairwise fused aromatic ring test"
-    assert (
-        results_no_all_aro == expected_results_no_all_aro
-    ), "Fail not fully aromatic ring test"
+    assert expected_results_pairwise == results_pairwise, "Fail pairwise fused aromatic ring test"
+    assert results_no_all_aro == expected_results_no_all_aro, "Fail not fully aromatic ring test"
 
 
 def test_n_heavy_metals():
@@ -102,7 +94,6 @@ def test_rule_of_generative_stereo_case():
 
 
 class Test_Rules(ut.TestCase):
-
     data = dm.data.freesolv()
 
     def test_basic_rules(self):

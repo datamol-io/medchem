@@ -26,9 +26,7 @@ def _compute_batch_props(mols):
         "n_lipinski_hba": dm.descriptors.n_lipinski_hba,
         "n_lipinski_hbd": dm.descriptors.n_lipinski_hbd,
     }
-    return dm.descriptors.compute_many_descriptors(
-        mols, properties_fn, add_properties=False
-    )
+    return dm.descriptors.compute_many_descriptors(mols, properties_fn, add_properties=False)
 
 
 class RuleFilters:
@@ -73,9 +71,7 @@ class RuleFilters:
             elif callable(rule_name):
                 rule = rule_name
             else:
-                raise ValueError(
-                    f"Unsupported rule {rule_name} of type {type(rule_name)}!"
-                )
+                raise ValueError(f"Unsupported rule {rule_name} of type {type(rule_name)}!")
             rules.append(rule)
         return rules
 

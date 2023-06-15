@@ -51,7 +51,32 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.com/datamol-io/medchem/main/tutorials/getting-started.html</loc>
+         <loc>https://github.com/datamol-io/medchem/main/tutorials/Chemical_Groups.html</loc>
+         <lastmod>2023-06-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/datamol-io/medchem/main/tutorials/Medchem_Query_Language.html</loc>
+         <lastmod>2023-06-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/datamol-io/medchem/main/tutorials/Medchem_Rules.html</loc>
+         <lastmod>2023-06-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/datamol-io/medchem/main/tutorials/Molecular_Complexity.html</loc>
+         <lastmod>2023-06-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/datamol-io/medchem/main/tutorials/Molecular_Filters.html</loc>
+         <lastmod>2023-06-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/datamol-io/medchem/main/tutorials/old_getting_started.html</loc>
          <lastmod>2023-06-15</lastmod>
          <changefreq>daily</changefreq>
     </url>

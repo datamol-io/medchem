@@ -9,7 +9,7 @@ import pandas as pd
 import datamol as dm
 
 from medchem import catalog
-from medchem.utils.loader import get_data
+from medchem.utils.loader import get_data_path
 
 
 def list_default_chemical_groups(hierachy: bool = False):
@@ -24,7 +24,7 @@ def list_default_chemical_groups(hierachy: bool = False):
     Returns:
         List of chemical groups
     """
-    data = pd.read_csv(get_data("chemical_groups.csv"))
+    data = pd.read_csv(get_data_path("chemical_groups.csv"))
     if hierachy:
         return list(data.hierarchy.unique())
     return list(data.group.unique())
@@ -40,7 +40,7 @@ def list_functional_group_names(exclude_basic: bool = True):
     Returns:
         List of functional group names
     """
-    data = pd.read_csv(get_data("chemical_groups.csv"))
+    data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
     if exclude_basic:
         data = data[~data.hierarchy.str.contains("basic")]
@@ -58,7 +58,7 @@ def _get_functional_group_map(exclude_basic: bool = True):
     Returns:
         List of functional group names
     """
-    data = pd.read_csv(get_data("chemical_groups.csv"))
+    data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
     if exclude_basic:
         data = data[~data.hierarchy.str.contains("basic")]
@@ -102,7 +102,7 @@ class ChemicalGroup:
         self.groups = groups
         self.n_jobs = n_jobs or 0
         if groups_db is None:
-            groups_db = get_data("chemical_groups.csv")
+            groups_db = get_data_path("chemical_groups.csv")
         self.data = pd.read_csv(groups_db)
         if "hierarchy" not in self.data.columns:
             self.data["hierarchy"] = self.data["group"]

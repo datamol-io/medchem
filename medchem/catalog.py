@@ -2,7 +2,6 @@ from typing import List
 from typing import Union
 from typing import Optional
 
-import warnings
 import functools
 
 from loguru import logger
@@ -11,14 +10,9 @@ import pandas as pd
 import numpy as np
 import datamol as dm
 
-with warnings.catch_warnings():
-    # Remove annoying `RuntimeWarnings`:
-    # `<frozen importlib._bootstrap>:219: RuntimeWarning: to-Python converter for boost::shared_ptr<RDKit::FilterCatalogEntry const> already registered; second conversion method ignored.`
-    warnings.simplefilter("ignore")
+from rdkit.Chem import rdfiltercatalog
 
-    from rdkit.Chem import rdfiltercatalog
-
-from medchem.utils import get_data
+from medchem.utils.loader import get_data_path
 
 
 def list_named_catalogs():
@@ -185,7 +179,7 @@ class NamedCatalogs:
         Returns:
             catalog (FilterCatalog): filter catalog
         """
-        rd_filters = pd.read_csv(get_data("common_alert_collection.csv"))
+        rd_filters = pd.read_csv(get_data_path("common_alert_collection.csv"))
         if subset is not None:
             if isinstance(subset, str):
                 subset = [subset]
@@ -326,7 +320,7 @@ class NamedCatalogs:
             This includes all the compounds in the catalog, regardless of severity (FLAG, EXCLUDE, ANNOTATION)
             You likely don't want to use this for blind prioritization
         """
-        nibr_filters = pd.read_csv(get_data("nibr.csv"))
+        nibr_filters = pd.read_csv(get_data_path("nibr.csv"))
         mincount = np.maximum(nibr_filters["mincount"], 1).astype(int)
         labels = nibr_filters.apply(
             lambda x: "{0}||{1}_min({2})||{3}||{4}||{5}".format(
@@ -349,7 +343,7 @@ class NamedCatalogs:
         https://github.com/StructureGenerator/SURGE/blob/main/doc/surge1_0.pdf
 
         """
-        bredt_df = pd.read_csv(get_data("bredt.csv"))
+        bredt_df = pd.read_csv(get_data_path("bredt.csv"))
         return from_smarts(
             bredt_df["smarts"].values,
             bredt_df["labels"].values,
@@ -363,7 +357,7 @@ class NamedCatalogs:
         Args:
             max_severity: maximum severity to consider for graph rules to be acceptable
         """
-        graph_df = pd.read_csv(get_data("graph.csv"))
+        graph_df = pd.read_csv(get_data_path("graph.csv"))
         # only apply rules with severity >= max_severity
         graph_df = graph_df[graph_df["severity"] >= max_severity]
         return from_smarts(
@@ -380,7 +374,7 @@ class NamedCatalogs:
         Args:
             filters: list of tag to filter the catalog on.
         """
-        chemical_groups = pd.read_csv(get_data("chemical_groups.csv"))
+        chemical_groups = pd.read_csv(get_data_path("chemical_groups.csv"))
         # we cannot keep the nan values in the dataframe
         chemical_groups = chemical_groups.dropna(subset=["smarts"])
         if isinstance(filters, str):

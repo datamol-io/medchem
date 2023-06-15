@@ -1,12 +1,13 @@
 from typing import Optional
-from typing import List
-from typing import Union
+
 import functools
+
 import datamol as dm
 import numpy as np
 import pandas as pd
+
 from rdkit.Chem import GraphDescriptors
-from medchem.utils import get_data
+from medchem.utils import get_data_path
 from medchem.complexity import _complexity_calc as calc
 
 
@@ -97,11 +98,13 @@ class ComplexityFilter:
             path: path to the threshold file
         """
         if path is None or path == "zinc_12":
-            path = "complexity/zinc_12_stats.csv"
-            path = get_data(path)
+            path = "zinc_12_stats.csv"
+            path = get_data_path(path, module="medchem.data.complexity")
+
         elif path == "zinc_15_available":
-            path = "complexity/zinc_15_available_stats.csv"
-            path = get_data(path)
+            path = "zinc_15_available_stats.csv"
+            path = get_data_path(path, module="medchem.data.complexity")
+
         data = pd.read_csv(path)
         return data
 

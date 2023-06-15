@@ -147,7 +147,7 @@ class RuleFilters:
     @functools.lru_cache(maxsize=32)
     def list_available_rules(query: Union[str, List[str]] = None):
         """List all the available rules and they properties"""
-        df = pd.read_csv(loader.get_data("medchem_rule_list.csv"))
+        df = pd.read_csv(loader.get_data_path("medchem_rule_list.csv"))
         if query is not None:
             if isinstance(query, (list, tuple)):
                 query = "|".join(query)
@@ -158,7 +158,7 @@ class RuleFilters:
     @functools.lru_cache(maxsize=32)
     def list_available_rules_names(query: Union[str, List[str]] = None):
         """List only the names of the available rules"""
-        df = pd.read_csv(loader.get_data("medchem_rule_list.csv"))
+        df = pd.read_csv(loader.get_data_path("medchem_rule_list.csv"))
         if query is not None:
             if isinstance(query, (list, tuple)):
                 query = "|".join(query)

@@ -13,7 +13,7 @@ from tqdm.auto import tqdm
 from loguru import logger
 from rdkit.Chem import rdchem
 from rdkit.Chem.Descriptors import MolWt, MolLogP, NumHDonors, NumHAcceptors, TPSA
-from medchem.utils import get_data
+from medchem.utils.loader import get_data_path
 from medchem.catalog import NamedCatalogs
 
 
@@ -141,7 +141,7 @@ class AlertFilters:
             alerts_db: Alerts file to use. Default is internal
         """
         if alerts_db is None:
-            alerts_db = get_data(file="common_alert_collection.csv")
+            alerts_db = get_data_path(filename="common_alert_collection.csv")
         self.rule_df = pd.read_csv(alerts_db)
         self.rule_list = []
         if alerts_set is None:
@@ -170,7 +170,7 @@ class AlertFilters:
         """
         Return a list of unique rule set names
         """
-        alerts_db = get_data(file="common_alert_collection.csv")
+        alerts_db = get_data_path(filename="common_alert_collection.csv")
         rule_df = pd.read_csv(alerts_db)
         return (
             rule_df.groupby("rule_set_name")

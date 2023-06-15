@@ -8,11 +8,7 @@ import re
 import shutil
 import subprocess
 import tempfile
-
-try:
-    import importlib.resources as importlib_resources
-except:
-    import importlib_resources
+import importlib.resources as importlib_resources
 
 import pandas as pd
 import datamol as dm

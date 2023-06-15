@@ -3,21 +3,39 @@ from typing import Optional
 
 import os
 import uuid
-import pandas as pd
+import io
 import re
 import shutil
 import subprocess
 import tempfile
+
+try:
+    import importlib.resources as importlib_resources
+except:
+    import importlib_resources
+
+import pandas as pd
 import datamol as dm
 import numpy as np
-from io import StringIO
-from loguru import logger
 
-this_dir, _ = os.path.split(__file__)
-BUILD_DIR = os.path.join(this_dir, "lilly/build")
-QUERY_DIR = os.path.join(this_dir, "data/queries")
-CHARGE_ASSIGN_DIR = os.path.join(this_dir, "data/charge_assigner")
-BIN2PATH = dict((x, os.path.join(BUILD_DIR, x)) for x in os.listdir(BUILD_DIR))
+
+def _find_lilly_binaries():
+    binaries_list = ["mc_first_pass", "tsubstructure", "iwdemerit"]
+    binary_paths = {}
+    for binary_name in binaries_list:
+        binary_path = shutil.which(binary_name)
+
+        if binary_path is None:
+            raise ImportError(
+                "The Lilly binaries required to use the `medchem.demerits` module seems to be missing. Install with `mamba install lilly-medchem-rules`."
+            )
+
+        binary_paths[binary_name] = binary_path
+
+    return binary_paths
+
+
+BIN2PATH = _find_lilly_binaries()
 
 
 def _rreplace(input_str, old, rep, occurrence):
@@ -39,14 +57,10 @@ def _parse_output(rowlist):
             for line in rowlist
         ]
     )
-    flux = StringIO(content)
-    df = pd.read_csv(
-        flux, sep=r"\s+", doublequote=True, names=["_smiles", "ID", "reasons"]
-    )
+    flux = io.StringIO(content)
+    df = pd.read_csv(flux, sep=r"\s+", doublequote=True, names=["_smiles", "ID", "reasons"])
     df["ID"] = pd.to_numeric(df["ID"])
-    df["reasons"] = df["reasons"].apply(
-        lambda x: x.strip("'") if x and isinstance(x, str) else x
-    )
+    df["reasons"] = df["reasons"].apply(lambda x: x.strip("'") if x and isinstance(x, str) else x)
     return df
 
 
@@ -83,10 +97,7 @@ def batch_score(
     n_splits = max(1, int(np.ceil(len(smiles_list) / batch_size)))
     if n_jobs is not None and n_splits > 1:
         smiles_batch_list = np.array_split(smiles_list, n_splits)
-        smiles_batch = [
-            dict(smiles_list=list(smlist), **run_options)
-            for smlist in smiles_batch_list
-        ]
+        smiles_batch = [dict(smiles_list=list(smlist), **run_options) for smlist in smiles_batch_list]
         # EN: cannot run this code in processes or loky mode
         output = dm.parallelized(
             score,
@@ -155,16 +166,8 @@ def score(
     mc_first_pass_options += " -A I -A ipp"
 
     query_files = ["reject1", "reject2", "demerits"]
-    if not os.path.isdir(QUERY_DIR):
-        raise ValueError(
-            "Query dir not found ! Make sure package is properly installed."
-        )
-    for i, qf in enumerate(query_files):
-        if not os.path.isfile(os.path.join(QUERY_DIR, qf)):
-            raise ValueError(
-                f"{qf} not found ! Make sure package is properly installed."
-            )
-        query_files[i] = os.path.join(QUERY_DIR, qf)
+    for i, query_file in enumerate(query_files):
+        query_files[i] = str(importlib_resources.files("medchem.data.queries").joinpath(query_file))
 
     # output file dir
     files_to_be_deleted = []
@@ -187,18 +190,24 @@ def score(
 
     # extra iwdemerit options
     nodemerit = run_options.get("nodemerit", False)
+
     if nodemerit or soft_upper_atom is None:
         soft_upper_atom = hard_upper_atom - 1
+
     if hard_upper_atom < soft_upper_atom:
         hard_upper_atom = soft_upper_atom + 1
+
     if demerit_cutoff:
         extra_iwdemerit_options += f" -f {demerit_cutoff} "
+
     if nodemerit:
         extra_iwdemerit_options += " -r "
+
     if iwd_options:
         extra_iwdemerit_options += " " + iwd_options
-    if os.path.isfile(os.path.join(CHARGE_ASSIGN_DIR, "queries")):
-        extra_iwdemerit_options += " -N F:" + os.path.join(CHARGE_ASSIGN_DIR, "queries")
+
+    charge_assigner_path = str(importlib_resources.files("medchem.data.charge_assigner").joinpath("queries"))
+    extra_iwdemerit_options += " -N F:" + charge_assigner_path
 
     odm = run_options.get("odm", [])
 
@@ -207,14 +216,10 @@ def score(
         with open(query_files[2]) as QRY_IN:
             current_queries = [qry.strip() for qry in QRY_IN]
             current_queries = [
-                qry
-                for qry in current_queries
-                if not any(odm_p.search(qry) for odm_p in odm_patterns)
+                qry for qry in current_queries if not any(odm_p.search(qry) for odm_p in odm_patterns)
             ]
 
-        with tempfile.NamedTemporaryFile(
-            mode="w+t", suffix=".qry", delete=False
-        ) as tmp_file:
+        with tempfile.NamedTemporaryFile(mode="w+t", suffix=".qry", delete=False) as tmp_file:
             tmp_file.write("\n".join(current_queries))
             query_files[2] = tmp_file.name
             files_to_be_deleted.append(tmp_file.name)
@@ -224,9 +229,7 @@ def score(
         mode="w+t", suffix=f"_lilly_{run_id}.smi", delete=False
     ) as smiles_tmp_files:
         smiles_tmp_files.write(
-            "\n".join(
-                [f"{sm.strip().split()[0]}\t{i}" for i, sm in enumerate(smiles_list)]
-            )
+            "\n".join([f"{sm.strip().split()[0]}\t{i}" for i, sm in enumerate(smiles_list)])
         )
         smiles_file = smiles_tmp_files.name
         files_to_be_deleted.append(smiles_file)
@@ -244,32 +247,15 @@ def score(
     out.append(run_cmd(cmd))
     if stop_after_step >= 1:
         cmd = []
-        cmd.extend(
-            (
-                BIN2PATH["tsubstructure"] + " -E autocreate -b -u -i smi -o smi -A D "
-            ).split()
-        )
+        cmd.extend((BIN2PATH["tsubstructure"] + " -E autocreate -b -u -i smi -o smi -A D ").split())
         cmd.extend(("-m " + bad_file_1 + " -m QDT").split())
-        cmd.extend(
-            (
-                f"-n {tsub_out_1} -q F:"
-                + query_files[0]
-                + optional_queries
-                + f" {mc_pass_out}"
-            ).split()
-        )
+        cmd.extend((f"-n {tsub_out_1} -q F:" + query_files[0] + optional_queries + f" {mc_pass_out}").split())
         out.append(run_cmd(cmd))
     if stop_after_step >= 2:
         cmd = []
-        cmd.extend(
-            (
-                BIN2PATH["tsubstructure"] + " -A D -E autocreate -b -u -i smi -o smi "
-            ).split()
-        )
+        cmd.extend((BIN2PATH["tsubstructure"] + " -A D -E autocreate -b -u -i smi -o smi ").split())
         cmd.extend(("-m " + bad_file_2 + " -m QDT").split())
-        cmd.extend(
-            (f"-n {tsub_out_2} -q F:" + query_files[1] + f" {tsub_out_1}").split()
-        )
+        cmd.extend((f"-n {tsub_out_2} -q F:" + query_files[1] + f" {tsub_out_1}").split())
         out.append(run_cmd(cmd))
 
     if stop_after_step >= 3:
@@ -284,9 +270,7 @@ def score(
             ).split()
         )
         cmd.extend(f"-R {bad_file_3}".split())
-        cmd.extend(
-            f"-G {iwd_out} -c smax={soft_upper_atom} -c hmax={hard_upper_atom} {tsub_out_2}".split()
-        )
+        cmd.extend(f"-G {iwd_out} -c smax={soft_upper_atom} -c hmax={hard_upper_atom} {tsub_out_2}".split())
         out.append(run_cmd(cmd))
 
     data_list = []
@@ -311,15 +295,11 @@ def score(
                 else:
                     demerit_string = str(demerit_string[0]).strip()
                     try:
-                        demerit_score = int(
-                            re.match(r"D\(([0-9]+)\)", demerit_string).group(1)
-                        )
+                        demerit_score = int(re.match(r"D\(([0-9]+)\)", demerit_string).group(1))
                     except:
                         pass
                     tmp = demerit_extractor.findall(row)
-                    demerit_string = ",".join(
-                        [":".join(reversed(l.split())) for l in tmp]
-                    )
+                    demerit_string = ",".join([":".join(reversed(l.split())) for l in tmp])
                     in_string += " " + demerit_string
                 parseable.append(in_string)
                 demerit_scores.append(demerit_score)
@@ -332,9 +312,7 @@ def score(
     final_df = pd.concat(data_list).sort_values("ID").reset_index(drop=True)
     # Postprocessing
     final_df["status"] = final_df["rejected"].apply(lambda x: "Exclude" if x else "Ok")
-    final_df.loc[
-        ((final_df.demerit_score > 0) & (~final_df.rejected)), "status"
-    ] = "Flag"
+    final_df.loc[((final_df.demerit_score > 0) & (~final_df.rejected)), "status"] = "Flag"
     # clean
     for to_del in files_to_be_deleted:
         if os.path.isfile(to_del):

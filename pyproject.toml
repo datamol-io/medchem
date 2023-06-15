@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "medchem"
+description = "Medchem: Molecular filtering for drug discovery."
+dynamic = ["version"]
+authors = [
+    { name = "Emmanuel Noutahi", email = "emmanuel@valencediscovery.com" },
+    { name = "Hadrien Mary", email = "hadrien@valencediscovery.com" },
+]
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+# NOTE(hadim): TODO
+dependencies = []
+
+# [project.scripts]
+# medchem = "medchem.cli:run"
+
+[project.urls]
+"Source Code" = "https://github.com/datamol-io/medchem"
+"Bug Tracker" = "https://github.com/datamol-io/medchem/issues"
+Documentation = "https://medchem-docs.datamol.io/"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools_scm]
+fallback_version = "dev"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["medchem", "medchem.*"]
+exclude = []
+namespaces = true
+
+[tool.setuptools.package-data]
+"medchem" = ["./data/**/*"]
+
+[tool.black]
+line-length = 110
+target-version = ['py310', 'py311']
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--verbose --durations=10 -n auto"
+testpaths = ["tests"]
+filterwarnings = []

@@ -1,11 +1,11 @@
 site_name: "medchem"
-site_description: "Makes medicinal chemists redundant... \\s"
-site_url: "https://github.com/valence-platform/medchem"
-repo_url: "https://github.com/valence-platform/medchem"
-repo_name: "valence-platform/medchem"
-copyright: Copyright 2021 Valence
+site_description: "Medchem: Molecular filtering for drug discovery."
+site_url: "https://github.com/datamol-io/medchem"
+repo_url: "https://github.com/datamol-io/medchem"
+repo_name: "datamol-io/medchem"
+copyright: Copyright 2020 - 2023 datamol.io
 
-remote_branch: "privpage"
+remote_branch: "gh-pages"
 use_directory_urls: false
 docs_dir: "docs"
 
@@ -13,7 +13,6 @@ nav:
   - Overview: index.md
   - Tutorials:
       - Getting Started: tutorials/getting-started.ipynb
-
   - API:
       - medchem.alerts: api/medchem.alerts.md
       - medchem.catalog: api/medchem.catalog.md
@@ -24,16 +23,16 @@ nav:
       - medchem.utils: api/medchem.utils.md
       - medchem.query: api/medchem.query.md
       - medchem.complexity: api/medchem.complexity.md
-  - CLI References: cli-references.md
 
 theme:
   name: material
-  custom_dir: docs/_overrides
-  palette:
-    primary: teal
-    accent: red
+  # NOTE(hadim): to customize the material primary and secondary
+  # color check `docs/assets/css/custom.css`.
   features:
+    - navigation.tabs
     - navigation.expand
+  favicon: images/logo.png
+  logo: images/logo.svg
 
 extra_css:
   - _assets/css/custom.css
@@ -46,29 +45,39 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed
   - pymdownx.tasklist
-  - mdx_truly_sane_lists
+  - pymdownx.details
   - mkdocs-click
+  - pymdownx.arithmatex:
+      generic: true
   - toc:
       permalink: true
-      toc_depth: 4
+
+watch:
+  - medchem/
 
 plugins:
   - search
+
   - mkdocstrings:
-      watch:
-        - medchem/
       handlers:
         python:
           setup_commands:
             - import sys
             - sys.path.append("docs")
             - sys.path.append("medchem")
-          selection:
+          options:
             new_path_syntax: yes
-          rendering:
             show_root_heading: yes
             heading_level: 3
-            show_if_no_docstring: true
+            show_source: false
+
   - mkdocs-jupyter:
-      execute: false
-      # kernel_name: python3
+      execute: False
+
+  - mike:
+      version_selector: true
+
+extra:
+  version:
+    # Multi versioning provider for mkdocs-material (used for the JS selector)
+    provider: mike

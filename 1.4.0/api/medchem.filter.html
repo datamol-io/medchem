@@ -1,0 +1,3427 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Medchem: Molecular filtering for drug discovery.">
+      
+      
+      
+        <link rel="canonical" href="https://github.com/datamol-io/medchem/1.4.0/api/medchem.filter.html">
+      
+      
+        <link rel="prev" href="medchem.demerits.html">
+      
+      
+        <link rel="next" href="medchem.groups.html">
+      
+      <link rel="icon" href="../images/logo.png">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+    
+    
+      
+        <title>medchem.filter - medchem</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.26e3688c.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../_assets/css/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#medchemfilter" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="medchem" class="md-header__button md-logo" aria-label="medchem" data-md-component="logo">
+      
+  <img src="../images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            medchem
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              medchem.filter
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/datamol-io/medchem" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    datamol-io/medchem
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../index.html" class="md-tabs__link">
+      Overview
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tutorials/getting-started.html" class="md-tabs__link">
+        Tutorials
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="medchem.alerts.html" class="md-tabs__link md-tabs__link--active">
+        API
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="medchem" class="md-nav__button md-logo" aria-label="medchem" data-md-component="logo">
+      
+  <img src="../images/logo.svg" alt="logo">
+
+    </a>
+    medchem
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/datamol-io/medchem" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    datamol-io/medchem
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/getting-started.html" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="medchem.alerts.html" class="md-nav__link">
+        medchem.alerts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="medchem.catalog.html" class="md-nav__link">
+        medchem.catalog
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="medchem.demerits.html" class="md-nav__link">
+        medchem.demerits
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          medchem.filter
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="medchem.filter.html" class="md-nav__link md-nav__link--active">
+        medchem.filter
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#medchem.filter.lead" class="md-nav__link">
+    lead
+  </a>
+  
+    <nav class="md-nav" aria-label="lead">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.alert_filter" class="md-nav__link">
+    alert_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.bredt_filter" class="md-nav__link">
+    bredt_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.catalog_filter" class="md-nav__link">
+    catalog_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.chemical_group_filter" class="md-nav__link">
+    chemical_group_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.complexity_filter" class="md-nav__link">
+    complexity_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.lilly_demerit_filter" class="md-nav__link">
+    lilly_demerit_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.molecular_graph_filter" class="md-nav__link">
+    molecular_graph_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.protecting_groups_filter" class="md-nav__link">
+    protecting_groups_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.rules_filter" class="md-nav__link">
+    rules_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.screening_filter" class="md-nav__link">
+    screening_filter()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medchem.filter.generic" class="md-nav__link">
+    generic
+  </a>
+  
+    <nav class="md-nav" aria-label="generic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.atom_list_filter" class="md-nav__link">
+    atom_list_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.halogenicity_filter" class="md-nav__link">
+    halogenicity_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.macrocycle_filter" class="md-nav__link">
+    macrocycle_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.num_atom_filter" class="md-nav__link">
+    num_atom_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.num_stereo_center_filter" class="md-nav__link">
+    num_stereo_center_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.ring_infraction_filter" class="md-nav__link">
+    ring_infraction_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.symmetry_filter" class="md-nav__link">
+    symmetry_filter()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="medchem.groups.html" class="md-nav__link">
+        medchem.groups
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="medchem.rules.html" class="md-nav__link">
+        medchem.rules
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="medchem.utils.html" class="md-nav__link">
+        medchem.utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="medchem.query.html" class="md-nav__link">
+        medchem.query
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="medchem.complexity.html" class="md-nav__link">
+        medchem.complexity
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#medchem.filter.lead" class="md-nav__link">
+    lead
+  </a>
+  
+    <nav class="md-nav" aria-label="lead">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.alert_filter" class="md-nav__link">
+    alert_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.bredt_filter" class="md-nav__link">
+    bredt_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.catalog_filter" class="md-nav__link">
+    catalog_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.chemical_group_filter" class="md-nav__link">
+    chemical_group_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.complexity_filter" class="md-nav__link">
+    complexity_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.lilly_demerit_filter" class="md-nav__link">
+    lilly_demerit_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.molecular_graph_filter" class="md-nav__link">
+    molecular_graph_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.protecting_groups_filter" class="md-nav__link">
+    protecting_groups_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.rules_filter" class="md-nav__link">
+    rules_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.lead.screening_filter" class="md-nav__link">
+    screening_filter()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medchem.filter.generic" class="md-nav__link">
+    generic
+  </a>
+  
+    <nav class="md-nav" aria-label="generic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.atom_list_filter" class="md-nav__link">
+    atom_list_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.halogenicity_filter" class="md-nav__link">
+    halogenicity_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.macrocycle_filter" class="md-nav__link">
+    macrocycle_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.num_atom_filter" class="md-nav__link">
+    num_atom_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.num_stereo_center_filter" class="md-nav__link">
+    num_stereo_center_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.ring_infraction_filter" class="md-nav__link">
+    ring_infraction_filter()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.filter.generic.symmetry_filter" class="md-nav__link">
+    symmetry_filter()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="medchemfilter"><code>medchem.filter</code><a class="headerlink" href="#medchemfilter" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="medchem.filter.lead" class="doc doc-heading">
+          <code>medchem.filter.lead</code>
+
+
+<a href="#medchem.filter.lead" class="headerlink" title="Permanent link">&para;</a></h3>
+
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.alert_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">alert_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">alerts</span><span class="p">,</span> <span class="n">alerts_db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">rule_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.alert_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a dataset of molecules, based on common structural alerts and specific rules.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of molecules to filter</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>alerts</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of alert collections to screen for. See AlertFilters.list_default_available_alerts()</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>alerts_db</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[os.<span title="os.PathLike">PathLike</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to the alert file name.
+The internal default file (alerts.csv) will be used if not provided</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Number of cpu to use</p>
+            </div>
+          </td>
+          <td>
+                <code>1</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>rule_dict</code></td>
+          <td>
+                <code><span title="typing.Dict">Dict</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Dictionary with additional rules to apply during the filtering.
+For example, such dictionary for drug-like compounds would look like this:</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>rule_dict
+    {"MW": [0, 500], "LogP": [-0.5, 5], "HBD": [0, 5], "HBA": [0, 10], "TPSA": [0, 150]}</p>
+</blockquote>
+</blockquote>
+</blockquote>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to return the filtered index</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means
+the molecule IS OK (not found in the alert catalog).</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.bredt_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bredt_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;threads&#39;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.bredt_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a list of compounds according to Bredt's rules
+<a href="https://en.wikipedia.org/wiki/Bredt%27s_rule">https://en.wikipedia.org/wiki/Bredt%27s_rule</a></p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;threads&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>batch_size</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>batch size for parallel processing. Note that <code>batch_size</code> should be
+increased if the number of used CPUs gets very large.</p>
+            </div>
+          </td>
+          <td>
+                <code>100</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is not toxic.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.catalog_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">catalog_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">catalogs</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;processes&#39;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.catalog_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a list of compounds according to catalog of structures alerts and patterns</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Sequence">Sequence</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>catalogs</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[<span title="typing.Union">Union</span>[str, <span title="rdkit.Chem.rdfiltercatalog.FilterCatalog">FilterCatalog</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of catalogs (name or FilterCatalog)</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;processes&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>batch_size</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>batch size for parallel processing. Note that <code>batch_size</code> should be
+increased if the number of used CPUs gets very large.</p>
+            </div>
+          </td>
+          <td>
+                <code>100</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is not found in the catalog.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.chemical_group_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">chemical_group_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">chemical_group</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;threads&#39;</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.chemical_group_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a list of compounds according to a chemical group instance.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function will return the list of molecules that DO NOT match the chemical group</p>
+</div>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>chemical_group</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="medchem.groups.ChemicalGroup" href="medchem.groups.html#medchem.groups.ChemicalGroup">ChemicalGroup</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a chemical group instance with the required functional groups to use.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;threads&#39;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule DOES NOT MATCH the groups.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.complexity_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">complexity_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">complexity_metric</span><span class="o">=</span><span class="s1">&#39;bertz&#39;</span><span class="p">,</span> <span class="n">threshold_stats_file</span><span class="o">=</span><span class="s1">&#39;zinc_15_available&#39;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="s1">&#39;99&#39;</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;processes&#39;</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.complexity_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a list of compounds according to a chemical group instance</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>complexity_metric</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>complexity metric to use
+Use <code>ComplexityFilter.list_default_available_filters</code> to list default filters.
+The following complexity metrics are supported by default
+* "bertz": bertz complexity index
+* "sas": synthetic accessibility score  (<code>zinc_15_available</code> only)
+* "qed": qed score  (<code>zinc_15_available</code> only)
+* "clogp": clogp for how greasy a molecule is compared to other in the same mw range  (<code>zinc_15_available</code> only)
+* "whitlock": whitlock complexity index
+* "barone": barone complexity index
+* "smcm": synthetic and molecular complexity
+* "twc":  total walk count complexity  (<code>zinc_15_available</code> only)</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;bertz&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>threshold_stats_file</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>complexity threshold statistic origin to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;zinc_15_available&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>limit</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>complexity outlier percentile to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;99&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;processes&#39;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<details class="also-see" open>
+  <summary>Also see</summary>
+  <p>medchem.complexity.ComplexityFilter</p>
+</details>
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule MATCH the rules.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.lilly_demerit_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">lilly_demerit_filter</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="n">max_demerits</span><span class="o">=</span><span class="mi">160</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.lilly_demerit_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Run Lilly demerit filtering on current list of molecules</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>smiles</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules as smiles preferably</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_demerits</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Cutoff to reject molecules Defaults to 160.</p>
+            </div>
+          </td>
+          <td>
+                <code>160</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return a mask or a list of valid indexes</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>kwargs</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>parameters specific to the <code>demerits.score</code> function</p>
+            </div>
+          </td>
+          <td>
+                <code>{}</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is ok.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.molecular_graph_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">molecular_graph_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">max_severity</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;threads&#39;</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.molecular_graph_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a list of compounds according to unstable molecular graph filter list.</p>
+<p>This list was obtained from observation around The disallowed graphs are:</p>
+<ul>
+<li>K3,3 or K2,4 structure</li>
+<li>Cone of P4 or K4 with 3-ear</li>
+<li>Node in more than one ring of length 3 or 4</li>
+</ul>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_severity</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>maximum acceptable severity (1-10). Default is &lt;5</p>
+            </div>
+          </td>
+          <td>
+                <code>5</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;threads&#39;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is not toxic.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.protecting_groups_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">protecting_groups_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">protecting_groups</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fmoc&#39;</span><span class="p">,</span> <span class="s1">&#39;tert-butoxymethyl&#39;</span><span class="p">,</span> <span class="s1">&#39;tert-butyl carbamate&#39;</span><span class="p">,</span> <span class="s1">&#39;tert-butyloxycarbonyl&#39;</span><span class="p">],</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;threads&#39;</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.protecting_groups_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a list of compounds according to match to  known protecting groups.
+Note that is a syntaxic sugar for calling chemical_group_filter with the protecting groups subset</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>protecting_groups</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>type of protection group to consider if not provided, will use all (not advised)</p>
+            </div>
+          </td>
+          <td>
+                <code>[&#39;fmoc&#39;, &#39;tert-butoxymethyl&#39;, &#39;tert-butyl carbamate&#39;, &#39;tert-butyloxycarbonyl&#39;]</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;threads&#39;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule DOES NOT MATCH the groups.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.rules_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">rules_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;processes&#39;</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.rules_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a list of compounds according to a predefined set of rules</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>rules</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[<span title="typing.List">List</span>[<span title="typing.Any">Any</span>], <a class="autorefs autorefs-internal" title="medchem.rules.RuleFilters" href="medchem.rules.html#medchem.rules.rule_filter.RuleFilters">RuleFilters</a>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of rules to apply to the input molecules.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;processes&#39;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule MATCH the rules.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.lead.screening_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">screening_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_severity</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.lead.screening_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter a set of molecules based on novartis screening deck curation process
+Schuffenhauer, A. et al. Evolution of Novartis' small molecule screening deck design, J. Med. Chem. (2020)
+DOI. <a href="https://dx.doi.org/10.1021/acs.jmedchem.0c01332">https://dx.doi.org/10.1021/acs.jmedchem.0c01332</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The severity argument corresponds to the accumulated severity for a compounds accross all pattern in the
+catalog.</p>
+</div>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_severity</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>maximum severity allowed. Default is &lt;10</p>
+            </div>
+          </td>
+          <td>
+                <code>10</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to return the filtered index</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule
+IS NOT REJECTED (i.e not found in the alert catalog).</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div><hr />
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="medchem.filter.generic" class="doc doc-heading">
+          <code>medchem.filter.generic</code>
+
+
+<a href="#medchem.filter.generic" class="headerlink" title="Permanent link">&para;</a></h3>
+
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.generic.atom_list_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">atom_list_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">unwanted_atom_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wanted_atom_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.generic.atom_list_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find molecule without any atom from a set of unwanted atom symbols
+and with all atoms in the set of desirable atom list</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>unwanted_atom_list</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[<span title="typing.Iterable">Iterable</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of undesirable atom symbol</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>wanted_atom_list</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[<span title="typing.Iterable">Iterable</span>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of desirable atom symbol</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is ok.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.generic.halogenicity_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">halogenicity_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">thresh_F</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">thresh_Br</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">thresh_Cl</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.generic.halogenicity_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find molecule that do not exceed halogen threshold. These thresholds are:</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>thresh_F</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>maximum number of fluorine</p>
+            </div>
+          </td>
+          <td>
+                <code>6</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>thresh_Br</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>maximum number of bromine</p>
+            </div>
+          </td>
+          <td>
+                <code>3</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>thresh_Cl</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>maximum number of chlorine</p>
+            </div>
+          </td>
+          <td>
+                <code>3</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is ok.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.generic.macrocycle_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">macrocycle_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">max_cycle_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.generic.macrocycle_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find molecules that do not infringe the strict maximum cycle size.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_cycle_size</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>strict maximum macrocycle size</p>
+            </div>
+          </td>
+          <td>
+                <code>10</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is ok.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.generic.num_atom_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">num_atom_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">min_atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.generic.num_atom_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find a molecule that match the atom number constraints
+Returning True means the molecule is fine</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>min_atoms</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>strict minimum number of atoms (atoms &gt; min_atoms)</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_atoms</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>strict maximum number of atoms (atoms &lt; max_atoms)</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is ok.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.generic.num_stereo_center_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">num_stereo_center_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">max_stereo_centers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_undefined_stereo_centers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.generic.num_stereo_center_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find a molecule that match the number of stereo center constraints.
+Returning True means the molecule is fine</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_stereo_center</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>strict maximum number of stereo centers (&lt;). Default is 4</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_undefined_stereo_centers</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>strict maximum number of undefined stereo centers (&lt;). Default is 2</p>
+            </div>
+          </td>
+          <td>
+                <code>2</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is ok.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.generic.ring_infraction_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ring_infraction_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">hetcycle_min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.generic.ring_infraction_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find molecules that have a ring infraction filter.
+Returning True means the molecule is fine</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>hetcycle_min_size</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Minimum ring size before more than 1 hetero atom or any non single bond is allowed.
+This is a <em>strict threshold (&gt;)</em></p>
+            </div>
+          </td>
+          <td>
+                <code>4</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is ok.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="medchem.filter.generic.symmetry_filter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">symmetry_filter</span><span class="p">(</span><span class="n">mols</span><span class="p">,</span> <span class="n">symmetry_threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">return_idx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#medchem.filter.generic.symmetry_filter" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find molecules that are not symmetrical, given a symmetry threshold</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>mols</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[<span title="typing.Union">Union</span>[str, <span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of input molecules</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>symmetry_threshold</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>threshold to consider a molecule highly symmetrical</p>
+            </div>
+          </td>
+          <td>
+                <code>0.8</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>return_idx</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to return index or a boolean mask</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_jobs</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[int]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of parallel job to run. Sequential by default</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>progress</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>whether to show progress bar</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scheduler</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joblib scheduler to use</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered_mask</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>boolean array (or index array) where true means the molecule is ok.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2020 - 2023 datamol.io
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.expand"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.b4d07000.min.js"></script>
+      
+    
+  </body>
+</html>

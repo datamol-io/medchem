@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from rdkit.Chem import GraphDescriptors
-from medchem.utils import get_data_path
+from medchem.utils.loader import get_data_path
 from medchem.complexity import _complexity_calc as calc
 
 

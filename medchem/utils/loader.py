@@ -6,7 +6,7 @@ import importlib.resources as importlib_resources
 import fsspec
 
 
-def get_data_path_path(filename: str, module: str = "medchem.data"):
+def get_data_path(filename: str, module: str = "medchem.data"):
     """Return the filepath of a data file."""
 
     path = importlib_resources.files(module).joinpath(filename)

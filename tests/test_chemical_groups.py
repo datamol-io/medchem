@@ -1,7 +1,7 @@
 import unittest as ut
 import datamol as dm
 from medchem.groups import ChemicalGroup
-from medchem.utils import get_data_path
+from medchem.utils.loader import get_data_path
 
 
 class Test_ChemicalGroup(ut.TestCase):

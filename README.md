@@ -48,10 +48,6 @@ You can run tests locally with:
 pytest
 ```
 
-## Changelogs
-
-See the latest changelogs at [CHANGELOGS.md](./CHANGELOGS.md).
-
 ## License
 
 Under the Apache-2.0 license. See [LICENSE.md](LICENSE.md).

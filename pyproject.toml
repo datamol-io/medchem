@@ -77,7 +77,7 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-# source = ["medchem/"]
+source = ["medchem/", "*/site-packages"]
 disable_warnings = ["no-data-collected"]
 data_file = ".coverage/coverage"
 

@@ -18,8 +18,7 @@ from medchem.catalog import NamedCatalogs
 
 
 class NovartisFilters:
-    """
-    Filtering class for building a screening deck following the novartis filtering process
+    """Filtering class for building a screening deck following the novartis filtering process
     published in https://dx.doi.org/10.1021/acs.jmedchem.0c01332.
 
     The output of the filter are explained below:
@@ -122,11 +121,9 @@ class NovartisFilters:
 
 
 class AlertFilters:
-    """
-    Filtering class for building a library based on a list of structural alerts
+    """Filtering class for building a library based on a list of structural alerts
 
     To list the available alerts, use the `list_default_available_alerts` method.
-
     """
 
     def __init__(

@@ -1,6 +1,7 @@
 from typing import List
 from typing import Union
 from typing import Optional
+from typing import Sequence
 
 import functools
 
@@ -10,7 +11,7 @@ import pandas as pd
 import numpy as np
 import datamol as dm
 
-from rdkit.Chem import rdfiltercatalog
+from rdkit.Chem import rdfiltercatalog  # type: ignore
 
 from medchem.utils.loader import get_data_path
 
@@ -50,11 +51,11 @@ def merge_catalogs(*catalogs):
     return parameterized_catalogs
 
 
-def from_smarts(
-    smarts: List[str],
-    labels: Optional[List[str]] = None,
-    mincounts: Optional[List[int]] = None,
-    maxcounts: Optional[List[int]] = None,
+def catalog_from_smarts(
+    smarts: Union[Sequence[str], np.ndarray, pd.Series],
+    labels: Optional[Union[Sequence[str], np.ndarray, pd.Series]] = None,
+    mincounts: Optional[Union[Sequence[int], np.ndarray, pd.Series]] = None,
+    maxcounts: Optional[Union[Sequence[int], np.ndarray, pd.Series]] = None,
     entry_as_inds: bool = False,
 ):
     """Load catalog from a list of smarts
@@ -196,8 +197,8 @@ class NamedCatalogs:
             ),
             axis=1,
         )
-        return from_smarts(
-            rd_filters["smarts"].values,
+        return catalog_from_smarts(
+            rd_filters["smarts"],
             labels,
             mincount,
             entry_as_inds=False,
@@ -333,7 +334,12 @@ class NamedCatalogs:
             ),
             axis=1,
         )
-        return from_smarts(nibr_filters["smarts"].values, labels, mincount, entry_as_inds=False)
+        return catalog_from_smarts(
+            nibr_filters["smarts"],
+            labels,
+            mincount,
+            entry_as_inds=False,
+        )
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
@@ -344,9 +350,9 @@ class NamedCatalogs:
 
         """
         bredt_df = pd.read_csv(get_data_path("bredt.csv"))
-        return from_smarts(
-            bredt_df["smarts"].values,
-            bredt_df["labels"].values,
+        return catalog_from_smarts(
+            bredt_df["smarts"],
+            bredt_df["labels"],
             entry_as_inds=True,
         )
 
@@ -360,9 +366,9 @@ class NamedCatalogs:
         graph_df = pd.read_csv(get_data_path("graph.csv"))
         # only apply rules with severity >= max_severity
         graph_df = graph_df[graph_df["severity"] >= max_severity]
-        return from_smarts(
-            graph_df["smarts"].values,
-            graph_df["labels"].values,
+        return catalog_from_smarts(
+            graph_df["smarts"],
+            graph_df["labels"],
             entry_as_inds=True,
         )
 
@@ -381,8 +387,8 @@ class NamedCatalogs:
             filters = [filters]
             chemical_groups = chemical_groups[chemical_groups.hierarchy.str.contains("|".join(filters))]
 
-        return from_smarts(
-            chemical_groups["smarts"].values,
-            chemical_groups["name"].values,
+        return catalog_from_smarts(
+            chemical_groups["smarts"],
+            chemical_groups["name"],
             entry_as_inds=True,
         )

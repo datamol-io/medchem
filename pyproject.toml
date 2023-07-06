@@ -29,11 +29,19 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-# NOTE(hadim): TODO
-dependencies = []
+dependencies = [
+    "typer",
+    "loguru",
+    "tqdm",
+    "numpy",
+    "lark",
+    "pandas",
+    "networkx",
+    "datamol >=0.10",
+]
 
-# [project.scripts]
-# medchem = "medchem.cli:run"
+[project.scripts]
+medchem = "medchem.cli:app"
 
 [project.urls]
 "Source Code" = "https://github.com/datamol-io/medchem"
@@ -62,6 +70,19 @@ include = '\.pyi?$'
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--verbose --durations=10 -n auto"
+addopts = "--verbose --durations=10 -n auto --cov=medchem --cov-fail-under=85 --cov-report xml --cov-report term"
 testpaths = ["tests"]
-filterwarnings = []
+filterwarnings = [
+    "ignore::DeprecationWarning:jupyter_client.connect.*:",
+]
+
+[tool.coverage.run]
+source = ["medchem/"]
+disable_warnings = ["no-data-collected"]
+data_file = ".coverage/coverage"
+
+[tool.coverage.report]
+omit = ["medchem/__init__.py", "medchem/_version.py"]
+
+[tool.coverage.xml]
+output = "coverage.xml"

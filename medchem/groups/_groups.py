@@ -1,4 +1,3 @@
-from multiprocessing.sharedctypes import Value
 from typing import List
 from typing import Optional
 from typing import Union
@@ -8,11 +7,11 @@ import functools
 import pandas as pd
 import datamol as dm
 
-from medchem import catalog
+from medchem.catalogs import catalog_from_smarts
 from medchem.utils.loader import get_data_path
 
 
-def list_default_chemical_groups(hierachy: bool = False):
+def list_default_chemical_groups(hierarchy: bool = False) -> list:
     """List all the chemical groups available.
     !!! note
         chemical groups defines how a collection of patterns are organized.
@@ -25,43 +24,33 @@ def list_default_chemical_groups(hierachy: bool = False):
         List of chemical groups
     """
     data = pd.read_csv(get_data_path("chemical_groups.csv"))
-    if hierachy:
+    if hierarchy:
         return list(data.hierarchy.unique())
     return list(data.group.unique())
 
 
-def list_functional_group_names(exclude_basic: bool = True):
+def list_functional_group_names() -> list:
     """
     List common functional group names
-
-    Args:
-        exclude_basic: whether to include the basic functional groups
 
     Returns:
         List of functional group names
     """
     data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
-    if exclude_basic:
-        data = data[~data.hierarchy.str.contains("basic")]
     return list(data.name)
 
 
 @functools.lru_cache(maxsize=None)
-def _get_functional_group_map(exclude_basic: bool = True):
+def get_functional_group_map() -> dict:
     """
     List common functional group names
-
-    Args:
-        exclude_basic: whether to include the basic functional groups
 
     Returns:
         List of functional group names
     """
     data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
-    if exclude_basic:
-        data = data[~data.hierarchy.str.contains("basic")]
     return dict(zip(data["name"], data["smarts"]))
 
 
@@ -77,15 +66,14 @@ class ChemicalGroup:
         The SMILES and SMARTS used in the default list of substructures do not result in the same matches.
         Unless specified otherwise, the SMILES will be used in the matching done by this class,
         whereas due to RDKit's limitation, the SMARTS will be used in the matching done by the generated catalog.
-        For more information see this discussion: https://github.com/valence-platform/medchem/pull/19,
 
     """
 
     def __init__(
         self,
-        groups: Union[str, List[str]] = None,
+        groups: Optional[Union[str, List[str]]] = None,
         n_jobs: Optional[int] = None,
-        groups_db: Optional[os.PathLike] = None,
+        groups_db: Optional[Union[os.PathLike, str]] = None,
     ):
         """Build a chemical group library
 
@@ -116,16 +104,20 @@ class ChemicalGroup:
 
     def filter(self, names: List[str], fuzzy: bool = False):
         """Filter the group to restrict to only the name in input
+
         Args:
             names: list of names to use for filters
-            fuzzy: whether to use exact of fuzzy matching
+            fuzzy: whether to use exact or fuzzy matching
         """
         if names is None or len(names) == 0:
             return self
+
         if fuzzy:
-            self.data = self.data[self.data.name.str.contains("|".join(names))]
+            names = [f".*{name}.*" for name in names]
+            self.data = self.data[self.data["name"].str.match(r"|".join(names))]
         else:
-            self.data = self.data[self.data.name.isin(names)]
+            self.data = self.data[self.data["name"].isin(names)]
+
         return self
 
     def _initialize_data(self):
@@ -180,7 +172,7 @@ class ChemicalGroup:
     @functools.lru_cache(maxsize=32)
     def get_catalog(self):
         """Build an rdkit catalog from the current chemical group data"""
-        return catalog.from_smarts(
+        return catalog_from_smarts(
             self.mol_smarts,
             self.name,
             entry_as_inds=False,
@@ -205,6 +197,7 @@ class ChemicalGroup:
         """
         if isinstance(mol, str):
             mol = dm.to_mol(mol)
+
         if mol is None:
             return None
 

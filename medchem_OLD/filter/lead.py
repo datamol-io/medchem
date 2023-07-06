@@ -13,6 +13,7 @@ import datamol as dm
 from functools import partial
 from loguru import logger
 from rdkit.Chem.rdfiltercatalog import FilterCatalog
+
 from medchem import demerits
 from medchem.alerts import AlertFilters
 from medchem.alerts import NovartisFilters
@@ -31,7 +32,7 @@ def alert_filter(
     rule_dict: Dict = None,
     return_idx: bool = False,
 ):
-    r"""Filter a dataset of molecules, based on common structural alerts and specific rules.
+    """Filter a dataset of molecules, based on common structural alerts and specific rules.
 
     Arguments:
         mols: List of molecules to filter

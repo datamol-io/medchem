@@ -19,6 +19,7 @@ def _generic_filter(
     scheduler: Optional[str] = None,
 ):
     """Apply any generic filter to a molecule
+
     Args:
         mols: list of input molecules
         rejection_fn: function to reject a molecule. Return True is the molecule is rejected
@@ -38,6 +39,7 @@ def _generic_filter(
             progress=progress,
             tqdm_kwargs=dict(desc="Macrocyle match", leave=False),
         )
+
     toxic = dm.parallelized(
         rejection_fn,
         mols,
@@ -46,9 +48,11 @@ def _generic_filter(
         progress=progress,
         tqdm_kwargs=dict(desc="Match", leave=False),
     )
+
     filtered_idx = [i for i, bad in enumerate(toxic) if not bad]
     if return_idx:
         return filtered_idx
+
     return np.bitwise_not(toxic)
 
 
@@ -313,7 +317,6 @@ def halogenicity_filter(
 
     Returns:
         filtered_mask: boolean array (or index array) where true means the molecule is ok.
-
     """
     fluorine_smarts = dm.from_smarts("[F]")
     bromine_smarts = dm.from_smarts("[Br]")

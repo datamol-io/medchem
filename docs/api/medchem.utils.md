@@ -4,10 +4,6 @@
 
 ---
 
-::: medchem.utils.matches
-
----
-
 ::: medchem.utils.loader
 
 ---

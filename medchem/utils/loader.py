@@ -1,7 +1,10 @@
 from typing import Optional
+from typing import cast
+from typing import Union
 
 import os
-import importlib.resources as importlib_resources
+import io
+import importlib.resources
 
 import fsspec
 
@@ -9,12 +12,14 @@ import fsspec
 def get_data_path(filename: str, module: str = "medchem.data"):
     """Return the filepath of a data file."""
 
-    path = importlib_resources.files(module).joinpath(filename)
-    path = str(path)
-    return path
+    path = importlib.resources.files(module).joinpath(filename)
+    return str(path)
 
 
-def get_grammar(grammar: Optional[os.PathLike] = None, as_string: bool = False):
+def get_grammar(
+    grammar: Optional[Union[os.PathLike, str]] = None,
+    as_string: bool = False,
+):
     """Return the default lark grammar file for queries
 
     Args:
@@ -22,11 +27,14 @@ def get_grammar(grammar: Optional[os.PathLike] = None, as_string: bool = False):
         as_string: If True, return the grammar as a string. Defaults to False.
     """
     if grammar is None:
-        grammar = importlib_resources.files("medchem.data").joinpath("grammar.lark")
-        grammar = str(grammar)
+        _grammar = importlib.resources.files("medchem.data").joinpath("grammar.lark")
+        _grammar = str(_grammar)
+    else:
+        _grammar = str(grammar)
 
     if as_string:
-        with fsspec.open(grammar, "r") as f:
-            grammar = f.read()
+        with fsspec.open(_grammar, "r") as f:
+            f = cast(io.TextIOBase, f)
+            _grammar = f.read()
 
-    return grammar
+    return _grammar

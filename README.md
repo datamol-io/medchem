@@ -37,7 +37,7 @@ Visit <https://medchem-docs.datamol.io/>.
 micromamba create -n medchem -f env.yml
 micromamba activate medchem
 
-pip install -e .
+pip install --no-deps -e .
 ```
 
 ### Tests

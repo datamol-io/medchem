@@ -2,6 +2,7 @@ from typing import Union
 from typing import Optional
 
 import datamol as dm
+
 from medchem.rules._utils import _in_range
 from medchem.rules._utils import n_fused_aromatic_rings
 from medchem.rules._utils import n_heavy_metals

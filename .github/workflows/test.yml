@@ -47,8 +47,8 @@ jobs:
       - name: Run tests
         run: pytest
 
-      # - name: Test CLI
-        # run: medchem --help
+      - name: Test CLI
+        run: medchem --help
 
       - name: Test building the doc
         run: mkdocs build

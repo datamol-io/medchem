@@ -77,12 +77,9 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-source = ["medchem/"]
+# source = ["medchem/"]
 disable_warnings = ["no-data-collected"]
 data_file = ".coverage/coverage"
-
-[tool.coverage.report]
-omit = ["medchem/__init__.py", "medchem/_version.py"]
 
 [tool.coverage.xml]
 output = "coverage.xml"

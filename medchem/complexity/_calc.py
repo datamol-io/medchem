@@ -1,14 +1,14 @@
-"""
-Complexity filters as implemented in nonpher
-https://github.com/lich-uct/nonpher/blob/master/nonpher/complex_lib.py
-"""
-from rdkit import Chem
 import math
+
+from rdkit.Chem.rdmolops import GetMolFrags
+from rdkit.Chem.rdmolops import FindPotentialStereo
+from rdkit.Chem import FindMolChiralCenters
+
 import datamol as dm
 
 
 def WhitlockCT(
-    mol,
+    mol: dm.Mol,
     ringval: float = 4,
     unsatval: float = 2,
     heteroval: float = 1,
@@ -28,12 +28,17 @@ def WhitlockCT(
         heteroval: The contribution of the heteroatom.
         chiralval: The contribution of the chiral center.
     """
+
     # possibly TODO phenyls and others are considered as protecting group thus could be removed (keyword argument removePhenyl)
     mol = dm.to_mol(mol, add_hs=True)
+
+    if mol is None:
+        raise ValueError("Invalid molecule")
+
     n_bonds = 0
     n_unsat = 0
     n_hetero = 0
-    n_chiral = len(Chem.FindMolChiralCenters(mol, includeUnassigned=True))
+    n_chiral = len(FindMolChiralCenters(mol, includeUnassigned=True))
     n_arom = 0
 
     bonds = mol.GetBonds()
@@ -50,12 +55,14 @@ def WhitlockCT(
             n_bonds += 2
         elif btype == dm.AROMATIC_BOND:
             n_arom += 1
+
     for atom in atoms:
         if atom.GetAtomicNum() != 1 and atom.GetAtomicNum() != 6:
             n_hetero += 1
 
-    n_rings = len(bonds) - len(atoms) + len(Chem.GetMolFrags(mol))
+    n_rings = len(bonds) - len(atoms) + len(GetMolFrags(mol))
     complexity = ringval * n_rings + unsatval * n_unsat + heteroval * n_hetero + chiralval * n_chiral
+
     return complexity
 
 
@@ -93,7 +100,7 @@ def BaroneCT(mol: dm.Mol, chiral: bool = False):
         else:
             cmpx += 3
     if chiral:
-        cmpx += 20 * len(Chem.FindMolChiralCenters(mol, includeUnassigned=True))
+        cmpx += 20 * len(FindMolChiralCenters(mol, includeUnassigned=True))
     return cmpx
 
 
@@ -149,7 +156,7 @@ C        C      1.000     0.500     0.333     0.667
 C        N      0.857     0.429     0.286     0.571
 C        O      0.750     0.375
 C        F      0.667
-C        P      0.400     
+C        P      0.400
 C        S      0.375     0.188               0.250
 C        Cl     0.353
 C        Br     0.171
@@ -247,14 +254,14 @@ def SMCM(mol: dm.Mol):
             b.GetEndAtom().GetAtomicNum(),
         )
 
-    chiral_a = len(Chem.FindPotentialStereo(mol)) * 2
+    chiral_a = len(FindPotentialStereo(mol)) * 2
     mot_score = sum([0] + [len(mol.GetSubstructMatches(patt)) for patt in _SMCM_SMARTSs])
     score = a_score + b_score + chiral_a - mot_score
 
     return round(score, 3)
 
 
-def _AWC(k, atom, table, neighbors):
+def _AWC(k: int, atom: int, table: list, neighbors: list):
     """Compute walk count for atom"""
     if not atom in table[k]:
         table[k][atom] = 0
@@ -263,7 +270,7 @@ def _AWC(k, atom, table, neighbors):
     return table[k][atom]
 
 
-def TWC(mol, log10: bool = True):
+def TWC(mol: dm.Mol, log10: bool = True):
     """
     Compute total walk count in a molecules as proxy for complexity. This score is described in:
     `twc = 1/2 sum(k=1..n-1,sum(i=atoms,awc(k,i)))`
@@ -293,6 +300,6 @@ def TWC(mol, log10: bool = True):
     if log10:
         try:
             return math.log10(twc)
-        except ValueError as e:
+        except ValueError:
             return float("nan")
     return twc

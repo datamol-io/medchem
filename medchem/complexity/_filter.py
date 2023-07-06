@@ -9,13 +9,15 @@ import pandas as pd
 from rdkit.Chem import GraphDescriptors
 
 from medchem.utils.loader import get_data_path
-from medchem.complexity import _complexity_calc as calc
+
+from ._calc import WhitlockCT
+from ._calc import BaroneCT
+from ._calc import SMCM
+from ._calc import TWC
 
 
 class ComplexityFilter:
-    """
-    Complexity filters derived from nonpher:
-    https://github.com/lich-uct/nonpher/blob/master/nonpher/nonpher.py
+    """Complexity filters.
 
     To recover the original complexity score, use `threshold_stats_file = "zinc_12"`.
     The threshold have been re-calculated using the original new zinc-15 and focusing only on
@@ -27,10 +29,10 @@ class ComplexityFilter:
         "sas": dm.descriptors.sas,  # sas score
         "qed": dm.descriptors.qed,  # qed score
         "clogp": dm.descriptors.clogp,  # clogp score
-        "whitlock": calc.WhitlockCT,  # whitlock complexity index
-        "barone": calc.BaroneCT,  # barone complexity index
-        "smcm": calc.SMCM,  # synthetic and molecular complexity
-        "twc": calc.TWC,  # Total walk count complexity
+        "whitlock": WhitlockCT,  # whitlock complexity index
+        "barone": BaroneCT,  # barone complexity index
+        "smcm": SMCM,  # synthetic and molecular complexity
+        "twc": TWC,  # Total walk count complexity
     }
 
     def __init__(
@@ -43,7 +45,7 @@ class ComplexityFilter:
         Default complexity limit is set on at least 1 exceeding metric on the 999th permille level
 
         Args:
-            limit: The complexity percentile outlier limit to be used (should be expressed as an integer)
+            limit: The complexity percentile outlier limit to be used (should be a string expressed as an integer)
             complexity_metric: The complexity filter name to be used.
                 Use `ComplexityFilter.list_default_available_filters` to list default filters.
                 The following complexity metrics are supported by default
@@ -62,17 +64,21 @@ class ComplexityFilter:
 
         """
         self.threshold_df = self.load_threshold_stats_file(threshold_stats_file)
+
         if limit not in self.threshold_df.percentile.unique():
             raise ValueError(f"Invalid value {limit}")
 
         available_filters = set(self.list_default_available_filters()).intersection(self.threshold_df.columns)
+
         if complexity_metric not in available_filters:
             raise ValueError(f"Invalid value {complexity_metric}. Should be one of {available_filters}")
+
         self.limit_index = limit
         self.complexity_metric = complexity_metric
         cur_df = self.threshold_df[self.threshold_df.percentile == self.limit_index]
         self.filter_selection_df = cur_df[[self.complexity_metric, "mw_bins"]].sort_values(
-            "mw_bins", ascending=True
+            "mw_bins",
+            ascending=True,
         )
 
     @classmethod
@@ -118,9 +124,11 @@ class ComplexityFilter:
             mol: input molecule
         """
         mw = dm.descriptors.mw(mol)
-        ind = np.digitize(mw, self.filter_selection_df.mw_bins.values, right=True)
+        ind = np.digitize(mw, self.filter_selection_df.mw_bins.tolist(), right=True)
         fn = ComplexityFilter.COMPLEXITY_FNS[self.complexity_metric]
         threshold = self.filter_selection_df[self.complexity_metric].values[ind]
+
         with dm.without_rdkit_log():
             pred = fn(mol)
+
         return np.isnan(pred) or pred < threshold

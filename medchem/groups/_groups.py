@@ -13,6 +13,7 @@ from medchem.utils.loader import get_data_path
 
 def list_default_chemical_groups(hierarchy: bool = False) -> list:
     """List all the chemical groups available.
+
     !!! note
         chemical groups defines how a collection of patterns are organized.
         They do not correspond to individual pattern name.

@@ -22,6 +22,7 @@ _lazy_imports_mod = {
     "groups": "medchem.groups",
     "catalogs": "medchem.catalogs",
     "constraints": "medchem.constraints",
+    "complexity": "medchem.complexity",
 }
 
 
@@ -58,3 +59,4 @@ if TYPE_CHECKING or os.environ.get("MEDCHEM_DISABLE_LAZY_LOADING", "0") == "1":
     from . import groups
     from . import catalogs
     from . import constraints
+    from . import complexity

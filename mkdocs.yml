@@ -23,6 +23,7 @@ nav:
       - Constraints Filtering: tutorials/Constraints_Filtering.ipynb
   - API:
       - medchem.catalogs: api/medchem.catalogs.md
+      - medchem.complexity: api/medchem.complexity.md
       - medchem.groups: api/medchem.groups.md
       - medchem.constraints: api/medchem.constraints.md
       - medchem.utils: api/medchem.utils.md

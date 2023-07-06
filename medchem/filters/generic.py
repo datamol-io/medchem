@@ -4,10 +4,13 @@ from typing import Callable
 from typing import Union
 
 import itertools
+
 import numpy as np
 import datamol as dm
-from rdkit.Chem import rdMolDescriptors
-from medchem.utils.graph import score_symmetry
+
+from rdkit.Chem import rdMolDescriptors  # type: ignore
+
+from ..utils.graph import score_symmetry
 
 
 def _generic_filter(

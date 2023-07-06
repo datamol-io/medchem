@@ -5,3 +5,4 @@ def test_import():
     import medchem.catalogs
     import medchem.constraints
     import medchem.complexity
+    import medchem.api

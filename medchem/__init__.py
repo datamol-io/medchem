@@ -23,6 +23,8 @@ _lazy_imports_mod = {
     "catalogs": "medchem.catalogs",
     "constraints": "medchem.constraints",
     "complexity": "medchem.complexity",
+    "filters": "medchem.filters",
+    "api": "medchem.api",
 }
 
 
@@ -60,3 +62,5 @@ if TYPE_CHECKING or os.environ.get("MEDCHEM_DISABLE_LAZY_LOADING", "0") == "1":
     from . import catalogs
     from . import constraints
     from . import complexity
+    from . import filters
+    from . import api

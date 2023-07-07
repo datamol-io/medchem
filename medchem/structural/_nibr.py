@@ -1,31 +1,24 @@
-from typing import Iterable
-from typing import List
+from typing import Sequence
 from typing import Optional
 from typing import Union
 
-import os
-import copy
 import functools
+
 import pandas as pd
 import datamol as dm
 
-from tqdm.auto import tqdm
-from loguru import logger
-from rdkit.Chem import rdchem
-from rdkit.Chem.Descriptors import MolWt, MolLogP, NumHDonors, NumHAcceptors, TPSA
-from medchem.utils.loader import get_data_path
-from medchem.catalog import NamedCatalogs
+from medchem.catalogs import NamedCatalogs
 
 
-class NovartisFilters:
+class NIBRFilters:
     """Filtering class for building a screening deck following the novartis filtering process
     published in https://dx.doi.org/10.1021/acs.jmedchem.0c01332.
 
     The output of the filter are explained below:
-    - **status**: one of `["Exclude", "Flag", "Annotations", "Ok"]` (ordered by quality).
-        Generally, you can keep anything without the "Exclude" label, as long as you also apply
+    - **status**: one of `["exclude", "flag", "annotations", "ok"]` (ordered by quality).
+        Generally, you can keep anything without the "exclude" label, as long as you also apply
         a maximum severity score for compounds that collects too many flags.
-    - **covalent**: number of potentially covalent motifs contained in the compound
+    - **n_covalent_motif**: number of potentially covalent motifs contained in the compound
     - **severity**: how severe are the issues with the molecules:
         - `0`: compound has no flags, might have annotations;
         - `1-9`:  number of flags the compound raises;
@@ -34,88 +27,135 @@ class NovartisFilters:
         (e.g peptides, glycosides, fatty acid). In that case, you should review the rejection reasons.
     """
 
+    def __init__(self):
+        self.catalog = NamedCatalogs.nibr()
+
+    def _evaluate(
+        self,
+        mol: Union[str, dm.Mol],
+        keep_details: bool = False,
+    ):
+        """Evaluate one molecule."""
+
+        if isinstance(mol, str):
+            with dm.without_rdkit_log():
+                _mol = dm.to_mol(mol)
+        else:
+            _mol = mol
+
+        if _mol is None:
+            return pd.Series(
+                {
+                    "mol": _mol,
+                    "pass_filter": False,
+                    "reasons": "invalid",
+                    "severity": 0,
+                    "status": "exclude",
+                    "n_covalent_motif": 0,
+                    "special_mol": 0,
+                }
+            )
+
+        # Get the matches
+        entries = self.catalog.GetMatches(_mol)
+
+        if len(entries) == 0:
+            return pd.Series(
+                {
+                    "mol": _mol,
+                    "pass_filter": True,
+                    "reasons": None,
+                    "severity": 0,
+                    "status": "ok",
+                    "n_covalent_motif": 0,
+                    "special_mol": 0,
+                }
+            )
+
+        result = pd.Series()
+        result["mol"] = _mol
+
+        # Iterate over all the matchign entries
+        result_entries = []
+        for entry in entries:
+            pname = entry.GetDescription()
+            _, name, severity, n_covalent_motif, special_mol = pname.split("||")
+
+            result_entry = {}
+            result_entry["name"] = name
+            result_entry["severity"] = int(severity)
+            result_entry["n_covalent_motif"] = int(n_covalent_motif)
+            result_entry["special_mol"] = bool(special_mol)
+            result_entries.append(result_entry)
+
+        result_entries = pd.DataFrame(result_entries)
+
+        # Now build a flat result from the detailed results per entries
+
+        result["reasons"] = "; ".join(result_entries["name"].tolist())
+
+        # severity of 2 means EXCLUDE
+        if 2 in result_entries["severity"].values:
+            result["severity"] = 10
+            result["status"] = "exclude"
+        else:
+            result["severity"] = result_entries["severity"].sum()
+
+            if 1 in result_entries["severity"].values:
+                result["status"] = "flag"
+            elif 0 in result_entries["severity"].values:
+                result["status"] = "annotations"
+
+        # get number of covalent flags and special molecule flags
+        result["n_covalent_motif"] = result_entries["n_covalent_motif"].sum()
+        result["special_mol"] = result_entries["special_mol"].sum()
+
+        if result["status"] == "exclude":
+            result["pass_filter"] = False
+        else:
+            result["pass_filter"] = True
+
+        if keep_details:
+            result["details"] = result_entries.to_dict()
+
+        return result
+
     def __call__(
         self,
-        mols: Iterable[Union[str, rdchem.Mol]],
-        n_jobs: Optional[int] = None,
+        mols: Sequence[Union[str, dm.Mol]],
+        n_jobs: Optional[int] = -1,
         progress: bool = False,
+        progress_leave: bool = False,
+        scheduler: str = "auto",
+        keep_details: bool = False,
     ):
         """Run alert evaluation on this list of molecule and return the full dataframe
 
         Args:
-            mols: input list of molecules
-            n_jobs: number of jobs
-            progress: whether to show progress or not
+            mols: list of input molecule object.
+            n_jobs: number of jobs to run in parallel.
+            progress: whether to show progress or not.
+            progress_leave: whether to leave the progress bar or not.
+            scheduler: which scheduler to use. If "auto", will use "processes" if `len(mols) > 500` else "threads".
         """
 
-        catalog = NamedCatalogs.nibr()
-        if n_jobs is not None:
-            if isinstance(mols[0], str):
-                mols = dm.parallelized(dm.to_mol, mols, n_jobs=n_jobs, progress=progress)
-            matches = dm.parallelized(
-                catalog.GetMatches,
-                mols,
-                n_jobs=n_jobs,
-                progress=progress,
-                scheduler="threads",
-            )
-        else:
-            mols = [dm.to_mol(x) if isinstance(x, str) else x for x in mols]
-            iter_mols = mols
-            if progress:
-                iter_mols = tqdm(mols)
-            matches = [catalog.GetMatches(mol) for mol in iter_mols]
+        if scheduler == "auto":
+            if len(mols) > 500:
+                scheduler = "processes"  # pragma: no cover
+            else:
+                scheduler = "threads"
 
-        results = []
-        for i, (mol, entries) in enumerate(zip(mols, matches)):
-            status = "Ok"
-            smiles = None
-            reasons = None
-            co = None
-            sm = None
-            sc = 0
-            try:
-                smiles = dm.to_smiles(mol)
-                if len(list(entries)):
-                    # initialize empty lists
-                    names, severity, covalent, special_mol = ([] for _ in range(4))
-                    # get the matches
-                    for entry in entries:
-                        pname = entry.GetDescription()
-                        _, name, sev, cov, m = pname.split("||")
-                        names.append(name)
-                        severity.append(int(sev))
-                        covalent.append(int(cov))
-                        special_mol.append(int(m))
-                    # concatenate all matching filters
-                    reasons = "; ".join(names)
-                    # severity of 2 means EXCLUDE
-                    if severity.count(2):
-                        sc = 10
-                        status = "Exclude"
-                    else:
-                        sc = sum(severity)
-                        if severity.count(1):
-                            status = "Flag"
-                        elif severity.count(0):
-                            status = "Annotations"
-                    # get number of covalent flags and special molecule flags
-                    co = sum(covalent)
-                    sm = sum(special_mol)
-            except Exception as e:
-                logger.warning(f"Fail on molecule at index {i}")
-
-            results.append([smiles, status, reasons, sc, co, sm])
-        df = pd.DataFrame(
-            results,
-            columns=[
-                "_smiles",
-                "status",
-                "reasons",
-                "severity",
-                "covalent",
-                "special_mol",
-            ],
+        results = dm.parallelized(
+            functools.partial(self._evaluate, keep_details=keep_details),
+            mols,
+            progress=progress,
+            n_jobs=n_jobs,
+            scheduler=scheduler,
+            tqdm_kwargs=dict(
+                desc="NIBR filtering",
+                leave=progress_leave,
+            ),
         )
-        return df
+        results = pd.DataFrame(results)
 
+        return results

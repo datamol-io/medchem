@@ -93,7 +93,7 @@ class CommonAlertsFilters:
 
         return rule_list
 
-    def evaluate(self, mol: Union[str, dm.Mol]):
+    def _evaluate(self, mol: Union[str, dm.Mol]):
         """
         Evaluate structure alerts on a molecule
 
@@ -164,7 +164,7 @@ class CommonAlertsFilters:
                 scheduler = "threads"
 
         results = dm.parallelized(
-            self.evaluate,
+            self._evaluate,
             mols,
             progress=progress,
             n_jobs=n_jobs,

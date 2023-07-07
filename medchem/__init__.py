@@ -24,6 +24,7 @@ _lazy_imports_mod = {
     "constraints": "medchem.constraints",
     "complexity": "medchem.complexity",
     "rules": "medchem.rules",
+    "structural": "medchem.structural",
 }
 
 
@@ -62,3 +63,4 @@ if TYPE_CHECKING or os.environ.get("MEDCHEM_DISABLE_LAZY_LOADING", "0") == "1":
     from . import constraints
     from . import complexity
     from . import rules
+    from . import structural

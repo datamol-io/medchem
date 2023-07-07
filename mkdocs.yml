@@ -16,6 +16,7 @@ nav:
   - Overview: index.md
   - Tutorials:
       - Medchem Rules: tutorials/Medchem_Rules.ipynb
+      - Structural Filters: tutorials/Structural_Filters.ipynb
       - Catalogs: tutorials/Catalogs.ipynb
       - Chemical Groups: tutorials/Chemical_Groups.ipynb
       - Medchem Query Language: tutorials/Medchem_Query_Language.ipynb
@@ -23,6 +24,7 @@ nav:
       - Constraints Filtering: tutorials/Constraints_Filtering.ipynb
   - API:
       - medchem.rules: api/medchem.rules.md
+      - medchem.structural: api/medchem.structural.md
       - medchem.catalogs: api/medchem.catalogs.md
       - medchem.complexity: api/medchem.complexity.md
       - medchem.groups: api/medchem.groups.md

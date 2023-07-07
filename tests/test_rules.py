@@ -162,9 +162,9 @@ def test_rule_filters_invalid():
     rfilter = mc.rules.RuleFilters(rule_list=["rule_of_five"])
 
     with pytest.raises(ValueError):
-        rfilter(mols=[None, "CCCCO"], fail_on_error=True)
+        rfilter(mols=[None, "CCCCO"], fail_if_invalid=True)
 
-    results = rfilter(mols=[None, "CCCCO"], fail_on_error=False)
+    results = rfilter(mols=[None, "CCCCO"], fail_if_invalid=False)
     assert results["mol"].isnull().sum() == 1
 
     assert pd.isna(results.iloc[0]["pass_all"])

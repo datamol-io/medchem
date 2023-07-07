@@ -4,7 +4,6 @@ from typing import Optional
 from typing import List
 from typing import Sequence
 from typing import Dict
-from typing import Tuple
 
 import functools
 
@@ -107,7 +106,7 @@ class RuleFilters:
         progress_leave: bool = False,
         scheduler: str = "auto",
         keep_props: bool = False,
-        fail_on_error: bool = True,
+        fail_if_invalid: bool = True,
     ) -> pd.DataFrame:
         """Compute the rules for a list of molecules
 
@@ -115,9 +114,10 @@ class RuleFilters:
             mols: list of input molecule object.
             n_jobs: number of jobs to run in parallel.
             progress: whether to show progress or not.
+            progress_leave: whether to leave the progress bar or not.
             scheduler: which scheduler to use. If "auto", will use "processes" if `len(mols) > 500` else "threads".
             keep_props: whether to keep the properties columns computed by the rules.
-            fail_on_error: whether to fail if a rule fails or not.
+            fail_if_invalid: whether to fail if a rule fails or not.
 
         Returns:
             df: Dataframe where each row is a molecule and each column is a the outcomes of applying self.rules[column].
@@ -135,7 +135,7 @@ class RuleFilters:
                 mol = dm.to_mol(mol)
 
             if mol is None:
-                if fail_on_error:
+                if fail_if_invalid:
                     raise ValueError("Molecule is None")
                 else:
                     return pd.Series()

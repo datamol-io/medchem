@@ -4,11 +4,13 @@ from typing import Union
 
 import os
 import io
+import functools
 import importlib.resources
 
 import fsspec
 
 
+@functools.lru_cache(maxsize=10)
 def get_data_path(filename: str, module: str = "medchem.data"):
     """Return the filepath of a data file."""
 

@@ -180,7 +180,7 @@ class NamedCatalogs:
         Returns:
             catalog (FilterCatalog): filter catalog
         """
-        rd_filters = pd.read_csv(get_data_path("common_alert_collection.csv"))
+        rd_filters = pd.read_csv(get_data_path("common_alerts_collection.csv"))
         if subset is not None:
             if isinstance(subset, str):
                 subset = [subset]

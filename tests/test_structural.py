@@ -1,5 +1,9 @@
+import pytest
+
 import medchem as mc
 import datamol as dm
+
+from medchem.structural.demerits import DemeritsFilters
 
 
 def test_common_alerts():
@@ -79,3 +83,63 @@ def test_nibr_invalid():
         "special_mol",
         "pass_filter",
     }
+
+
+def test_demerits():
+    dfilters = DemeritsFilters()
+
+    data = dm.data.solubility()
+    data = data.sample(50, random_state=20)
+
+    results = dfilters(mols=data["mol"].tolist())
+
+    assert results["pass_filter"].sum() == 30
+    assert set(results.columns.tolist()) == {
+        "smiles",
+        "reasons",
+        "step",
+        "demerit_score",
+        "status",
+        "pass_filter",
+        "mol",
+    }
+
+
+def test_demerits_config():
+    test_config = {
+        "output": "test",
+        "min_atoms": 7,
+        "soft_max_atoms": 30,
+        "hard_max_atoms": 50,
+        "smarts": [],
+        "nodemerit": False,
+        "dthresh": 160,
+        "odm": [],
+        "okiso": False,
+        "noapdm": False,
+    }
+
+    dfilters = DemeritsFilters(**test_config)
+
+    data = dm.data.solubility()
+    data = data.sample(50, random_state=20)
+
+    results = dfilters(mols=data["mol"].tolist())
+
+    assert results["pass_filter"].sum() == 30
+    assert set(results.columns.tolist()) == {
+        "smiles",
+        "reasons",
+        "step",
+        "demerit_score",
+        "status",
+        "pass_filter",
+        "mol",
+    }
+
+
+def test_demerits_invalid():
+    dfilters = DemeritsFilters()
+
+    with pytest.raises(ValueError):
+        dfilters(mols=[None, "CC9888", "CCCCO"])

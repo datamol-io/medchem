@@ -1,3 +1,3 @@
 # `medchem.structural`
 
-::: medchem.structural.CommonAlerts
+::: medchem.structural.CommonAlertsFilters

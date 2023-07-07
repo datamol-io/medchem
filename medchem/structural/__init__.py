@@ -1,1 +1,1 @@
-from ._common import CommonAlerts
+from ._common import CommonAlertsFilters

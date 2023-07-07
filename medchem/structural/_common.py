@@ -14,7 +14,7 @@ from loguru import logger
 from medchem.utils.loader import get_data_path
 
 
-class CommonAlerts:
+class CommonAlertsFilters:
     """Filtering class for building a library based on a list of structural alerts
 
     To list the available alerts, use the `list_default_available_alerts` method.

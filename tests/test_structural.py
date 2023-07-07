@@ -3,7 +3,7 @@ import datamol as dm
 
 
 def test_common_alerts():
-    alerts = mc.structural.CommonAlerts()
+    alerts = mc.structural.CommonAlertsFilters()
 
     data = dm.data.solubility()
     data = data.iloc[:50]
@@ -27,7 +27,7 @@ def test_common_alerts():
 
 
 def test_common_alerts_invalid():
-    alerts = mc.structural.CommonAlerts()
+    alerts = mc.structural.CommonAlertsFilters()
 
     results = alerts(mols=[None, "CC9888", "CCCCO"])
 
@@ -37,5 +37,5 @@ def test_common_alerts_invalid():
 
 
 def test_common_alerts_list():
-    l = mc.structural.CommonAlerts.list_default_available_alerts()
+    l = mc.structural.CommonAlertsFilters.list_default_available_alerts()
     assert l.columns.tolist() == ["rule_set_name", "smarts", "catalog_description", "rule_set", "source"]

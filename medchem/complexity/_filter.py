@@ -1,4 +1,5 @@
 from typing import Optional
+from typing import Union
 
 import functools
 
@@ -114,7 +115,7 @@ class ComplexityFilter:
         data = pd.read_csv(path)
         return data
 
-    def __call__(self, mol: dm.Mol):
+    def __call__(self, mol: Union[dm.Mol, str]):
         """
         Check whether the input structure is too complex given this instance of the complexity filter
         Return False is the molecule is too complex, else True
@@ -122,8 +123,13 @@ class ComplexityFilter:
         Args:
             mol: input molecule
         """
+
+        if isinstance(mol, str):
+            mol = dm.to_mol(mol)
+
         mw = dm.descriptors.mw(mol)
         ind = np.digitize(mw, self.filter_selection_df["mw_bins"], right=True)
+
         fn = ComplexityFilter.COMPLEXITY_FNS[self.complexity_metric]
         threshold = self.filter_selection_df[self.complexity_metric].values[ind]
 

@@ -30,6 +30,7 @@ nav:
       - medchem.complexity: api/medchem.complexity.md
       - medchem.groups: api/medchem.groups.md
       - medchem.constraints: api/medchem.constraints.md
+      - medchem.functional: api/medchem.functional.md
       - medchem.utils: api/medchem.utils.md
 
 theme:

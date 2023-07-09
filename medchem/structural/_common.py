@@ -35,7 +35,7 @@ class CommonAlertsFilters:
             alerts_db_path = get_data_path(filename="common_alerts_collection.csv")
 
         if alerts_set is None:
-            alerts_set = ["BMS", "Dundee", "Glaxo"]
+            alerts_set = ["BMS"]
         elif isinstance(alerts_set, str):
             alerts_set = [alerts_set]
 

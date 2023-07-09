@@ -5,7 +5,6 @@ import datamol as dm
 
 from rdkit.Chem.rdmolops import ReplaceCore
 from rdkit.Chem.rdmolops import GetMolFrags
-
 from rdkit.Chem.Scaffolds import MurckoScaffold
 
 from loguru import logger

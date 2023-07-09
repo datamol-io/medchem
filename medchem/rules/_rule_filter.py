@@ -69,6 +69,10 @@ class RuleFilters:
         else:
             _rule_list_names = rule_list_names
 
+            # If rule_list_names is provided, we check whether the list is unique
+            if len(set(_rule_list_names)) != len(_rule_list_names):
+                raise ValueError("rule_list_names must be unique")
+
         rules = {}
         for rule_name, rule_fn in zip(_rule_list_names, rule_list):
             if isinstance(rule_fn, str):
@@ -156,7 +160,9 @@ class RuleFilters:
             datum["pass_all"] = True
             datum["pass_any"] = False
             for rule_name, rule_fn in self.rules.items():
-                datum[rule_name] = rule_fn(mol)
+                # Do the computation
+                datum[rule_name] = rule_fn(mol, **props)
+
                 datum["pass_all"] &= datum[rule_name]
                 datum["pass_any"] |= datum[rule_name]
 

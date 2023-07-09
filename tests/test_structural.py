@@ -9,22 +9,21 @@ from medchem.structural.demerits import DemeritsFilters
 def test_common_alerts():
     alerts = mc.structural.CommonAlertsFilters()
 
-    data = dm.data.solubility()
+    data = dm.data.freesolv()
     data = data.iloc[:50]
+
+    data["mol"] = data["smiles"].apply(dm.to_mol)
 
     results = alerts(mols=data["mol"].tolist(), n_jobs=-1, scheduler="auto")
 
-    assert results["pass_filter"].sum() == 29
+    assert results["pass_filter"].sum() == 44
     assert results["reasons"].unique().tolist() == [
         None,
-        "Aliphatic long chain",
-        "isolated alkene",
-        "Aliphatic long chain;isolated alkene",
-        "I1 Aliphatic methylene chains 7 or more long;Aliphatic long chain;isolated alkene",
-        "polyene",
-        "triple bond",
-        "Aliphatic long chain;triple bond",
-        "I1 Aliphatic methylene chains 7 or more long;Aliphatic long chain;triple bond",
+        "halogen_heteroatom;sulfonyl_halide",
+        "primary_halide_sulfate",
+        "non_ring_CH2O_acetal;phosphorus_sulfur_bond",
+        "aldehyde",
+        "gte_10_carbon_sb_chain;gte_8_CF2_or_CH2",
     ]
 
     assert set(results.columns.tolist()) == {"mol", "pass_filter", "status", "reasons"}

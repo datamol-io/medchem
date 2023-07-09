@@ -12,13 +12,6 @@
 
 Medchem is a Python library that proposes multiple molecular medchem filters to a wide range of use cases relevant in a drug discovery context.
 
-- ✅ xxxx
-- 🐍 xxxx
-- ⚗️ xxxx
-- 🧠 xxxx
-- ⮔ xxxx
-- 🔌 xxxx
-
 ## Installation
 
 ```bash

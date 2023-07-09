@@ -116,7 +116,7 @@ class NIBRFilters:
             result["pass_filter"] = True
 
         if keep_details:
-            result["details"] = result_entries.to_dict()
+            result["details"] = result_entries.to_dict(orient="records")
 
         return result
 
@@ -137,6 +137,7 @@ class NIBRFilters:
             progress: whether to show progress or not.
             progress_leave: whether to leave the progress bar or not.
             scheduler: which scheduler to use. If "auto", will use "processes" if `len(mols) > 500` else "threads".
+            keep_details: whether to keep the details of the evaluation or not.
         """
 
         if scheduler == "auto":

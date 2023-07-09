@@ -93,7 +93,11 @@ class CommonAlertsFilters:
 
         return rule_list
 
-    def _evaluate(self, mol: Union[str, dm.Mol]):
+    def _evaluate(
+        self,
+        mol: Union[str, dm.Mol],
+        keep_details: bool = False,
+    ):
         """
         Evaluate structure alerts on a molecule
 
@@ -117,7 +121,8 @@ class CommonAlertsFilters:
             )
 
         # Match the molecule against the alerts
-        n_matches = self.alerts_df["smarts_mol"].apply(lambda x: len(_mol.GetSubstructMatches(x)))
+        matches = self.alerts_df["smarts_mol"].apply(lambda x: _mol.GetSubstructMatches(x))
+        n_matches = matches.apply(len)
         has_alert = n_matches > 0
 
         # Prepare the result
@@ -137,6 +142,12 @@ class CommonAlertsFilters:
             result["status"] = "ok"
             result["reasons"] = None
 
+        if keep_details:
+            details = self.alerts_df[has_alert].copy()
+            details = details.drop(columns=["smarts_mol"])
+            details["matches"] = matches[has_alert].tolist()
+            result["details"] = details.to_dict(orient="records")
+
         return result
 
     def __call__(
@@ -146,6 +157,7 @@ class CommonAlertsFilters:
         progress: bool = False,
         progress_leave: bool = False,
         scheduler: str = "auto",
+        keep_details: bool = False,
     ):
         """Run alert evaluation on this list of molecule and return the full dataframe
 
@@ -155,6 +167,7 @@ class CommonAlertsFilters:
             progress: whether to show progress or not.
             progress_leave: whether to leave the progress bar or not.
             scheduler: which scheduler to use. If "auto", will use "processes" if `len(mols) > 500` else "threads".
+            keep_details: whether to keep the details of the evaluation or not.
         """
 
         if scheduler == "auto":
@@ -164,13 +177,13 @@ class CommonAlertsFilters:
                 scheduler = "threads"
 
         results = dm.parallelized(
-            self._evaluate,
+            functools.partial(self._evaluate, keep_details=keep_details),
             mols,
             progress=progress,
             n_jobs=n_jobs,
             scheduler=scheduler,
             tqdm_kwargs=dict(
-                desc="Filter by alerts",
+                desc="Common alerts filtering",
                 leave=progress_leave,
             ),
         )

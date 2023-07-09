@@ -2,4 +2,4 @@
 
 ::: medchem.structural.CommonAlertsFilters
 ::: medchem.structural.NIBRFilters
-::: medchem.structural.demerits.LillyDemeritsFilters
+::: medchem.structural.lilly_demerits.LillyDemeritsFilters

@@ -3,7 +3,7 @@ import pytest
 import medchem as mc
 import datamol as dm
 
-from medchem.structural.demerits import LillyDemeritsFilters
+from medchem.structural.lilly_demerits import LillyDemeritsFilters
 
 
 def test_common_alerts():
@@ -14,7 +14,7 @@ def test_common_alerts():
 
     data["mol"] = data["smiles"].apply(dm.to_mol)
 
-    results = alerts(mols=data["mol"].tolist(), n_jobs=-1, scheduler="auto")
+    results = alerts(mols=data["mol"].tolist(), n_jobs=-1, scheduler="auto", keep_details=True)
 
     assert results["pass_filter"].sum() == 44
     assert results["reasons"].unique().tolist() == [
@@ -26,7 +26,7 @@ def test_common_alerts():
         "gte_10_carbon_sb_chain;gte_8_CF2_or_CH2",
     ]
 
-    assert set(results.columns.tolist()) == {"mol", "pass_filter", "status", "reasons"}
+    assert set(results.columns.tolist()) == {"mol", "pass_filter", "status", "reasons", "details"}
 
 
 def test_common_alerts_invalid():
@@ -84,7 +84,7 @@ def test_nibr_invalid():
     }
 
 
-def test_demerits():
+def test_lilly_demerits():
     dfilters = LillyDemeritsFilters()
 
     data = dm.data.solubility()
@@ -104,7 +104,7 @@ def test_demerits():
     }
 
 
-def test_demerits_config():
+def test_lilly_demerits_config():
     test_config = {
         "output": "test",
         "min_atoms": 7,

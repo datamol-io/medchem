@@ -339,7 +339,7 @@ class EvaluableQuery:
         self.query_nodes = [_NodeEvaluator(x) for x in self.FN_PATTERN.split(parsed_query)]
         self.verbose = verbose
 
-    def __call__(self, mol: Union[dm.Mol, str], exec: bool = True):
+    def __call__(self, mol: Union[dm.Mol, str], exec: bool = True) -> str:
         """Evaluate a query on an input molecule
 
         Args:
@@ -348,7 +348,6 @@ class EvaluableQuery:
 
         Returns:
             query string or boolean value corresponding to the query result
-
         """
         query_eval = " ".join([f"{node(mol)}" for node in self.query_nodes])
         if self.verbose:

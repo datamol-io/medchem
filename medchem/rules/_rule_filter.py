@@ -4,6 +4,7 @@ from typing import Optional
 from typing import List
 from typing import Sequence
 from typing import Dict
+from typing import cast
 
 import functools
 
@@ -12,6 +13,7 @@ import datamol as dm
 
 from medchem.utils import loader
 
+from ..utils.func import get_function_name
 from . import basic_rules
 
 
@@ -71,6 +73,7 @@ class RuleFilters:
         for rule_name, rule_fn in zip(_rule_list_names, rule_list):
             if isinstance(rule_fn, str):
                 rule = getattr(basic_rules, rule_fn, None)
+
                 if rule is None:
                     raise ValueError(f"Rule {rule_fn} not found")
 
@@ -84,7 +87,7 @@ class RuleFilters:
                 if isinstance(rule_fn, str):
                     rule_name = rule_fn
                 else:
-                    rule_name = rule.__name__
+                    rule_name = get_function_name(rule_fn)
 
             rules[rule_name] = rule
 

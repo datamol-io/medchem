@@ -124,7 +124,7 @@ class ComplexityFilter:
             mol: input molecule
         """
         mw = dm.descriptors.mw(mol)
-        ind = np.digitize(mw, self.filter_selection_df.mw_bins.tolist(), right=True)
+        ind = np.digitize(mw, self.filter_selection_df["mw_bins"], right=True)
         fn = ComplexityFilter.COMPLEXITY_FNS[self.complexity_metric]
         threshold = self.filter_selection_df[self.complexity_metric].values[ind]
 

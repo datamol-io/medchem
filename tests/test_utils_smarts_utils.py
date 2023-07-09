@@ -86,27 +86,6 @@ def test_long_chain():
     assert chain3_out == [True, True, False, False, False, False]
 
 
-def test_smarts_fragment():
-    smiles = ["COCC(O)=O", "OCCO", "O.CCO.O"]
-    mols = [dm.to_mol(x) for x in smiles]
-    mols = [cast(dm.Mol, x) for x in mols]
-
-    query1 = SMARTSUtils.same_fragment("[8]", "[8]", "[8]")
-    query2 = SMARTSUtils.different_fragment("[8]", "[8]", "[8]")
-
-    assert query1 == "([8]).([8]).([8])"
-    assert query2 == "([8].[8].[8])"
-
-    # NOTE(hadim): below tests will only pass once support by RDKit is added
-    # See https://github.com/rdkit/rdkit/issues/1261
-
-    # query1_out = [m.HasSubstructMatch(dm.from_smarts(query1)) for m in mols]
-    # query2_out = [m.HasSubstructMatch(dm.from_smarts(query2)) for m in mols]
-
-    # assert query1_out == [True, False, False]
-    # assert query2_out == [False, False, True]
-
-
 def test_atom_in_env():
     mol = dm.to_mol("c1[c:1](OC)cc(F)cc1")
     mol = cast(dm.Mol, mol)

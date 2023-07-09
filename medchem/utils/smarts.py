@@ -184,64 +184,18 @@ class SMARTSUtils:
             smarts: smarts pattern matching the group/environment
         """
 
-        smarts_strs = list(smarts_strs)
+        _smarts_strs = list(smarts_strs)
 
         if include_atoms:
-            smarts_strs = [f"[*:99]{sm}" for sm in smarts_strs]
+            _smarts_strs = [f"[*:99]{sm}" for sm in _smarts_strs]
 
-        smarts_strs = [f"$({sm})" for sm in smarts_strs]
+        _smarts_strs = [f"$({sm})" for sm in _smarts_strs]
 
         if union:
-            query = ",".join(smarts_strs)
+            query = ",".join(_smarts_strs)
         else:
-            query = ";".join(smarts_strs)
+            query = ";".join(_smarts_strs)
 
         if query:
             query = f"[{query}]"
         return query
-
-    @classmethod
-    def different_fragment(cls, *smarts_strs: str) -> str:
-        """
-        Returns a new query that match patterns that are in different fragments.
-
-        !!! warning
-            This feature is not supported yet by RDKit. See https://github.com/rdkit/rdkit/issues/1261
-
-        Args:
-            smarts_strs: list of input patterns defining the fragments
-
-        Example:
-            matching two oxygens in a molecule will work with '[#8].[#8]', but if you want the
-            oxygens to be in DIFFERENT fragments, then build the query with:
-            >>> SMARTSUtils.different_fragment('[#8]', '[#8]')
-
-        Returns:
-            smarts: smarts pattern matching patterns that are in different fragments
-        """
-
-        query = ".".join(smarts_strs)
-        if query:
-            query = f"({query})"
-        return query
-
-    @classmethod
-    def same_fragment(cls, *smarts_strs: str) -> str:
-        """
-        Returns a new query that match patterns that are in THE SAME fragment (component)
-
-        !!! warning
-            This feature is not supported yet by RDKit. See https://github.com/rdkit/rdkit/issues/1261
-
-        Args:
-            smarts_strs: list of input patterns defining the fragments
-
-        Example:
-            matching two oxygens in a molecule will work with '[#8].[#8]', but if you want the
-            oxygens to be in the SAME fragment, then build the query with:
-            >>> SMARTSUtils.same_fragment('[#8]', '[#8]')
-
-        Returns:
-            smarts: smarts pattern matching patterns that are in the same component
-        """
-        return ".".join([f"({sm})" for sm in smarts_strs])

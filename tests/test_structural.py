@@ -3,7 +3,7 @@ import pytest
 import medchem as mc
 import datamol as dm
 
-from medchem.structural.demerits import DemeritsFilters
+from medchem.structural.demerits import LillyDemeritsFilters
 
 
 def test_common_alerts():
@@ -85,7 +85,7 @@ def test_nibr_invalid():
 
 
 def test_demerits():
-    dfilters = DemeritsFilters()
+    dfilters = LillyDemeritsFilters()
 
     data = dm.data.solubility()
     data = data.sample(50, random_state=20)
@@ -118,7 +118,7 @@ def test_demerits_config():
         "noapdm": False,
     }
 
-    dfilters = DemeritsFilters(**test_config)
+    dfilters = LillyDemeritsFilters(**test_config)
 
     data = dm.data.solubility()
     data = data.sample(50, random_state=20)
@@ -138,7 +138,7 @@ def test_demerits_config():
 
 
 def test_demerits_invalid():
-    dfilters = DemeritsFilters()
+    dfilters = LillyDemeritsFilters()
 
     with pytest.raises(ValueError):
         dfilters(mols=[None, "CC9888", "CCCCO"])

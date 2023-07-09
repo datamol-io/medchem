@@ -1,1 +1,1 @@
-from ._demerits import DemeritsFilters
+from ._demerits import LillyDemeritsFilters

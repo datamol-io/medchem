@@ -23,7 +23,7 @@ from ._lilly import run_cmd
 BIN2PATH = find_lilly_binaries()
 
 
-class DemeritsFilters:
+class LillyDemeritsFilters:
     def __init__(
         self,
         mc_first_pass_options: Optional[str] = None,

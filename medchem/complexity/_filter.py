@@ -19,7 +19,6 @@ from ._calc import TWC
 class ComplexityFilter:
     """Complexity filters.
 
-    To recover the original complexity score, use `threshold_stats_file = "zinc_12"`.
     The threshold have been re-calculated using the original new zinc-15 and focusing only on
     commercially available compounds.
     """

@@ -3,6 +3,8 @@ import re
 import shutil
 import subprocess
 
+from loguru import logger
+
 import pandas as pd
 
 
@@ -53,7 +55,7 @@ def run_cmd(cmd, shell=False):
     """Run command"""
     res = subprocess.run(cmd, capture_output=True, shell=shell, check=False)
     if res.returncode != 0:
-        print("".join(res.stderr.decode("utf-8")))
-        print(" ".join(cmd))
+        logger.error("".join(res.stderr.decode("utf-8")))
+        logger.error(" ".join(cmd))
         res.check_returncode()
     return res

@@ -9,16 +9,17 @@ class QueryParser(Transformer):
     Note that you **SHOULD NOT HAVE TO INTERACT WITH THIS CLASS DIRECTLY**.
 
     Example:
-        >>> import medchem
-        >>> import lark
-        >>> QUERY_GRAMMAR = medchem.utils.loader.get_grammar(as_string=True)
-        >>> QUERY_PARSER = Lark(QUERY_GRAMMAR, parser="lalr", transformer=QueryParser())
-        >>> # see how the string needs to be "quoted". This builds on the json quote requirements to avoid dealing with unwanted outcomes
-        >>> example = \"""(HASPROP("tpsa" > 120 ) | HASSUBSTRUCTURE("c1ccccc1")) AND NOT HASALERT("pains") OR HASSUBSTRUCTURE("[OH]", max)\"""
-        >>> t = QUERY_PARSER.parse(example)
-        >>> print(t)
+        ```python
+        import medchem
+        import lark
+        QUERY_GRAMMAR = medchem.utils.loader.get_grammar(as_string=True)
+        QUERY_PARSER = Lark(QUERY_GRAMMAR, parser="lalr", transformer=QueryParser())
+        # see how the string needs to be "quoted". This builds on the json quote requirements to avoid dealing with unwanted outcomes
+        example = \"""(HASPROP("tpsa" > 120 ) | HASSUBSTRUCTURE("c1ccccc1")) AND NOT HASALERT("pains") OR HASSUBSTRUCTURE("[OH]", max)\"""
+        t = QUERY_PARSER.parse(example)
+        print(t)
         ((((`fn(getprop, prop='tpsa')` > 120.0) or `fn(hassubstructure, query='c1ccccc1', operator='None', limit=None, is_smarts=None)`) and not `fn(hasalert, alert='pains')`) or `fn(hassubstructure, query='[OH]', operator='max', limit=None, is_smarts=None)`)
-
+        ```
     """
 
     @v_args(inline=True)

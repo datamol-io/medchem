@@ -5,20 +5,23 @@ from typing import List
 
 import ast
 import re
+import functools
+
+from loguru import logger
+from lark import Lark, ParseTree
+
 import datamol as dm
 
-from functools import partial
-from lark import Lark
-from loguru import logger
-from medchem.catalog import NamedCatalogs
-from medchem.catalog import list_named_catalogs
+from medchem.catalogs import NamedCatalogs
+from medchem.catalogs import list_named_catalogs
 from medchem.groups import list_functional_group_names
-from medchem.groups import _get_functional_group_map
-from medchem.rules._utils import list_descriptors
-from medchem.rules.rule_filter import RuleFilters
+from medchem.groups import get_functional_group_map
+from medchem.rules import list_descriptors
+from medchem.rules import RuleFilters
 from medchem.rules import basic_rules
 from medchem.utils.loader import get_grammar
-from medchem.query.parser import QueryParser
+
+from ._parser import QueryParser
 
 
 class QueryOperator:
@@ -34,7 +37,7 @@ class QueryOperator:
         mol: Union[dm.Mol, str],
         query: str,
         is_smarts: bool = False,
-        operator: str = "min",
+        operator: Optional[str] = "min",
         limit: int = 1,
     ):
         """Check if a molecule has substructure provided by a query
@@ -50,16 +53,24 @@ class QueryOperator:
             has_substructure (bool): whether the query is a subgraph of the molecule
         """
         if is_smarts:
-            query = dm.from_smarts(query)
+            _query = dm.from_smarts(query)
         else:
-            query = dm.to_mol(query)
+            _query = dm.to_mol(query)
+
         if limit is None:
             limit = 1
+
         if operator is None:
             operator = "min"
+
         mol = dm.to_mol(mol)
-        matches = mol.GetSubstructMatches(query, uniquify=True)
+
+        if mol is None:
+            raise ValueError("Molecule is None")
+
+        matches = mol.GetSubstructMatches(_query, uniquify=True)
         coeff = -1 if operator == "min" else 1
+
         return len(matches) * coeff <= limit * coeff
 
     @staticmethod
@@ -74,9 +85,16 @@ class QueryOperator:
         Returns:
             has_superstructure (bool): whether the molecule is a subgraph of the query
         """
-        query = dm.to_mol(query)
+        _query = dm.to_mol(query)
         mol = dm.to_mol(mol)
-        return query.HasSubstructMatch(mol)
+
+        if mol is None:
+            raise ValueError("Molecule is None")
+
+        if _query is None:
+            raise ValueError("Query is None")
+
+        return _query.HasSubstructMatch(mol)
 
     @staticmethod
     def hasalert(mol: Union[dm.Mol, str], alert: str):
@@ -92,13 +110,24 @@ class QueryOperator:
         """
 
         mol = dm.to_mol(mol)
+
+        if mol is None:
+            raise ValueError("Molecule is None")
+
         if isinstance(alert, str):
             if alert not in QueryOperator.AVAILABLE_CATALOGS:
                 raise ValueError(
                     f"Alert {alert} is not supported. Available alerts are: {QueryOperator.AVAILABLE_CATALOGS}"
                 )
-            alert = getattr(NamedCatalogs, alert, lambda: None)()
-        return alert.HasMatch(mol)
+            _alert = getattr(NamedCatalogs, alert, lambda: None)()
+
+        else:
+            _alert = alert
+
+        if _alert is None:
+            raise ValueError("Alert is None")
+
+        return _alert.HasMatch(mol)
 
     @staticmethod
     def matchrule(mol: Union[dm.Mol, str], rule: str):
@@ -113,13 +142,23 @@ class QueryOperator:
         """
 
         mol = dm.to_mol(mol)
+
+        if mol is None:
+            raise ValueError("Molecule is None")
+
         if isinstance(rule, str):
             if rule not in QueryOperator.AVAILABLE_RULES:
                 raise ValueError(
                     f"Rule {rule} is not supported. Available rules are: {QueryOperator.AVAILABLE_RULES}"
                 )
-            rule = getattr(basic_rules, rule, None)
-        return rule(mol)
+            _rule = getattr(basic_rules, rule, None)
+        else:
+            _rule = rule
+
+        if _rule is None:
+            raise ValueError("Rule is None")
+
+        return _rule(mol)
 
     @staticmethod
     def hasgroup(mol: Union[dm.Mol, str], group: str):
@@ -140,7 +179,7 @@ class QueryOperator:
             raise ValueError(
                 f"Functional Group {group} is not supported. Available functional group are: {QueryOperator.AVAILABLE_FUNCTIONAL_GROUPS}"
             )
-        group_smarts = _get_functional_group_map()[group]
+        group_smarts = get_functional_group_map()[group]
         return QueryOperator.hassubstructure(mol, group_smarts, is_smarts=True)
 
     @staticmethod
@@ -163,9 +202,15 @@ class QueryOperator:
                 raise ValueError(
                     f"Property {prop} is not supported. Available properties are: {QueryOperator.AVAILABLES_PROPERTIES}"
                 )
-            prop = getattr(dm.descriptors, prop, None)
+            _prop = getattr(dm.descriptors, prop, None)
 
-        computed = prop(mol)
+        else:
+            _prop = prop
+
+        if _prop is None:
+            raise ValueError("Prop is None")
+
+        computed = _prop(mol)
         return comparator(computed, limit)
 
     @staticmethod
@@ -189,6 +234,12 @@ class QueryOperator:
                     f"Property {prop} is not supported. Available properties are: {QueryOperator.AVAILABLES_PROPERTIES}"
                 )
             prop_fn = getattr(dm.descriptors, prop, None)
+
+        else:
+            prop_fn = prop
+
+        if prop_fn is None:
+            raise ValueError("Prop is None")
 
         return prop_fn(mol)
 
@@ -215,7 +266,7 @@ class QueryOperator:
 
         mol = dm.to_mol(mol)
         query = dm.to_mol(query)
-        sim_val = 1 - float(dm.cdist([mol], [query]))
+        sim_val = 1 - dm.cdist([mol], [query])[0][0]
         return comparator(sim_val, limit)
 
     @staticmethod
@@ -237,7 +288,7 @@ class QueryOperator:
 
         mol = dm.to_mol(mol)
         query = dm.to_mol(query)
-        sim_val = 1 - float(dm.cdist([mol], [query]))
+        sim_val = 1 - dm.cdist([mol], [query])[0][0]
         return sim_val
 
 
@@ -263,7 +314,7 @@ class _NodeEvaluator:
             if _fn is None:
                 raise ValueError("Unknown function {}".format(node_arg_list[0]))
             _kwargs = dict((k, ast.literal_eval(v)) for k, v in [x.split("=", 1) for x in node_arg_list[1:]])
-            self.node_fn = partial(_fn, **_kwargs)
+            self.node_fn = functools.partial(_fn, **_kwargs)
 
     def __call__(self, *args, **kwargs):
         if self.node_fn is None:
@@ -271,18 +322,20 @@ class _NodeEvaluator:
         return self.node_fn(*args, **kwargs)
 
 
-class _EvaluableQuery:
+class EvaluableQuery:
     """Parser of a query into a list of evaluable function nodes"""
 
     FN_PATTERN = re.compile("`(.*?)`")
 
-    def __init__(self, parsed_query: str, verbose: bool = False):
+    def __init__(self, parsed_query: Union[str, ParseTree], verbose: bool = False):
         """Constructor for query evaluation
 
         Args:
             parsed_query: query that has been parsed and transformed
             verbose: whrther to print debug information
         """
+
+        parsed_query = str(parsed_query)
         self.query_nodes = [_NodeEvaluator(x) for x in self.FN_PATTERN.split(parsed_query)]
         self.verbose = verbose
 
@@ -329,7 +382,7 @@ class QueryFilter:
         self.transformer = QueryParser()
         self._query_str = query
         self.query = self.transformer.transform(self.query_parser.parse(self._query_str))
-        self._evaluable_query = _EvaluableQuery(self.query)
+        self._evaluable_query = EvaluableQuery(self.query)
 
     def __repr__(self) -> str:
         return self.query
@@ -337,7 +390,7 @@ class QueryFilter:
     def __call__(
         self,
         mols: List[Union[str, dm.Mol]],
-        scheduler="processes",
+        scheduler: str = "processes",
         n_jobs: int = -1,
         progress: bool = True,
     ):
@@ -345,9 +398,9 @@ class QueryFilter:
 
         Args:
             mols: list of input molecules to filter
-            n_jobs: whether to run job in parallel and number of jobs to consider. Defaults to -1.
-            scheduler: scheduler to use. Defaults to 'processes'.
-            progress: whether to show job progress. Defaults to True.
+            n_jobs: whether to run job in parallel and number of jobs to consider.
+            scheduler: scheduler to use.
+            progress: whether to show job progress.
         """
         tqdm_kwargs = {}
         if progress:

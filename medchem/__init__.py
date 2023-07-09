@@ -26,6 +26,7 @@ _lazy_imports_mod = {
     "rules": "medchem.rules",
     "structural": "medchem.structural",
     "functional": "medchem.functional",
+    "query": "medchem.query",
 }
 
 
@@ -66,3 +67,4 @@ if TYPE_CHECKING or os.environ.get("MEDCHEM_DISABLE_LAZY_LOADING", "0") == "1":
     from . import rules
     from . import structural
     from . import functional
+    from . import query

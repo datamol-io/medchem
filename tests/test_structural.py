@@ -14,7 +14,12 @@ def test_common_alerts():
 
     data["mol"] = data["smiles"].apply(dm.to_mol)
 
-    results = alerts(mols=data["mol"].tolist(), n_jobs=-1, scheduler="auto", keep_details=True)
+    results = alerts(
+        mols=data["mol"].tolist(),
+        n_jobs=-1,
+        scheduler="processes",
+        keep_details=True,
+    )
 
     assert results["pass_filter"].sum() == 44
     assert results["reasons"].unique().tolist() == [
@@ -50,7 +55,12 @@ def test_nibr():
     data = dm.data.solubility()
     data = data.iloc[:50]
 
-    results = nibr_filters(mols=data["mol"].tolist(), n_jobs=-1, scheduler="auto", keep_details=True)
+    results = nibr_filters(
+        mols=data["mol"].tolist(),
+        n_jobs=-1,
+        scheduler="processes",
+        keep_details=True,
+    )
 
     assert results["pass_filter"].sum() == 49
     assert set(results.columns.tolist()) == {

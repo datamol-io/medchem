@@ -126,7 +126,7 @@ class NIBRFilters:
         n_jobs: Optional[int] = -1,
         progress: bool = False,
         progress_leave: bool = False,
-        scheduler: str = "auto",
+        scheduler: str = "threads",
         keep_details: bool = False,
     ):
         """Run alert evaluation on this list of molecule and return the full dataframe
@@ -136,15 +136,10 @@ class NIBRFilters:
             n_jobs: number of jobs to run in parallel.
             progress: whether to show progress or not.
             progress_leave: whether to leave the progress bar or not.
-            scheduler: which scheduler to use. If "auto", will use "processes" if `len(mols) > 500` else "threads".
+            scheduler: which scheduler to use. The `processes` scheduler works but is very
+                inefficient due to RDKit Catalog serialization which tends to be very slow.
             keep_details: whether to keep the details of the evaluation or not.
         """
-
-        if scheduler == "auto":
-            if len(mols) > 500:
-                scheduler = "processes"  # pragma: no cover
-            else:
-                scheduler = "threads"
 
         results = dm.parallelized(
             functools.partial(self._evaluate, keep_details=keep_details),

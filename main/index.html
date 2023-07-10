@@ -14,10 +14,10 @@
       
       
       
-        <link rel="next" href="tutorials/Molecular_Filters.html">
+        <link rel="next" href="cli.html">
       
       <link rel="icon" href="images/logo.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.18">
     
     
       
@@ -191,11 +191,23 @@
   
 
 
+  <li class="md-tabs__item">
+    <a href="cli.html" class="md-tabs__link">
+      CLI
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
   
   
   
     <li class="md-tabs__item">
-      <a href="tutorials/Molecular_Filters.html" class="md-tabs__link">
+      <a href="tutorials/Medchem_Rules.html" class="md-tabs__link">
         Tutorials
       </a>
     </li>
@@ -211,7 +223,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="api/medchem.alerts.html" class="md-tabs__link">
+      <a href="api/medchem.rules.html" class="md-tabs__link">
         API
       </a>
     </li>
@@ -303,13 +315,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    Summary
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
   </a>
@@ -317,11 +322,25 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#available-filters" class="md-nav__link">
-    Available Filters
+  <a href="#getting-started" class="md-nav__link">
+    Getting Started
   </a>
   
-    <nav class="md-nav" aria-label="Available Filters">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-notice" class="md-nav__link">
+    Usage Notice
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acknowledgement" class="md-nav__link">
+    Acknowledgement
+  </a>
+  
+    <nav class="md-nav" aria-label="Acknowledgement">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -333,28 +352,21 @@
         
           <li class="md-nav__item">
   <a href="#nibr-filters" class="md-nav__link">
-    NIBR filters
+    NIBR Filters
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#bredt-filters" class="md-nav__link">
-    Bredt filters
+  <a href="#structural-alerts-filters" class="md-nav__link">
+    Structural Alerts Filters
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#alerts-filters" class="md-nav__link">
-    Alerts filters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#generic-filters" class="md-nav__link">
-    Generic filters
+  <a href="#rdkit-catalogs" class="md-nav__link">
+    RDKit Catalogs
   </a>
   
 </li>
@@ -379,6 +391,21 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="cli.html" class="md-nav__link">
+        CLI
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
@@ -387,17 +414,17 @@
       
         
       
-      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
       
       
       
-        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
           Tutorials
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_2">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
           Tutorials
         </label>
@@ -409,8 +436,8 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/Molecular_Filters.html" class="md-nav__link">
-        Molecular Filters and Alerts
+      <a href="tutorials/Medchem_Rules.html" class="md-nav__link">
+        Medchem Rules
       </a>
     </li>
   
@@ -423,8 +450,22 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/Medchem_Rules.html" class="md-nav__link">
-        Medchem Rules
+      <a href="tutorials/Structural_Filters.html" class="md-nav__link">
+        Structural Filters
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/Catalogs.html" class="md-nav__link">
+        Catalogs
       </a>
     </li>
   
@@ -479,8 +520,8 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/old_getting_started.html" class="md-nav__link">
-        DEPRECATED Getting Started
+      <a href="tutorials/Constraints_Filtering.html" class="md-nav__link">
+        Constraints Filtering
       </a>
     </li>
   
@@ -508,17 +549,17 @@
       
         
       
-      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
       
       
       
-        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
           API
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
           <span class="md-nav__icon md-icon"></span>
           API
         </label>
@@ -530,8 +571,8 @@
   
   
     <li class="md-nav__item">
-      <a href="api/medchem.alerts.html" class="md-nav__link">
-        medchem.alerts
+      <a href="api/medchem.rules.html" class="md-nav__link">
+        medchem.rules
       </a>
     </li>
   
@@ -544,8 +585,8 @@
   
   
     <li class="md-nav__item">
-      <a href="api/medchem.catalog.html" class="md-nav__link">
-        medchem.catalog
+      <a href="api/medchem.structural.html" class="md-nav__link">
+        medchem.structural
       </a>
     </li>
   
@@ -558,8 +599,8 @@
   
   
     <li class="md-nav__item">
-      <a href="api/medchem.demerits.html" class="md-nav__link">
-        medchem.demerits
+      <a href="api/medchem.catalogs.html" class="md-nav__link">
+        medchem.catalogs
       </a>
     </li>
   
@@ -572,8 +613,8 @@
   
   
     <li class="md-nav__item">
-      <a href="api/medchem.filter.html" class="md-nav__link">
-        medchem.filter
+      <a href="api/medchem.complexity.html" class="md-nav__link">
+        medchem.complexity
       </a>
     </li>
   
@@ -600,8 +641,22 @@
   
   
     <li class="md-nav__item">
-      <a href="api/medchem.rules.html" class="md-nav__link">
-        medchem.rules
+      <a href="api/medchem.constraints.html" class="md-nav__link">
+        medchem.constraints
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/medchem.functional.html" class="md-nav__link">
+        medchem.functional
       </a>
     </li>
   
@@ -616,34 +671,6 @@
     <li class="md-nav__item">
       <a href="api/medchem.utils.html" class="md-nav__link">
         medchem.utils
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api/medchem.query.html" class="md-nav__link">
-        medchem.query
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api/medchem.complexity.html" class="md-nav__link">
-        medchem.complexity
       </a>
     </li>
   
@@ -683,13 +710,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    Summary
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
   </a>
@@ -697,11 +717,25 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#available-filters" class="md-nav__link">
-    Available Filters
+  <a href="#getting-started" class="md-nav__link">
+    Getting Started
   </a>
   
-    <nav class="md-nav" aria-label="Available Filters">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-notice" class="md-nav__link">
+    Usage Notice
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acknowledgement" class="md-nav__link">
+    Acknowledgement
+  </a>
+  
+    <nav class="md-nav" aria-label="Acknowledgement">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -713,28 +747,21 @@
         
           <li class="md-nav__item">
   <a href="#nibr-filters" class="md-nav__link">
-    NIBR filters
+    NIBR Filters
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#bredt-filters" class="md-nav__link">
-    Bredt filters
+  <a href="#structural-alerts-filters" class="md-nav__link">
+    Structural Alerts Filters
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#alerts-filters" class="md-nav__link">
-    Alerts filters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#generic-filters" class="md-nav__link">
-    Generic filters
+  <a href="#rdkit-catalogs" class="md-nav__link">
+    RDKit Catalogs
   </a>
   
 </li>
@@ -763,155 +790,33 @@
 
 
 <h1 id="medchem">Medchem<a class="headerlink" href="#medchem" title="Permanent link">&para;</a></h1>
-<p>Package for applying common medchem filters to a dataset of molecules.</p>
-<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This package contains various implementation of medchem rules collected from various sources that may be applied as filters on generated or screened molecules. It centralizes all common filters used at Valence Discovery.</p>
-<p>Although the list is as exhaustive as possible, filtering rules mainly depends on the drug discovery programs.</p>
-<p>It should be noted that <strong>systematically applying all filters is to be avoided</strong>. For example, "PAINS C" filters are usually not very relevant, another example is the filtering are very strict and could flag important substructure for a project (example some ZBGs).</p>
+<p><em>Medchem - Molecular filtering for drug discovery.</em></p>
+<p>Medchem is a Python library that proposes multiple molecular medchem filters to a wide range of use cases relevant in a drug discovery context.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>medchem
 </code></pre></div>
-<h2 id="available-filters">Available Filters<a class="headerlink" href="#available-filters" title="Permanent link">&para;</a></h2>
-<p>The following filters are available:</p>
-<h3 id="eli-lilly-medchem-rules"><strong>Eli Lilly Medchem Rules</strong><a class="headerlink" href="#eli-lilly-medchem-rules" title="Permanent link">&para;</a></h3>
-<p>These are python binding of the implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at <a href="https://doi.org/10.1021/jm301008n">doi 10.1021/jm301008n</a>.</p>
-<p>These rules are used in <code>medchem.filter.lilly_demerit_filter</code> function and are the main offering of this package.</p>
-<h3 id="nibr-filters">NIBR filters<a class="headerlink" href="#nibr-filters" title="Permanent link">&para;</a></h3>
-<p>Rules used by Novartis to build their new screening deck. The rules are published under "Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020), <a href="https://dx.doi.org/10.1021/acs.jmedchem.0c01332">https://dx.doi.org/10.1021/acs.jmedchem.0c01332</a>.</p>
-<p>These rules are used in lead filtering as <code>medchem.filter.lead.screening_filter</code></p>
-<h3 id="bredt-filters">Bredt filters<a class="headerlink" href="#bredt-filters" title="Permanent link">&para;</a></h3>
-<p>These are filters based on the Bredt's rules for unstable chemistry.There are used in lead filtering as <code>medchem.filter.lead.bredt_filter</code>.</p>
-<h3 id="alerts-filters">Alerts filters<a class="headerlink" href="#alerts-filters" title="Permanent link">&para;</a></h3>
-<p>These are alerts rules from the ChEMBL database curation scheme and public litterature on promiscuous compounds on commons assays. The rule set are:</p>
-<table>
-<thead>
-<tr>
-<th align="left">name</th>
-<th align="right"># alerts</th>
-<th align="left">source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">Glaxo</td>
-<td align="right">55</td>
-<td align="left">ChEMBL</td>
-</tr>
-<tr>
-<td align="left">Dundee</td>
-<td align="right">105</td>
-<td align="left">ChEMBL</td>
-</tr>
-<tr>
-<td align="left">BMS</td>
-<td align="right">180</td>
-<td align="left">ChEMBL</td>
-</tr>
-<tr>
-<td align="left">PAINS</td>
-<td align="right">481</td>
-<td align="left">ChEMBL</td>
-</tr>
-<tr>
-<td align="left">SureChEMBL</td>
-<td align="right">166</td>
-<td align="left">ChEMBL</td>
-</tr>
-<tr>
-<td align="left">MLSMR</td>
-<td align="right">116</td>
-<td align="left">ChEMBL</td>
-</tr>
-<tr>
-<td align="left">Inpharmatica</td>
-<td align="right">91</td>
-<td align="left">ChEMBL</td>
-</tr>
-<tr>
-<td align="left">LINT</td>
-<td align="right">57</td>
-<td align="left">ChEMBL</td>
-</tr>
-<tr>
-<td align="left">Alarm-NMR</td>
-<td align="right">75</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">AlphaScreen-Hitters</td>
-<td align="right">6</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">GST-Hitters</td>
-<td align="right">34</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">HIS-Hitters</td>
-<td align="right">19</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">LuciferaseInhibitor</td>
-<td align="right">3</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">DNABinder</td>
-<td align="right">78</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">Chelator</td>
-<td align="right">55</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">Frequent-Hitter</td>
-<td align="right">15</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">Electrophilic</td>
-<td align="right">119</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">Genotoxic-Carcinogenicity</td>
-<td align="right">117</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">LD50-Oral</td>
-<td align="right">20</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">Non-Genotoxic-Carcinogenicity</td>
-<td align="right">22</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">Reactive-Unstable-Toxic</td>
-<td align="right">335</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">Skin</td>
-<td align="right">155</td>
-<td align="left">Litterature</td>
-</tr>
-<tr>
-<td align="left">Toxicophore</td>
-<td align="right">154</td>
-<td align="left">Litterature</td>
-</tr>
-</tbody>
-</table>
-<p>There are used in lead filtering through <code>medchem.filter.lead.alert_filter</code></p>
-<h3 id="generic-filters">Generic filters<a class="headerlink" href="#generic-filters" title="Permanent link">&para;</a></h3>
-<p>These are generic filters based on specific molecular property such as number of atoms, size of macrocycles, etc. They are available at <code>medchem.filter.generic</code></p>
+<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<p>The best way to get started is by going through the tutorials.</p>
+<h2 id="usage-notice">Usage Notice<a class="headerlink" href="#usage-notice" title="Permanent link">&para;</a></h2>
+<p>While medchem filters, alerts and rules are powerfull ways to triage a list of drug-like compounds, it's <strong>important</strong> to always keep in mind to <strong>never apply those filters blindly</strong>. It's impossible for such filters to take into account the full diversity of the drug-like chemical space and by applying them blindly you might discard interesting compounds or let pass toxic or unwanted compounds.</p>
+<blockquote>
+<p><em>Don't blindly apply Medchem filters; you may miss gems or allow toxins.</em></p>
+</blockquote>
+<h2 id="acknowledgement">Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permanent link">&para;</a></h2>
+<p>Medchem proposes a large list of mechem filters, alerts and rules. All of those has been built over the years by the scientific community and we would like to thanks everyone who has contributed to those collections and filtering methods.</p>
+<h3 id="eli-lilly-medchem-rules">Eli Lilly Medchem Rules<a class="headerlink" href="#eli-lilly-medchem-rules" title="Permanent link">&para;</a></h3>
+<p>Originally proposed in <a href="https://doi.org/10.1021/jm301008n">"Rules for Identifying Potentially Reactive or Promiscuous Compounds" in 2012</a> by Robert F. Bruns and Ian A. Watson. Medchem is re-using the implementation from <a href="https://github.com/IanAWatson/Lilly-Medchem-Rules">https://github.com/IanAWatson/Lilly-Medchem-Rules</a>.</p>
+<p>The Medchem implementation can be used from <code>medchem.structural.lilly_demerits</code>.</p>
+<h3 id="nibr-filters">NIBR Filters<a class="headerlink" href="#nibr-filters" title="Permanent link">&para;</a></h3>
+<p>Rules used by Novartis to build their new screening deck. First proposed in <a href="https://dx.doi.org/10.1021/acs.jmedchem.0c01332">"Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020)</a>.</p>
+<p>The Medchem implementation ca be found at <code>medchem.structural.NIBRFilters()</code>.</p>
+<h3 id="structural-alerts-filters">Structural Alerts Filters<a class="headerlink" href="#structural-alerts-filters" title="Permanent link">&para;</a></h3>
+<p>These are alerts rules from the ChEMBL database curation scheme and public litterature on promiscuous compounds on commons assays. We thanks <a href="https://twitter.com/wpwalters">Patrick Walters</a> for putting together this list of alerts.</p>
+<p>The original implementation by Patrick Walters can be found at <a href="https://github.com/PatWalters/rd_filters">https://github.com/PatWalters/rd_filters</a> with <a href="https://practicalcheminformatics.blogspot.com/2018/08/filtering-chemical-libraries.html">its companion blog post</a>.</p>
+<p>The Medchem implementation can be found at <code>medchem.structural.CommonAlertsFilters()</code>.</p>
+<h3 id="rdkit-catalogs">RDKit Catalogs<a class="headerlink" href="#rdkit-catalogs" title="Permanent link">&para;</a></h3>
+<p>RDKit contains also contains a large list of filtering catalogs on which Medchem relies for the filtering logic.</p>
+<p>Those catalogs can be found at <code>medchem.catalogs.NamedCatalogs</code>.</p>
 
 
 
@@ -953,10 +858,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.expand"], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.expand"], "search": "assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.b4d07000.min.js"></script>
+      <script src="assets/javascripts/bundle.220ee61c.min.js"></script>
       
     
   </body>

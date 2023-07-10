@@ -63,6 +63,7 @@ td p {
   --md-footer-fg-color--light: var(--custom-secondary);
   --md-footer-fg-color--lighter: var(--custom-secondary);
 
+
 }
 
 .md-header {
@@ -123,4 +124,19 @@ td p {
 .md-container .jp-Cell-outputWrapper .jp-OutputPrompt.jp-OutputArea-prompt,
 .md-container .jp-Cell-inputWrapper .jp-InputPrompt.jp-InputArea-prompt {
   display: none !important;
+}
+
+/* Increase the width */
+.md-grid {
+  max-width: 75rem;
+}
+
+/* Jupyter Tweaks */
+
+.jupyter-wrapper {
+  --jp-code-font-size: 0.8em !important;
+}
+
+.jupyter-wrapper table.dataframe {
+  font-size: 0.7em !important;
 }

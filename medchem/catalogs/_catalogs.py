@@ -216,8 +216,8 @@ class NamedCatalogs:
 
     @staticmethod
     @functools.lru_cache(maxsize=32)
-    def gsk():
-        return NamedCatalogs.alerts(subset=["GSK"])
+    def glaxo():
+        return NamedCatalogs.alerts(subset=["Glaxo"])
 
     @staticmethod
     @functools.lru_cache(maxsize=32)

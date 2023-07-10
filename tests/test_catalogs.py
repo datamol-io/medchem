@@ -47,7 +47,7 @@ def test_NamedCatalogs():
         "dnabinder",
         "dundee",
         "electrophilic",
-        "gsk",
+        "glaxo",
         "gst_hitters",
         "his_hitters",
         "hitters",

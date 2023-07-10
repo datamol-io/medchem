@@ -208,7 +208,7 @@ class QueryOperator:
             _prop = prop
 
         if _prop is None:
-            raise ValueError("Prop is None")
+            raise ValueError(f"Prop is None: '{prop}'")
 
         computed = _prop(mol)
         return comparator(computed, limit)

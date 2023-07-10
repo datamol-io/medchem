@@ -1,59 +1,59 @@
 rule_id,rule_set,description,smarts,rule_set_name,priority,mincount,source,catalog_description
-0,1,R1 Reactive alkyl halides,"[Br,Cl,I][CX4;CH,CH2]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-1,1,R2 Acid halides,"[S,C](=[O,S])[F,Br,Cl,I]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-2,1,R3 Carbazides,O=CN=[N+]=[N-],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-3,1,R4 Sulphate esters,"COS(=O)O[C,c]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-4,1,R5 Sulphonates,"COS(=O)(=O)[C,c]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-5,1,R6 Acid anhydrides,C(=O)OC(=O),GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-6,1,R7 Peroxides,OO,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-7,1,R8 Pentafluorophenyl esters,C(=O)Oc1c(F)c(F)c(F)c(F)c1(F),GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-8,1,R9 Paranitrophenyl esters,C(=O)Oc1ccc(N(=O)~[OX1])cc1,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-9,1,R10 esters of HOBT,C(=O)Onnn,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-10,1,R11 Isocyanates & Isothiocyanates,"N=C=[S,O]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-11,1,R12 Triflates,OS(=O)(=O)C(F)(F)F,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-12,1,R13 lawesson's reagent and derivatives,P(=S)(S)S,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-13,1,R14 phosphoramides,NP(=O)(N)N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-14,1,R15 Aromatic azides,cN=[N+]=[N-],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-15,1,R16 beta carbonyl quaternary Nitrogen,"C(=O)C[N+,n+]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-16,1,R17 acylhydrazide,[N;R0][N;R0]C(=O),GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-17,1,"R18 Quaternary C, Cl, I, P or S","[C+,Cl+,I+,P+,S+]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-18,1,R19 Phosphoranes,C=P,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-19,1,R20 Chloramidines,[Cl]C([C&R0])=N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-20,1,R21 Nitroso,[N&D2](=O),GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-21,1,R22 P/S Halides,"[P,S][Cl,Br,F,I]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-22,1,R23 Carbodiimide,N=C=N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-23,1,R24 Isonitrile,[N+]#[C-],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-24,1,R25 Triacyloximes,C(=O)N(C(=O))OC(=O),GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-25,1,R26 Cyanohydrins,N#CC[OH],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-26,1,R27 Acyl cyanides,N#CC(=O),GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-27,1,R28 Sulfonyl cyanides,S(=O)(=O)C#N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-28,1,R29 Cyanophosphonates,P(OCC)(OCC)(=O)C#N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-29,1,R30 Azocyanamides,[N;R0]=[N;R0]C#N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-30,1,R31 Azoalkanals,[N;R0]=[N;R0]CC=O,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-31,1,I1 Aliphatic methylene chains 7 or more long,[CD2;R0][CD2;R0][CD2;R0][CD2;R0][CD2;R0][CD2;R0][CD2;R0],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-32,1,I2 Compounds with 4 or more acidic groups,"[C,S,P](=O)[OH].[C,S,P](=O)[OH].[C,S,P](=O)[OH].[C,S,P](=O)[OH]",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-33,1,I3 Crown ethers,[O;R1][C;R1][C;R1][O;R1][C;R1][C;R1][O;R1],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-34,1,I4 Disulphides,SS,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-35,1,I5 Thiols,[SH],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-36,1,"I6 Epoxides, Thioepoxides, Aziridines","C1[O,S,N]C1",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-37,1,"I7 2,4,5 trihydroxyphenyl",c([OH])c([OH])c([OH]),GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-38,1,"I8 2,3,4 trihydroxyphenyl",c([OH])c([OH])cc([OH]),GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-39,1,I9 Hydrazothiourea,N=NC(=S)N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-40,1,I10 Thiocyanate,SC#N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-41,1,I11 Benzylic quaternary Nitrogen,cC[N+],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-42,1,I12 Thioesters,"C[O,S;R0][C;R0](=S)",GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-43,1,I13 Cyanamides,N[CH2]C#N,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-44,1,I14 Four membered lactones,C1(=O)OCC1,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-45,1,I15 Di and Triphosphates,P(=O)([OH])OP(=O)[OH],GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-46,1,I16 Betalactams,N1CCC1=O,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-47,1,N1 Quinones,O=C1[#6]~[#6]C(=O)[#6]~[#6]1,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-48,1,N2 Polyenes,C=CC=CC=CC=C,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-49,1,N3 Saponin derivatives,O1CCCCC1OC2CCC3CCCCC3C2,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-50,1,N4 Cytochalasin derivatives,O=C1NCC2CCCCC21,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-51,1,N5 Cycloheximide derivatives,O=C1CCCC(N1)=O,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-52,1,N6 Monensin derivatives,O1CCCCC1C2CCCO2,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-53,1,N7 Cyanidin derivatives,[OH]c1cc([OH])cc2=[O+]C(=C([OH])Cc21)c3cc([OH])c([OH])cc3,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
-54,1,N8 Squalestatin derivatives,C12OCCC(O1)CC2,GSK,8,1,ChEMBL,Glaxo Wellcome Hard filters
+0,1,R1 Reactive alkyl halides,"[Br,Cl,I][CX4;CH,CH2]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+1,1,R2 Acid halides,"[S,C](=[O,S])[F,Br,Cl,I]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+2,1,R3 Carbazides,O=CN=[N+]=[N-],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+3,1,R4 Sulphate esters,"COS(=O)O[C,c]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+4,1,R5 Sulphonates,"COS(=O)(=O)[C,c]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+5,1,R6 Acid anhydrides,C(=O)OC(=O),Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+6,1,R7 Peroxides,OO,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+7,1,R8 Pentafluorophenyl esters,C(=O)Oc1c(F)c(F)c(F)c(F)c1(F),Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+8,1,R9 Paranitrophenyl esters,C(=O)Oc1ccc(N(=O)~[OX1])cc1,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+9,1,R10 esters of HOBT,C(=O)Onnn,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+10,1,R11 Isocyanates & Isothiocyanates,"N=C=[S,O]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+11,1,R12 Triflates,OS(=O)(=O)C(F)(F)F,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+12,1,R13 lawesson's reagent and derivatives,P(=S)(S)S,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+13,1,R14 phosphoramides,NP(=O)(N)N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+14,1,R15 Aromatic azides,cN=[N+]=[N-],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+15,1,R16 beta carbonyl quaternary Nitrogen,"C(=O)C[N+,n+]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+16,1,R17 acylhydrazide,[N;R0][N;R0]C(=O),Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+17,1,"R18 Quaternary C, Cl, I, P or S","[C+,Cl+,I+,P+,S+]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+18,1,R19 Phosphoranes,C=P,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+19,1,R20 Chloramidines,[Cl]C([C&R0])=N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+20,1,R21 Nitroso,[N&D2](=O),Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+21,1,R22 P/S Halides,"[P,S][Cl,Br,F,I]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+22,1,R23 Carbodiimide,N=C=N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+23,1,R24 Isonitrile,[N+]#[C-],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+24,1,R25 Triacyloximes,C(=O)N(C(=O))OC(=O),Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+25,1,R26 Cyanohydrins,N#CC[OH],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+26,1,R27 Acyl cyanides,N#CC(=O),Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+27,1,R28 Sulfonyl cyanides,S(=O)(=O)C#N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+28,1,R29 Cyanophosphonates,P(OCC)(OCC)(=O)C#N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+29,1,R30 Azocyanamides,[N;R0]=[N;R0]C#N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+30,1,R31 Azoalkanals,[N;R0]=[N;R0]CC=O,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+31,1,I1 Aliphatic methylene chains 7 or more long,[CD2;R0][CD2;R0][CD2;R0][CD2;R0][CD2;R0][CD2;R0][CD2;R0],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+32,1,I2 Compounds with 4 or more acidic groups,"[C,S,P](=O)[OH].[C,S,P](=O)[OH].[C,S,P](=O)[OH].[C,S,P](=O)[OH]",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+33,1,I3 Crown ethers,[O;R1][C;R1][C;R1][O;R1][C;R1][C;R1][O;R1],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+34,1,I4 Disulphides,SS,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+35,1,I5 Thiols,[SH],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+36,1,"I6 Epoxides, Thioepoxides, Aziridines","C1[O,S,N]C1",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+37,1,"I7 2,4,5 trihydroxyphenyl",c([OH])c([OH])c([OH]),Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+38,1,"I8 2,3,4 trihydroxyphenyl",c([OH])c([OH])cc([OH]),Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+39,1,I9 Hydrazothiourea,N=NC(=S)N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+40,1,I10 Thiocyanate,SC#N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+41,1,I11 Benzylic quaternary Nitrogen,cC[N+],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+42,1,I12 Thioesters,"C[O,S;R0][C;R0](=S)",Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+43,1,I13 Cyanamides,N[CH2]C#N,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+44,1,I14 Four membered lactones,C1(=O)OCC1,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+45,1,I15 Di and Triphosphates,P(=O)([OH])OP(=O)[OH],Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+46,1,I16 Betalactams,N1CCC1=O,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+47,1,N1 Quinones,O=C1[#6]~[#6]C(=O)[#6]~[#6]1,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+48,1,N2 Polyenes,C=CC=CC=CC=C,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+49,1,N3 Saponin derivatives,O1CCCCC1OC2CCC3CCCCC3C2,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+50,1,N4 Cytochalasin derivatives,O=C1NCC2CCCCC21,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+51,1,N5 Cycloheximide derivatives,O=C1CCCC(N1)=O,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+52,1,N6 Monensin derivatives,O1CCCCC1C2CCCO2,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+53,1,N7 Cyanidin derivatives,[OH]c1cc([OH])cc2=[O+]C(=C([OH])Cc21)c3cc([OH])c([OH])cc3,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
+54,1,N8 Squalestatin derivatives,C12OCCC(O1)CC2,Glaxo,8,1,ChEMBL,Glaxo Wellcome Hard filters
 55,2,> 2 ester groups,"C(=O)O[C,H1].C(=O)O[C,H1].C(=O)O[C,H1]",Dundee,4,1,ChEMBL,University of Dundee NTD Screening Library Filters
 56,2,2-halo pyridine,"n1c([F,Cl,Br,I])cccc1",Dundee,4,1,ChEMBL,University of Dundee NTD Screening Library Filters
 57,2,acid halide,"C(=O)[Cl,Br,I,F]",Dundee,4,1,ChEMBL,University of Dundee NTD Screening Library Filters

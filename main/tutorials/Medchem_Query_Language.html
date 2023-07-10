@@ -2981,24 +2981,24 @@ out</div>
 <li><p><code>&quot;&quot;&quot;HASPROP(&quot;tpsa&quot; &gt; 120) OR HASSUBSTRUCTURE(&quot;CO&quot;)&quot;&quot;&quot;</code>, <code>&quot;&quot;&quot;(HASPROP(&quot;tpsa&quot; &gt; 120)) OR (HASSUBSTRUCTURE(&quot;CO&quot;))&quot;&quot;&quot;</code> and <code>&quot;&quot;&quot;(HASPROP(&quot;tpsa&quot; &gt; 120) OR HASSUBSTRUCTURE(&quot;CO&quot;))&quot;&quot;&quot;</code> are equivalent</p>
 </li>
 </ul>
-<h3 id="hasalert">HASALERT<a class="anchor-link" href="#hasalert">&#182;</a></h3><p>check whether a molecule has an <code>alert</code> from a catalog</p>
+<h3 id="hasalert"><code>HASALERT</code><a class="anchor-link" href="#hasalert">&#182;</a></h3><p>Check whether a molecule has an <code>alert</code> from a catalog:</p>
 <div class="highlight"><pre><span></span><span class="c1"># alert is one supported alert catalog by `medchem`. For example `pains`</span>
 <span class="n">HASALERT</span><span class="p">(</span><span class="n">alert</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
-<h3 id="hasgroup">HASGROUP<a class="anchor-link" href="#hasgroup">&#182;</a></h3><p>check whether a molecule has a specific functional group from a catalog</p>
+<h3 id="hasgroup"><code>HASGROUP</code><a class="anchor-link" href="#hasgroup">&#182;</a></h3><p>Check whether a molecule has a specific functional group from a catalog</p>
 <div class="highlight"><pre><span></span><span class="c1"># group is one supported functional group provided by `medchem`</span>
 <span class="n">HASGROUP</span><span class="p">(</span><span class="n">group</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
-<h3 id="matchrule">MATCHRULE<a class="anchor-link" href="#matchrule">&#182;</a></h3><p>check whether a molecule match a predefined druglikeness <code>rule</code> from a catalog</p>
+<h3 id="matchrule"><code>MATCHRULE</code><a class="anchor-link" href="#matchrule">&#182;</a></h3><p>Check whether a molecule match a predefined druglikeness <code>rule</code> from a catalog</p>
 <div class="highlight"><pre><span></span><span class="c1"># rule is one supported rule provided by `medchem`. For example `rule_of_five`</span>
 <span class="n">MATCHRULE</span><span class="p">(</span><span class="n">rule</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
-<h3 id="hassuperstructure">HASSUPERSTRUCTURE<a class="anchor-link" href="#hassuperstructure">&#182;</a></h3><p>check whether a molecule has <code>query</code> as superstructure</p>
+<h3 id="hassuperstructure"><code>HASSUPERSTRUCTURE</code><a class="anchor-link" href="#hassuperstructure">&#182;</a></h3><p>Check whether a molecule has <code>query</code> as superstructure</p>
 <div class="highlight"><pre><span></span><span class="c1"># query is a SMILES</span>
 <span class="n">HASSUPERSTRUCTURE</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
-<h3 id="hassubstructure">HASSUBSTRUCTURE<a class="anchor-link" href="#hassubstructure">&#182;</a></h3><p>Check whether a molecule has <code>query</code> as substructure.
-<strong>Note that providing the comma separator <code>,</code> is <em>mandatory</em> here as each variable is an argument.</strong></p>
+<h3 id="hassubstructure"><code>HASSUBSTRUCTURE</code><a class="anchor-link" href="#hassubstructure">&#182;</a></h3><p>Check whether a molecule has <code>query</code> as substructure.</p>
+<p><strong>Note that providing the comma separator <code>,</code> is <em>mandatory</em> here as each variable is an argument.</strong></p>
 <div class="highlight"><pre><span></span><span class="c1"># query is a SMILES or a SMARTS, operator is defined below, is_smarts is a boolean</span>
 
 <span class="n">HASSUBSTRUCTURE</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">is_smarts</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">operator</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">limit</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span>
@@ -3025,18 +3025,18 @@ out</div>
 <ul>
 <li><code>HASSUBSTRUCTURE(&quot;CO&quot;, min, False, 1)</code></li>
 </ul>
-<h3 id="hasprop">HASPROP<a class="anchor-link" href="#hasprop">&#182;</a></h3><p>Check whether a molecule has <code>prop</code> as property within a defined limit.
-<strong>Any comma <code>,</code> provided between arguments will be ignored</strong></p>
+<h3 id="hasprop"><code>HASPROP</code><a class="anchor-link" href="#hasprop">&#182;</a></h3><p>Check whether a molecule has <code>prop</code> as property within a defined limit.</p>
+<p><strong>Any comma <code>,</code> provided between arguments will be ignored</strong></p>
 <div class="highlight"><pre><span></span><span class="c1"># prop is a valid datamol.descriptors property, comparator is a required comparator operator and defined below</span>
 <span class="n">HASPROP</span><span class="p">(</span><span class="n">prop</span><span class="p">:</span><span class="nb">str</span> <span class="n">comparator</span><span class="p">:</span><span class="nb">str</span> <span class="n">limit</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span>
 </pre></div>
-<h3 id="like">LIKE<a class="anchor-link" href="#like">&#182;</a></h3><p>Check whether a molecule is similar enough to another molecule.
-<strong>Any comma <code>,</code> provided between arguments will be ignored</strong></p>
+<h3 id="like"><code>LIKE</code><a class="anchor-link" href="#like">&#182;</a></h3><p>Check whether a molecule is similar enough to another molecule.</p>
+<p><strong>Any comma <code>,</code> provided between arguments will be ignored</strong></p>
 <div class="highlight"><pre><span></span><span class="c1"># query is a SMILES</span>
 <span class="n">LIKE</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span>  <span class="n">comparator</span><span class="p">:</span><span class="nb">str</span> <span class="n">limit</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span>
 </pre></div>
 <h3 id="basic-operators">Basic operators:<a class="anchor-link" href="#basic-operators">&#182;</a></h3><ul>
-<li>comparator: one of <code>=</code> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>,  <code>&gt;=</code></li>
+<li>comparator: one of <code>=</code> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></li>
 <li>misc: the following misc values are accepted and parsed <code>true</code>, <code>false</code>, <code>True</code>, <code>False</code>, <code>TRUE</code>, <code>FALSE</code></li>
 <li>operator (can be quoted or unquoted):<ul>
 <li>MIN: <code>min</code>, <code>MIN</code></li>
@@ -3045,8 +3045,8 @@ out</div>
 </li>
 <li>boolean operator:<ul>
 <li>AND operator : <code>AND</code> or <code>&amp;</code> or <code>&amp;&amp;</code> or <code>and</code></li>
-<li>OR operator : <code>OR</code>  or <code>|</code> or <code>||</code> or <code>or</code></li>
-<li>NOT operator : <code>NOT</code> or  <code>!</code> or  <code>~</code> or <code>not</code></li>
+<li>OR operator : <code>OR</code> or <code>|</code> or <code>||</code> or <code>or</code></li>
+<li>NOT operator : <code>NOT</code> or <code>!</code> or <code>~</code> or <code>not</code></li>
 </ul>
 </li>
 </ul>

@@ -445,6 +445,26 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#syntax" class="md-nav__link">
+    Syntax
+  </a>
+  
+    <nav class="md-nav" aria-label="Syntax">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hasalert" class="md-nav__link">
+    HASALERT
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -688,6 +708,26 @@
   <a href="#example-2" class="md-nav__link">
     Example #2
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#syntax" class="md-nav__link">
+    Syntax
+  </a>
+  
+    <nav class="md-nav" aria-label="Syntax">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hasalert" class="md-nav__link">
+    HASALERT
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2918,37 +2958,101 @@ out</div>
 </div>
 
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div id="cell-id=671cab7a-651a-4b02-b8db-ec14d893b430" class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div>
+<div id="cell-id=43e98299-b6ff-4448-a657-967c9acad58d" class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-        
-        
-        <div class="CodeMirror cm-s-jupyter">
-            <div class="zeroclipboard-container">
-                <clipboard-copy for="cell-7">
-                <div>
-                    <span class="notice" hidden>Copied!</span>
-                    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 16 16" version="1.1"  data-view-component="true" class="clipboard-copy-icon">
-                        <path fill="currentColor" fill-rule="evenodd" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"></path>
-                        <path fill="currentColor" fill-rule="evenodd" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"></path>
-                    </svg>
-                    </div>
-                </clipboard-copy>
-            </div>
-            <div class="highlight-ipynb hl-python "><pre><span></span>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<hr />
+<h2 id="syntax">Syntax<a class="anchor-link" href="#syntax">&#182;</a></h2><p>Any string provided as <code>query</code> argument needs to be quoted (similar to json) to avoid ambiguity in parsing.</p>
+<ul>
+<li><p>An example of valid query is <code>&quot;&quot;&quot;(HASPROP(&quot;tpsa&quot; &gt; 120 ) | HASSUBSTRUCTURE(&quot;c1ccccc1&quot;)) AND NOT HASALERT(&quot;pains&quot;) OR HASSUBSTRUCTURE(&quot;[OH]&quot;, max, 2)&quot;&quot;&quot;</code>.</p>
+</li>
+<li><p>Examples of invalid queries are</p>
+<ul>
+<li><code>&quot;&quot;&quot;HASPROP(&quot;tpsa&quot; &gt; 120) OR HASSUBSTRUCTURE(&quot;[OH]&quot;, True, &gt;, 3)&quot;&quot;&quot;</code> : unexpected wrong operator <code>&gt;</code></li>
+<li><code>&quot;&quot;&quot;HASPROP(tpsa &gt; 120)&quot;&quot;&quot;</code> : tpsa is not quoted</li>
+<li><code>&quot;&quot;&quot;HASPROP(&quot;tpsa&quot;) &gt; 120&quot;&quot;&quot;</code> : this is not part of the language specification</li>
+<li><code>&quot;&quot;&quot;(HASPROP(&quot;tpsa&quot; &gt; 120) AND HASSUBSTRUCTURE(&quot;[OH]&quot;, True, max, 3 )&quot;&quot;&quot;</code>: mismatching parenthesis <code>(</code></li>
+</ul>
+</li>
+<li><p><code>&quot;&quot;&quot;HASPROP(&quot;tpsa&quot; &gt; 120) OR HASSUBSTRUCTURE(&quot;CO&quot;)&quot;&quot;&quot;</code>, <code>&quot;&quot;&quot;(HASPROP(&quot;tpsa&quot; &gt; 120)) OR (HASSUBSTRUCTURE(&quot;CO&quot;))&quot;&quot;&quot;</code> and <code>&quot;&quot;&quot;(HASPROP(&quot;tpsa&quot; &gt; 120) OR HASSUBSTRUCTURE(&quot;CO&quot;))&quot;&quot;&quot;</code> are equivalent</p>
+</li>
+</ul>
+<h3 id="hasalert">HASALERT<a class="anchor-link" href="#hasalert">&#182;</a></h3><p>check whether a molecule has an <code>alert</code> from a catalog</p>
+<div class="highlight"><pre><span></span><span class="c1"># alert is one supported alert catalog by `medchem`. For example `pains`</span>
+<span class="n">HASALERT</span><span class="p">(</span><span class="n">alert</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
-<div id="cell-7" class="clipboard-copy-txt"></div>
-        
-        </div>
-    </div>
+<h3 id="hasgroup">HASGROUP<a class="anchor-link" href="#hasgroup">&#182;</a></h3><p>check whether a molecule has a specific functional group from a catalog</p>
+<div class="highlight"><pre><span></span><span class="c1"># group is one supported functional group provided by `medchem`</span>
+<span class="n">HASGROUP</span><span class="p">(</span><span class="n">group</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+<h3 id="matchrule">MATCHRULE<a class="anchor-link" href="#matchrule">&#182;</a></h3><p>check whether a molecule match a predefined druglikeness <code>rule</code> from a catalog</p>
+<div class="highlight"><pre><span></span><span class="c1"># rule is one supported rule provided by `medchem`. For example `rule_of_five`</span>
+<span class="n">MATCHRULE</span><span class="p">(</span><span class="n">rule</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+<h3 id="hassuperstructure">HASSUPERSTRUCTURE<a class="anchor-link" href="#hassuperstructure">&#182;</a></h3><p>check whether a molecule has <code>query</code> as superstructure</p>
+<div class="highlight"><pre><span></span><span class="c1"># query is a SMILES</span>
+<span class="n">HASSUPERSTRUCTURE</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+<h3 id="hassubstructure">HASSUBSTRUCTURE<a class="anchor-link" href="#hassubstructure">&#182;</a></h3><p>Check whether a molecule has <code>query</code> as substructure.
+<strong>Note that providing the comma separator <code>,</code> is <em>mandatory</em> here as each variable is an argument.</strong></p>
+<div class="highlight"><pre><span></span><span class="c1"># query is a SMILES or a SMARTS, operator is defined below, is_smarts is a boolean</span>
+
+<span class="n">HASSUBSTRUCTURE</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">is_smarts</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">operator</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">limit</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span>
+
+<span class="c1"># which correspond to setting this default values</span>
+<span class="n">HASSUBSTRUCTURE</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">is_smarts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># same as</span>
+<span class="n">HASSUBSTRUCTURE</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">is_smarts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+<p>Not providing optional arguments is allowed, but they need to be provided in the exact same order shown above. Thus:</p>
+<ul>
+<li><code>HASSUBSTRUCTURE(&quot;CO&quot;)</code></li>
+<li><code>HASSUBSTRUCTURE(&quot;CO&quot;, False)</code></li>
+<li><code>HASSUBSTRUCTURE(&quot;CO&quot;, False, min)</code></li>
+<li><code>HASSUBSTRUCTURE(&quot;CO&quot;, False, min, 1)</code></li>
+</ul>
+<p>are all <code>valid</code> and <code>equivalent</code> (given their default values)</p>
+<p>Furthermore, since the correct argument map can be inferred when no ambiguity arises, the following <code>are valid but discouraged</code></p>
+<ul>
+<li><code>HASSUBSTRUCTURE(&quot;CO&quot;, False, 1)</code></li>
+<li><code>HASSUBSTRUCTURE(&quot;CO&quot;, min, 1)</code></li>
+</ul>
+<p>Whereas, this is invalid:</p>
+<ul>
+<li><code>HASSUBSTRUCTURE(&quot;CO&quot;, min, False, 1)</code></li>
+</ul>
+<h3 id="hasprop">HASPROP<a class="anchor-link" href="#hasprop">&#182;</a></h3><p>Check whether a molecule has <code>prop</code> as property within a defined limit.
+<strong>Any comma <code>,</code> provided between arguments will be ignored</strong></p>
+<div class="highlight"><pre><span></span><span class="c1"># prop is a valid datamol.descriptors property, comparator is a required comparator operator and defined below</span>
+<span class="n">HASPROP</span><span class="p">(</span><span class="n">prop</span><span class="p">:</span><span class="nb">str</span> <span class="n">comparator</span><span class="p">:</span><span class="nb">str</span> <span class="n">limit</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+<h3 id="like">LIKE<a class="anchor-link" href="#like">&#182;</a></h3><p>Check whether a molecule is similar enough to another molecule.
+<strong>Any comma <code>,</code> provided between arguments will be ignored</strong></p>
+<div class="highlight"><pre><span></span><span class="c1"># query is a SMILES</span>
+<span class="n">LIKE</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span>  <span class="n">comparator</span><span class="p">:</span><span class="nb">str</span> <span class="n">limit</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+<h3 id="basic-operators">Basic operators:<a class="anchor-link" href="#basic-operators">&#182;</a></h3><ul>
+<li>comparator: one of <code>=</code> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>,  <code>&gt;=</code></li>
+<li>misc: the following misc values are accepted and parsed <code>true</code>, <code>false</code>, <code>True</code>, <code>False</code>, <code>TRUE</code>, <code>FALSE</code></li>
+<li>operator (can be quoted or unquoted):<ul>
+<li>MIN: <code>min</code>, <code>MIN</code></li>
+<li>MAX: <code>max</code>, <code>MAX</code></li>
+</ul>
+</li>
+<li>boolean operator:<ul>
+<li>AND operator : <code>AND</code> or <code>&amp;</code> or <code>&amp;&amp;</code> or <code>and</code></li>
+<li>OR operator : <code>OR</code>  or <code>|</code> or <code>||</code> or <code>or</code></li>
+<li>NOT operator : <code>NOT</code> or  <code>!</code> or  <code>~</code> or <code>not</code></li>
+</ul>
+</li>
+</ul>
 
 </div>
 </div>
-
 </div>
 </div>
 </div>

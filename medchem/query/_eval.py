@@ -332,7 +332,7 @@ class EvaluableQuery:
 
         Args:
             parsed_query: query that has been parsed and transformed
-            verbose: whrther to print debug information
+            verbose: whether to print debug information
         """
 
         parsed_query = str(parsed_query)

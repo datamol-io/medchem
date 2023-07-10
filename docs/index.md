@@ -1,14 +1,8 @@
 # Medchem
 
-Package for applying common medchem filters to a dataset of molecules.
+_Medchem - Molecular filtering for drug discovery._
 
-## Summary
-
-This package contains various implementation of medchem rules collected from various sources that may be applied as filters on generated or screened molecules. It centralizes all common filters used at Valence Discovery.
-
-Although the list is as exhaustive as possible, filtering rules mainly depends on the drug discovery programs.
-
-It should be noted that **systematically applying all filters is to be avoided**. For example, "PAINS C" filters are usually not very relevant, another example is the filtering are very strict and could flag important substructure for a project (example some ZBGs).
+Medchem is a Python library that proposes multiple molecular medchem filters to a wide range of use cases relevant in a drug discovery context.
 
 ## Installation
 
@@ -16,58 +10,42 @@ It should be noted that **systematically applying all filters is to be avoided**
 micromamba install -c conda-forge medchem
 ```
 
-## Available Filters
+## Getting Started
 
-The following filters are available:
+The best way to get started is by going through the tutorials.
 
-### **Eli Lilly Medchem Rules**
+## Usage Notice
 
-These are python binding of the implementation of Eli Lilly Medchem Rules published under "Rules for Identifying Potentially Reactive or Promiscuous Compounds" by Robert F. Bruns and Ian W. Watson, J. Med. Chem. 2012, 55, 9763--9772 as ACS Author choice, i.e. open access at [doi 10.1021/jm301008n](https://doi.org/10.1021/jm301008n).
+While medchem filters, alerts and rules are powerfull ways to triage a list of drug-like compounds, it's **important** to always keep in mind to **never apply those filters blindly**. It's impossible for such filters to take into account the full diversity of the drug-like chemical space and by applying them blindly you might discard interesting compounds or let pass toxic or unwanted compounds.
 
-These rules are used in `medchem.filter.lilly_demerit_filter` function and are the main offering of this package.
+> _Don't blindly apply Medchem filters; you may miss gems or allow toxins._
 
-### NIBR filters
+## Acknowledgement
 
-Rules used by Novartis to build their new screening deck. The rules are published under "Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020), <https://dx.doi.org/10.1021/acs.jmedchem.0c01332>.
+Medchem proposes a large list of mechem filters, alerts and rules. All of those has been built over the years by the scientific community and we would like to thanks everyone who has contributed to those collections and filtering methods.
 
-These rules are used in lead filtering as `medchem.filter.lead.screening_filter`
+### Eli Lilly Medchem Rules
 
-### Bredt filters
+Originally proposed in ["Rules for Identifying Potentially Reactive or Promiscuous Compounds" in 2012](https://doi.org/10.1021/jm301008n) by Robert F. Bruns and Ian A. Watson. Medchem is re-using the implementation from <https://github.com/IanAWatson/Lilly-Medchem-Rules>.
 
-These are filters based on the Bredt's rules for unstable chemistry.There are used in lead filtering as `medchem.filter.lead.bredt_filter`.
+The Medchem implementation can be used from `medchem.structural.lilly_demerits`.
 
-### Alerts filters
+### NIBR Filters
 
-These are alerts rules from the ChEMBL database curation scheme and public litterature on promiscuous compounds on commons assays. The rule set are:
+Rules used by Novartis to build their new screening deck. First proposed in ["Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020)](https://dx.doi.org/10.1021/acs.jmedchem.0c01332).
 
-| name                          | # alerts | source      |
-| :---------------------------- | -------: | :---------- |
-| Glaxo                         |       55 | ChEMBL      |
-| Dundee                        |      105 | ChEMBL      |
-| BMS                           |      180 | ChEMBL      |
-| PAINS                         |      481 | ChEMBL      |
-| SureChEMBL                    |      166 | ChEMBL      |
-| MLSMR                         |      116 | ChEMBL      |
-| Inpharmatica                  |       91 | ChEMBL      |
-| LINT                          |       57 | ChEMBL      |
-| Alarm-NMR                     |       75 | Litterature |
-| AlphaScreen-Hitters           |        6 | Litterature |
-| GST-Hitters                   |       34 | Litterature |
-| HIS-Hitters                   |       19 | Litterature |
-| LuciferaseInhibitor           |        3 | Litterature |
-| DNABinder                     |       78 | Litterature |
-| Chelator                      |       55 | Litterature |
-| Frequent-Hitter               |       15 | Litterature |
-| Electrophilic                 |      119 | Litterature |
-| Genotoxic-Carcinogenicity     |      117 | Litterature |
-| LD50-Oral                     |       20 | Litterature |
-| Non-Genotoxic-Carcinogenicity |       22 | Litterature |
-| Reactive-Unstable-Toxic       |      335 | Litterature |
-| Skin                          |      155 | Litterature |
-| Toxicophore                   |      154 | Litterature |
+The Medchem implementation ca be found at `medchem.structural.NIBRFilters()`.
 
-There are used in lead filtering through `medchem.filter.lead.alert_filter`
+### Structural Alerts Filters
 
-### Generic filters
+These are alerts rules from the ChEMBL database curation scheme and public litterature on promiscuous compounds on commons assays. We thanks [Patrick Walters](https://twitter.com/wpwalters) for putting together this list of alerts.
 
-These are generic filters based on specific molecular property such as number of atoms, size of macrocycles, etc. They are available at `medchem.filter.generic`
+The original implementation by Patrick Walters can be found at <https://github.com/PatWalters/rd_filters> with [its companion blog post](https://practicalcheminformatics.blogspot.com/2018/08/filtering-chemical-libraries.html).
+
+The Medchem implementation can be found at `medchem.structural.CommonAlertsFilters()`.
+
+### RDKit Catalogs
+
+RDKit contains also contains a large list of filtering catalogs on which Medchem relies for the filtering logic.
+
+Those catalogs can be found at `medchem.catalogs.NamedCatalogs`.

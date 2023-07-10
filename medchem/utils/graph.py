@@ -1,8 +1,11 @@
+from typing import cast
 from typing import Union
 from typing import List
+from typing import Any
 
 import datamol as dm
 import numpy as np
+import networkx as nx
 
 from rdkit.Chem import SaltRemover
 
@@ -24,7 +27,7 @@ def automorphism(
         node_attrs: list of categorical atom attributes/properties to consider for node matching
         edge_attrs: list of categorical bond attributes/properties to consider for edge matching
     """
-    nx = dm.graph._get_networkx()
+
     # there is no need to kekulize the molecule, in order to preserve
     # aromaticity instead of switching to double bonds
     with dm.without_rdkit_log():
@@ -56,7 +59,9 @@ def automorphism(
     return dict(graph=graph, matches=matches, mol=mol)
 
 
-def score_symmetry(mol: Union[dm.Mol, str], exclude_self_mapped_edged: bool = False, **automorphism_kwargs):
+def score_symmetry(
+    mol: Union[dm.Mol, str], exclude_self_mapped_edged: bool = False, **automorphism_kwargs: Any
+):
     """Provide a symmetry score for a given input molecule
 
     !!! note
@@ -64,20 +69,27 @@ def score_symmetry(mol: Union[dm.Mol, str], exclude_self_mapped_edged: bool = Fa
         We define symmetry according to any (set of) plans dividing the molecule into two very similar subgraph.
         We include both edge and vertex transitivity. For example the star-molecular graph
         (e.g neopentane) is symmetrical here, although it's not vertex-transitive.
-        For more information see https://github.com/valence-platform/medchem/pull/41
 
     Args:
         mol: inputs molecules
         exclude_self_mapped_edged: Whether to exclude edges that matches to themselves in automorphism.
         automorphism_kwargs: keyword for determining automorphism
     """
+
     mol_automorphism = automorphism(mol, **automorphism_kwargs)
     _is_self_mapped = lambda mapping: all(node1 == node2 for node1, node2 in mapping.items())
+
     # We check and filter for identity mapping x->x for all nodes
     graph = mol_automorphism["graph"]
     graphmol = mol_automorphism["mol"]
     matches = mol_automorphism["matches"]
     matches = [x for x in matches if not _is_self_mapped(x)]
+
+    # Always make the type explicit
+    graphmol = cast(dm.Mol, graphmol)
+    graph = cast(nx.Graph, graph)
+    matches = cast(List[dict], matches)
+
     # Step 1: We set the symmetry score to 0 when there is not automorphism
     if len(matches) == 0:
         return 0

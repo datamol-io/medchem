@@ -1,3 +1,0 @@
-# `medchem.demerits`
-
-::: medchem.demerits

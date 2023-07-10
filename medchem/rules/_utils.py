@@ -1,9 +1,14 @@
 from typing import List
+
 import itertools
 import datamol as dm
-from rdkit import Chem
+
+from rdkit.Chem.rdmolops import ReplaceCore
+from rdkit.Chem.rdmolops import GetMolFrags
 from rdkit.Chem.Scaffolds import MurckoScaffold
+
 from loguru import logger
+
 from medchem.utils.smarts import SMARTSUtils
 
 _DESCRIPTOR_LIST = [
@@ -41,8 +46,13 @@ _DESCRIPTOR_LIST = [
 ]
 
 
-def _in_range(x, min_val: float = -float("inf"), max_val: float = float("inf")):
+def in_range(
+    x: float,
+    min_val: float = -float("inf"),
+    max_val: float = float("inf"),
+):
     """Check if a value is in a range
+
     Args:
         x: value to check
         min_val: minimum value
@@ -106,9 +116,9 @@ def has_spider_chains(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4)
     scaffold = MurckoScaffold.GetScaffoldForMol(mol)
     try:
         scaffold = dm.sanitize_mol(scaffold)
-        side_chains = Chem.ReplaceCore(mol, scaffold, labelByIndex=False)
+        side_chains = ReplaceCore(mol, scaffold, labelByIndex=False)
         if side_chains is not None:
-            side_chains = list(Chem.GetMolFrags(side_chains, asMols=True))
+            side_chains = list(GetMolFrags(side_chains, asMols=True))
             side_chains = [dm.to_smiles(x) for x in side_chains]
             side_chains = [SMARTSUtils.standardize_attachment(x, "[1*]") for x in side_chains]
             side_chains = [dm.to_mol(x) for x in side_chains]
@@ -118,9 +128,21 @@ def has_spider_chains(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4)
     except Exception as e:
         logger.error(e)
 
+    assert all([isinstance(x, dm.Mol) for x in side_chains])
+
     # extract side chains from the scaffold
     flagel_query = dm.from_smarts(flagel_query)
-    matches = [x.HasSubstructMatch(flagel_query) for x in side_chains]
+
+    if flagel_query is None:
+        raise ValueError("Invalid flagel query")
+
+    matches = []
+    for x in side_chains:
+        if x is None or isinstance(x, str):
+            raise ValueError("None molecule in side chains")
+
+        matches.append(x.HasSubstructMatch(flagel_query))
+
     return sum(matches) >= min_flagel
 
 
@@ -136,14 +158,17 @@ def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairw
         pairwise: whether to compute the number of fused aromatic rings pairwise.
             meaning phenanthrene and anthracene would count for 2 fused aromatic rings each
     """
+
     # EN: might make sense to move this to datamol
     # This code can be spedt up by sacrificing readability, will revisit eventually
 
     ring_systems = mol.GetRingInfo()
+
     # we use bond since we are focusing on fused rings
     simple_rings = list(ring_systems.BondRings())
     rings = [set(r) for r in simple_rings]
     ring_map = [set([x]) for x in range(len(rings))]
+
     go_next = True
     while go_next:
         go_next = False
@@ -158,6 +183,7 @@ def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairw
                 ring_map.append(new_map)
                 go_next = True
                 break
+
     # simple_rings: is the list of simple rings from ring info
     # rings: the list of rings after mergin fused rings
     # ring_map: the mapping between fused rings and the basic rings their contains
@@ -171,9 +197,11 @@ def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairw
                     fused_rings.append(fused_ring)
     else:
         fused_rings = [r for i, r in enumerate(rings) if len(ring_map[i]) >= 2]
+
     n_aromatic_fused_rings = 0
     for i, fused_ring_bonds in enumerate(fused_rings):
         aromatic_system = [mol.GetBondWithIdx(bond_id).GetIsAromatic() for bond_id in fused_ring_bonds]
+
         if require_all_aromatic:
             n_aromatic_fused_rings += all(aromatic_system)
         else:
@@ -182,9 +210,7 @@ def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairw
     return n_aromatic_fused_rings
 
 
-def fraction_atom_in_scaff(
-    mol: dm.Mol,
-):
+def fraction_atom_in_scaff(mol: dm.Mol):
     """Compute the fraction of atoms that belong to any ring system of the molecule
     as defined by the scaffold
 
@@ -194,17 +220,17 @@ def fraction_atom_in_scaff(
     n_heavy_atoms = mol.GetNumHeavyAtoms()
     if n_heavy_atoms < 1:
         return 0
+
     n_heavy_scaffold_atoms = 0
     scaffold = MurckoScaffold.GetScaffoldForMol(mol)
-    try:
-        scaffold = dm.sanitize_mol(scaffold)
+    scaffold = dm.sanitize_mol(scaffold)
+
+    if scaffold is not None:
         n_heavy_scaffold_atoms = scaffold.GetNumHeavyAtoms()
-    except:
-        pass
+
     return n_heavy_scaffold_atoms / n_heavy_atoms
 
 
 def list_descriptors():
     """List all descriptors available for computation"""
-    # EN: this is until datamol release
     return _DESCRIPTOR_LIST

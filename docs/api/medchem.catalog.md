@@ -1,3 +1,0 @@
-# `medchem.catalog`
-
-::: medchem.catalog

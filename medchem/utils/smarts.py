@@ -1,6 +1,7 @@
-from multiprocessing.sharedctypes import Value
-from typing import Any, Optional
+from typing import Optional
+
 import datamol as dm
+
 import re
 
 ATTACHMENT_POINT_TOKEN = re.escape("*")
@@ -28,8 +29,10 @@ class SMARTSUtils:
         """
         if not smiles:
             return smiles
+
         for attach_regex in ATTACHMENT_POINTS:
             smiles = re.sub(attach_regex, attach_tokens, smiles)
+
         return smiles
 
     @classmethod
@@ -38,7 +41,7 @@ class SMARTSUtils:
         smarts_str1: str,
         smarts_str2: str,
         aromatic_only: bool = False,
-    ):
+    ) -> str:
         """
         Returns a recursive smarts string connecting the two input smarts in `ortho` of each other.
         Connexion points needs to be through single or double bonds
@@ -65,7 +68,7 @@ class SMARTSUtils:
         smarts_str1: str,
         smarts_str2: str,
         aromatic_only: bool = False,
-    ):
+    ) -> str:
         """
         Returns a recursive smarts string connecting the two input smarts in `meta` of each other.
         Connexion points needs to be through single or double bonds
@@ -84,6 +87,7 @@ class SMARTSUtils:
         """
         if aromatic_only:
             return f"[$({smarts_str1})]-,=!:aaa-,=!:[$({smarts_str2})]"
+
         return f"[$({smarts_str1})]-,=!:[r][r][r]-,=!:[$({smarts_str2})]"
 
     @classmethod
@@ -92,7 +96,7 @@ class SMARTSUtils:
         smarts_str1: str,
         smarts_str2: str,
         aromatic_only: bool = False,
-    ):
+    ) -> str:
         """
         Returns a recursive smarts string connecting the two input smarts in `para` of each other.
         Connexion points needs to be through single or double bonds
@@ -120,7 +124,7 @@ class SMARTSUtils:
         unbranched: bool = False,
         unsaturated_bondtype: Optional[str] = None,
         allow_hetero_atoms: bool = True,
-    ):
+    ) -> str:
         """
         Returns a query that can match a long aliphatic chain
 
@@ -152,11 +156,12 @@ class SMARTSUtils:
             bond = "-,="
         elif unsaturated_bondtype in [dm.TRIPLE_BOND, "#"]:
             bond = "-,#"
+
         query = bond.join([base_query] * min_size)
         return query
 
     @classmethod
-    def atom_in_env(cls, *smarts_strs, include_atoms: bool = False, union: bool = False):
+    def atom_in_env(cls, *smarts_strs: str, include_atoms: bool = False, union: bool = False) -> str:
         """
         Returns a recursive/group smarts to find an atom that fits in the environments as defined by all the input smarts
 
@@ -169,65 +174,27 @@ class SMARTSUtils:
         Example:
             you can use this function to construct a complex query if you are not sure about how to write the smarts
             for example, to find a carbon atom that is both in a ring or size 6, bonded to an ethoxy and have a Fluorine in meta
-            >>> SMARTSUtils.atom_in_env("[#6;r6][OD2][C&D1]", "[c]aa[F]", union=False) # there are alternative way to write this
+
+            ```python
+            SMARTSUtils.atom_in_env("[#6;r6][OD2][C&D1]", "[c]aa[F]", union=False) # there are alternative way to write this
+            ```
 
         Returns:
             smarts: smarts pattern matching the group/environment
         """
-        if include_atoms:
-            smarts_strs = [f"[*:99]{sm}" for sm in smarts_strs]
 
-        smarts_strs = [f"$({sm})" for sm in smarts_strs]
+        _smarts_strs = list(smarts_strs)
+
+        if include_atoms:
+            _smarts_strs = [f"[*:99]{sm}" for sm in _smarts_strs]
+
+        _smarts_strs = [f"$({sm})" for sm in _smarts_strs]
+
         if union:
-            query = ",".join(smarts_strs)
+            query = ",".join(_smarts_strs)
         else:
-            query = ";".join(smarts_strs)
+            query = ";".join(_smarts_strs)
+
         if query:
             query = f"[{query}]"
         return query
-
-    @classmethod
-    def different_fragment(cls, *smarts_strs):
-        """
-        Returns a new query that match patterns that are in different fragments.
-
-        !!! warning
-            This feature is not supported yet by RDKit. See https://github.com/rdkit/rdkit/issues/1261
-
-        Args:
-            smarts_strs: list of input patterns defining the fragments
-
-        Example:
-            matching two oxygens in a molecule will work with '[#8].[#8]', but if you want the
-            oxygens to be in DIFFERENT fragments, then build the query with:
-            >>> SMARTSUtils.different_fragment('[#8]', '[#8]')
-
-        Returns:
-            smarts: smarts pattern matching patterns that are in different fragments
-        """
-
-        query = ".".join(smarts_strs)
-        if query:
-            query = f"({query})"
-        return query
-
-    @classmethod
-    def same_fragment(cls, *smarts_strs):
-        """
-        Returns a new query that match patterns that are in THE SAME fragment (component)
-
-        !!! warning
-            This feature is not supported yet by RDKit. See https://github.com/rdkit/rdkit/issues/1261
-
-        Args:
-            smarts_strs: list of input patterns defining the fragments
-
-        Example:
-            matching two oxygens in a molecule will work with '[#8].[#8]', but if you want the
-            oxygens to be in the SAME fragment, then build the query with:
-            >>> SMARTSUtils.same_fragment('[#8]', '[#8]')
-
-        Returns:
-            smarts: smarts pattern matching patterns that are in the same component
-        """
-        return ".".join([f"({sm})" for sm in smarts_strs])

@@ -12,13 +12,6 @@
 
 Medchem is a Python library that proposes multiple molecular medchem filters to a wide range of use cases relevant in a drug discovery context.
 
-- ✅ xxxx
-- 🐍 xxxx
-- ⚗️ xxxx
-- 🧠 xxxx
-- ⮔ xxxx
-- 🔌 xxxx
-
 ## Installation
 
 ```bash
@@ -37,7 +30,7 @@ Visit <https://medchem-docs.datamol.io/>.
 micromamba create -n medchem -f env.yml
 micromamba activate medchem
 
-pip install -e .
+pip install --no-deps -e .
 ```
 
 ### Tests
@@ -47,10 +40,6 @@ You can run tests locally with:
 ```bash
 pytest
 ```
-
-## Changelogs
-
-See the latest changelogs at [CHANGELOGS.md](./CHANGELOGS.md).
 
 ## License
 

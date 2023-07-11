@@ -1,5 +1,4 @@
 {
-    "name": "medchem",
     "containerEnv": {
         "TZ": "America/Montreal",
         "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
@@ -21,13 +20,13 @@
             "CONDA_ENV_FILE": "env.yml"
         }
     },
-    "overrideCommand": false, // allow the entrypoint to run
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [],
+    // allow the entrypoint to run
+    // "overrideCommand": false,
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "pip install -e .",
-    "mounts": [
-        "source=pre-commit-cache-${localEnv:USER},target=/home/mambauser/.cache/pre-commit,type=volume",
-        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind,consistency=cached"
-    ],
+    // Customize the way VS Code is started when running in the container
     "customizations": {
         "vscode": {
             "extensions": [

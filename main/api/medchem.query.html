@@ -47,6 +47,8 @@
     
       <link rel="stylesheet" href="../_assets/css/custom.css">
     
+      <link rel="stylesheet" href="../_assets/css/tweak-width.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -318,9 +320,7 @@
       
       
       
-        
-      
-      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
       
       
       
@@ -357,7 +357,7 @@
   
     <li class="md-nav__item">
       <a href="../tutorials/Structural_Filters.html" class="md-nav__link">
-        Structural Filters
+        Structural Alert Filters
       </a>
     </li>
   
@@ -644,6 +644,34 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#medchem.query._eval.QueryOperator.AVAILABLES_PROPERTIES" class="md-nav__link">
+    AVAILABLES_PROPERTIES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.query._eval.QueryOperator.AVAILABLE_CATALOGS" class="md-nav__link">
+    AVAILABLE_CATALOGS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.query._eval.QueryOperator.AVAILABLE_FUNCTIONAL_GROUPS" class="md-nav__link">
+    AVAILABLE_FUNCTIONAL_GROUPS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.query._eval.QueryOperator.AVAILABLE_RULES" class="md-nav__link">
+    AVAILABLE_RULES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#medchem.query._eval.QueryOperator.getprop" class="md-nav__link">
     getprop()
   </a>
@@ -910,6 +938,34 @@
   
     <nav class="md-nav" aria-label="QueryOperator">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#medchem.query._eval.QueryOperator.AVAILABLES_PROPERTIES" class="md-nav__link">
+    AVAILABLES_PROPERTIES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.query._eval.QueryOperator.AVAILABLE_CATALOGS" class="md-nav__link">
+    AVAILABLE_CATALOGS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.query._eval.QueryOperator.AVAILABLE_FUNCTIONAL_GROUPS" class="md-nav__link">
+    AVAILABLE_FUNCTIONAL_GROUPS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medchem.query._eval.QueryOperator.AVAILABLE_RULES" class="md-nav__link">
+    AVAILABLE_RULES
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#medchem.query._eval.QueryOperator.getprop" class="md-nav__link">
@@ -1186,7 +1242,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>whether to run job in parallel and number of jobs to consider.</p>
+              <p>whether to run jobs in parallel and number of jobs to consider.</p>
             </div>
           </td>
           <td>
@@ -1200,7 +1256,7 @@
           </td>
           <td>
             <div class="doc-md-description">
-              <p>scheduler to use.</p>
+              <p>joblib scheduler to use.</p>
             </div>
           </td>
           <td>
@@ -1338,6 +1394,94 @@
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="medchem.query._eval.QueryOperator.AVAILABLES_PROPERTIES" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">AVAILABLES_PROPERTIES</span> <span class="o">=</span> <span class="n">list_descriptors</span><span class="p">()</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#medchem.query._eval.QueryOperator.AVAILABLES_PROPERTIES" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Default list of available properties in medchem's query system</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="medchem.query._eval.QueryOperator.AVAILABLE_CATALOGS" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">AVAILABLE_CATALOGS</span> <span class="o">=</span> <span class="n">list_named_catalogs</span><span class="p">()</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#medchem.query._eval.QueryOperator.AVAILABLE_CATALOGS" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Default list of available catalogs in medchem's query system</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="medchem.query._eval.QueryOperator.AVAILABLE_FUNCTIONAL_GROUPS" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">AVAILABLE_FUNCTIONAL_GROUPS</span> <span class="o">=</span> <span class="n">list_functional_group_names</span><span class="p">()</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#medchem.query._eval.QueryOperator.AVAILABLE_FUNCTIONAL_GROUPS" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Default list of available functional groups in medchem's query system</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="medchem.query._eval.QueryOperator.AVAILABLE_RULES" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">AVAILABLE_RULES</span> <span class="o">=</span> <span class="n">RuleFilters</span><span class="o">.</span><span class="n">list_available_rules_names</span><span class="p">()</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#medchem.query._eval.QueryOperator.AVAILABLE_RULES" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Default list of available rules in medchem's query system</p>
+  </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -1356,7 +1500,7 @@
 
   <div class="doc doc-contents ">
   
-      <p>Compute the molecular property if a molecule.
+      <p>Compute the molecular property of a molecule.
 This is an alternative to the hasprop function, that does not enforce any comparison.</p>
 
   <p><strong>Parameters:</strong></p>
@@ -1530,9 +1674,7 @@ The alert catalog needs to be one supported by the medchem package.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Check if a molecule has a specific functional group.
-Internally, this is done fetching the smarts corresponding to the group
-then calling <code>QueryOperator.hassubstructure</code></p>
+      <p>Check if a molecule has a specific functional group.</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1618,7 +1760,7 @@ then calling <code>QueryOperator.hassubstructure</code></p>
 
   <div class="doc doc-contents ">
   
-      <p>Check if a molecule has a molecule property within desired range</p>
+      <p>Check if a molecule has a property within a desired range</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1732,7 +1874,7 @@ then calling <code>QueryOperator.hassubstructure</code></p>
 
   <div class="doc doc-contents ">
   
-      <p>Check if a molecule has substructure provided by a query</p>
+      <p>Check if a molecule has the substructure provided by a query</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1861,7 +2003,7 @@ then calling <code>QueryOperator.hassubstructure</code></p>
   <div class="doc doc-contents ">
   
       <p>Check if a molecule has a superstructure defined by a query.
-Note that a superstructure cannot be a query (smarts)</p>
+Note that a superstructure cannot be a query (SMARTS)</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1947,8 +2089,7 @@ Note that a superstructure cannot be a query (smarts)</p>
 
   <div class="doc doc-contents ">
   
-      <p>Check if a molecule is similar or distant enough from another molecule using tanimoto ECFP distance.
-and is useful for letting python handles the binary comparison operators.</p>
+      <p>Check if a molecule is similar or distant enough from another molecule using tanimoto ECFP distance.</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2151,7 +2292,7 @@ Takes computed_similarity and <code>limit</code> as arguments and returns a bool
   
       <p>Compute the ECFP tanimoto similarity between two molecules.
 This is an alternative to the like function, that does not enforce any comparison,
-and is useful for letting python handles the binary comparison operators.</p>
+and lets python handles the binary comparison operators.</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2690,6 +2831,11 @@ the underlying function is supposed to handle it.</p>
           
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </button>
+        
       </main>
       
         <footer class="md-footer">
@@ -2719,10 +2865,22 @@ the underlying function is supposed to handle it.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.expand"], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tracking", "navigation.top"], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+        
+          <script src="../_assets/js/mathjax.js"></script>
+        
+      
+        
+          <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
+      
+        
+          <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
       
     
   </body>

@@ -45,6 +45,8 @@
     
       <link rel="stylesheet" href="_assets/css/custom.css">
     
+      <link rel="stylesheet" href="_assets/css/tweak-width.css">
+    
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -358,8 +360,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#structural-alerts-filters" class="md-nav__link">
-    Structural Alerts Filters
+  <a href="#common-structural-alert-filters" class="md-nav__link">
+    Common Structural Alert Filters
   </a>
   
 </li>
@@ -412,9 +414,7 @@
       
       
       
-        
-      
-      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
       
       
       
@@ -451,7 +451,7 @@
   
     <li class="md-nav__item">
       <a href="tutorials/Structural_Filters.html" class="md-nav__link">
-        Structural Filters
+        Structural Alert Filters
       </a>
     </li>
   
@@ -547,9 +547,7 @@
       
       
       
-        
-      
-      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
       
       
       
@@ -767,8 +765,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#structural-alerts-filters" class="md-nav__link">
-    Structural Alerts Filters
+  <a href="#common-structural-alert-filters" class="md-nav__link">
+    Common Structural Alert Filters
   </a>
   
 </li>
@@ -805,31 +803,31 @@
 
 <h1 id="medchem">Medchem<a class="headerlink" href="#medchem" title="Permanent link">&para;</a></h1>
 <p><em>Medchem - Molecular filtering for drug discovery.</em></p>
-<p>Medchem is a Python library that proposes multiple molecular medchem filters to a wide range of use cases relevant in a drug discovery context.</p>
+<p>Medchem is a Python library that proposes molecular filters and prioritization rules for a wide range of use cases relevant in drug discovery.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>medchem
 </code></pre></div>
 <h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
 <p>The best way to get started is by going through the tutorials.</p>
 <h2 id="usage-notice">Usage Notice<a class="headerlink" href="#usage-notice" title="Permanent link">&para;</a></h2>
-<p>While medchem filters, alerts and rules are powerfull ways to triage a list of drug-like compounds, it's <strong>important</strong> to always keep in mind to <strong>never apply those filters blindly</strong>. It's impossible for such filters to take into account the full diversity of the drug-like chemical space and by applying them blindly you might discard interesting compounds or let pass toxic or unwanted compounds.</p>
+<p>When using medchem filters, alerts, and rules to triage a list of drug-like compounds, it is <strong>essential to avoid blindly applying these filters</strong>. It's impossible for such filters to take into account the full diversity of the drug-like chemical space and by blindly applying them you might discard interesting compounds or allow toxic or unwanted compounds for your particular context.</p>
 <blockquote>
 <p><em>Don't blindly apply Medchem filters; you may miss gems or allow toxins.</em></p>
 </blockquote>
 <h2 id="acknowledgement">Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permanent link">&para;</a></h2>
-<p>Medchem proposes a large list of mechem filters, alerts and rules. All of those has been built over the years by the scientific community and we would like to thanks everyone who has contributed to those collections and filtering methods.</p>
+<p>Medchem incorporates a comprehensive collection of medchem filters, alerts, and rules that have been developed by the scientific community over the years. We extend our gratitude to all the contributors to these collections and filtering methods.</p>
 <h3 id="eli-lilly-medchem-rules">Eli Lilly Medchem Rules<a class="headerlink" href="#eli-lilly-medchem-rules" title="Permanent link">&para;</a></h3>
 <p>Originally proposed in <a href="https://doi.org/10.1021/jm301008n">"Rules for Identifying Potentially Reactive or Promiscuous Compounds" in 2012</a> by Robert F. Bruns and Ian A. Watson. Medchem is re-using the implementation from <a href="https://github.com/IanAWatson/Lilly-Medchem-Rules">https://github.com/IanAWatson/Lilly-Medchem-Rules</a>.</p>
-<p>The Medchem implementation can be used from <code>medchem.structural.lilly_demerits</code>.</p>
+<p>The Medchem implementation is accessible through <code>medchem.structural.lilly_demerits</code>.</p>
 <h3 id="nibr-filters">NIBR Filters<a class="headerlink" href="#nibr-filters" title="Permanent link">&para;</a></h3>
-<p>Rules used by Novartis to build their new screening deck. First proposed in <a href="https://dx.doi.org/10.1021/acs.jmedchem.0c01332">"Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020)</a>.</p>
-<p>The Medchem implementation ca be found at <code>medchem.structural.NIBRFilters()</code>.</p>
-<h3 id="structural-alerts-filters">Structural Alerts Filters<a class="headerlink" href="#structural-alerts-filters" title="Permanent link">&para;</a></h3>
-<p>These are alerts rules from the ChEMBL database curation scheme and public litterature on promiscuous compounds on commons assays. We thanks <a href="https://twitter.com/wpwalters">Patrick Walters</a> for putting together this list of alerts.</p>
-<p>The original implementation by Patrick Walters can be found at <a href="https://github.com/PatWalters/rd_filters">https://github.com/PatWalters/rd_filters</a> with <a href="https://practicalcheminformatics.blogspot.com/2018/08/filtering-chemical-libraries.html">its companion blog post</a>.</p>
+<p>Rules used by the Novartis Institutes for BioMedical Research to build their screening deck. The initial proposal can be found in <a href="https://dx.doi.org/10.1021/acs.jmedchem.0c01332">"Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020)</a>.</p>
+<p>The Medchem implementation can be found at <code>medchem.structural.NIBRFilters()</code>.</p>
+<h3 id="common-structural-alert-filters">Common Structural Alert Filters<a class="headerlink" href="#common-structural-alert-filters" title="Permanent link">&para;</a></h3>
+<p>These alert rules are derived from the ChEMBL database curation scheme and public literature on promiscuous compounds in common assays. We extend our thanks <a href="https://twitter.com/wpwalters">Patrick Walters</a> for putting together this list of alerts.</p>
+<p>The original implementation by Patrick Walters can be found at <a href="https://github.com/PatWalters/rd_filters">https://github.com/PatWalters/rd_filters</a> along with its accompanying blog post <a href="https://practicalcheminformatics.blogspot.com/2018/08/filtering-chemical-libraries.html">Filtering Chemical Libraries</a>.</p>
 <p>The Medchem implementation can be found at <code>medchem.structural.CommonAlertsFilters()</code>.</p>
 <h3 id="rdkit-catalogs">RDKit Catalogs<a class="headerlink" href="#rdkit-catalogs" title="Permanent link">&para;</a></h3>
-<p>RDKit contains also contains a large list of filtering catalogs on which Medchem relies for the filtering logic.</p>
+<p>RDKit also contains a large list of catalogs on which Medchem relies for our filtering logic.</p>
 <p>Those catalogs can be found at <code>medchem.catalogs.NamedCatalogs</code>.</p>
 
 
@@ -842,6 +840,11 @@
           
           
         </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </button>
         
       </main>
       
@@ -872,10 +875,22 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.expand"], "search": "assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.tracking", "navigation.top"], "search": "assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+        
+          <script src="_assets/js/mathjax.js"></script>
+        
+      
+        
+          <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
+      
+        
+          <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
       
     
   </body>

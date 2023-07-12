@@ -47,6 +47,8 @@
     
       <link rel="stylesheet" href="../_assets/css/custom.css">
     
+      <link rel="stylesheet" href="../_assets/css/tweak-width.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -318,9 +320,7 @@
       
       
       
-        
-      
-      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
       
       
       
@@ -357,7 +357,7 @@
   
     <li class="md-nav__item">
       <a href="../tutorials/Structural_Filters.html" class="md-nav__link">
-        Structural Filters
+        Structural Alert Filters
       </a>
     </li>
   
@@ -1552,8 +1552,8 @@ of the name of a pre-defined rule as defined in the basic_rules module</p>
 <code class="highlight language-python"><span class="n">list_available_rules</span><span class="p">(</span><span class="o">*</span><span class="n">query</span><span class="p">)</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
 
 <a href="#medchem.rules._rule_filter.RuleFilters.list_available_rules" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -1575,8 +1575,8 @@ of the name of a pre-defined rule as defined in the basic_rules module</p>
 <code class="highlight language-python"><span class="n">list_available_rules_names</span><span class="p">(</span><span class="o">*</span><span class="n">query</span><span class="p">)</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
 
 <a href="#medchem.rules._rule_filter.RuleFilters.list_available_rules_names" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -1635,8 +1635,8 @@ of the name of a pre-defined rule as defined in the basic_rules module</p>
 
   <div class="doc doc-contents ">
   
-      <p>Compute the drug likeness filter according to chemaxon:</p>
-<p>It computes: <code>MW &lt; 400 &amp; logP &lt; 5 &amp; HBA &lt;= 10 &amp; HBD &lt;= 5 &amp; ROTBONDS &lt; 5 &amp; ring &gt; 0</code></p>
+      <p>Compute the druglikeness filter according to chemaxon:</p>
+<p>It computes: <code>MW &lt; 400 &amp; logP &lt; 5 &amp; HBA &lt;= 10 &amp; HBD &lt;= 5 &amp; ROTBONDS &lt; 5 &amp; RINGS &gt; 0</code></p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1803,7 +1803,7 @@ of the name of a pre-defined rule as defined in the basic_rules module</p>
   <div class="doc doc-contents ">
   
       <p>Computes drug likeness rule for CNS penetrant molecules as described in:
-Jeffrey &amp; Summerfield (2010) Assessment of the blood-brain barrier in CNS drug discovery.</p>
+<a href="https://pubmed.ncbi.nlm.nih.gov/19664709/">Jeffrey &amp; Summerfield (2010) Assessment of the blood-brain barrier in CNS drug discovery.</a></p>
 <p>It computes: <code>MW in [135, 582]  &amp; logP in [-0.2, 6.1] &amp; TPSA in [3, 118] &amp; HBD &lt;= 3 &amp; HBA &lt;= 5</code></p>
 
   <p><strong>Parameters:</strong></p>
@@ -1956,8 +1956,7 @@ Jeffrey &amp; Summerfield (2010) Assessment of the blood-brain barrier in CNS dr
 
   <div class="doc doc-contents ">
   
-      <p>Compute the DrugLike Soft rule available in FAF-Drugs4.
-The rules are described at <a href="https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html">https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html</a></p>
+      <p>Compute the DrugLike Soft rule available in <a href="https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html">FAF-Drugs4</a>.</p>
 <p>It computes:
 <div class="highlight"><pre><span></span><code>MW in [100, 600] &amp; logP &lt; in [-3, 6] &amp; HBD &lt;= 7 &amp; HBA &lt;= 12 &amp; TPSA &lt;=180 &amp; ROTBONDS &lt;= 11 &amp;
 RIGBONDS &lt;= 30 &amp; N_RINGS &lt;= 6 &amp; MAX_SIZE_RING &lt;= 18 &amp; N_CARBONS in [3, 35] &amp;  N_HETEROATOMS in [1, 15] &amp;
@@ -2149,14 +2148,14 @@ HC_RATIO in [0.1, 1.1] &amp; CHARGE in [-4, 4] &amp; N_ATOM_CHARGE &lt;= 4
   <div class="doc doc-contents ">
   
       <p>Compute passive intestinal absorption according to Egan Rules as described in:
-Egan, William J., Kenneth M. Merz, and John J. Baldwin (2000) Prediction of drug absorption using multivariate statistics</p>
+<a href="https://pubs.acs.org/doi/abs/10.1021/jm000292e">Egan, William J., Kenneth M. Merz, and John J. Baldwin (2000) Prediction of drug absorption using multivariate statistics.</a></p>
 <p>It computes: <code>TPSA in [0, 132] &amp; logP in [-1, 6]</code></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition abstract">
+<p class="admonition-title">Summary of the paper</p>
 <p>The author built a multivariate statistics model of passive intestinal absorption with robust outlier detection.
 Outliers were identified as being actively transported. They chose PSA and AlogP98 (cLogP), based on consideration of the physical processes
-involved in membrane permeability and the interrelationships and redundancies between other available descriptors.
-<strong>Compounds, which had been assayed for Caco-2 cell permeability, demonstrated a good rate of successful predictions (74−92%)</strong></p>
+involved in membrane permeability and the interrelationships and redundancies between other available descriptors.</p>
+<p><strong>Compounds, which had been assayed for Caco-2 cell permeability, demonstrated a good rate of successful predictions (74−92%)</strong></p>
 </div>
 
   <p><strong>Parameters:</strong></p>
@@ -2267,8 +2266,8 @@ involved in membrane permeability and the interrelationships and redundancies be
 
   <div class="doc doc-contents ">
   
-      <p>Compute the Lipinski's rule-of-5 for a molecule. Also known as Pfizer's rule of five or RO5,
-this rule is a rule of thumb to evaluate the druglikeness of a chemical compounds</p>
+      <p>Compute the Lipinski's rule-of-5 for a molecule. Also known as Pfizer's rule of five or RO5.
+This rule is a rule of thumb to evaluate the druglikeness of a chemical compounds.</p>
 <p>It computes: <code>MW &lt;= 500 &amp; logP &lt;= 5  &amp; HBD &lt;= 5 &amp; HBA &lt;= 10</code></p>
 
   <p><strong>Parameters:</strong></p>
@@ -2407,9 +2406,9 @@ this rule is a rule of thumb to evaluate the druglikeness of a chemical compound
 
   <div class="doc doc-contents ">
   
-      <p>Compute the Beyond rule-of-5 rule for a molecule. This rule illustrates the potential of compounds far beyond rule of 5 space to
+      <p>Compute the Beyond rule-of-5 rule for a molecule. This rule illustrates the potential of compounds far beyond rule-of-5 space to
 modulate novel and difficult target classes that have large, flat, and groove-shaped binding sites and has been described in:</p>
-<p>Doak, Bradley C., et al. (2015) How Beyond Rule of 5 Drugs and Clinical Candidates Bind to Their Targets.</p>
+<p><a href="https://pubmed.ncbi.nlm.nih.gov/26457449/">Doak, Bradley C., et al. (2015) How Beyond Rule of 5 Drugs and Clinical Candidates Bind to Their Targets.</a></p>
 <p>It computes: <code>MW &lt;= 1000 &amp; logP in [-2, 10] &amp; HBD &lt;= 6 &amp; HBA &lt;= 15 &amp; TPSA &lt;=250 &amp; ROTBONDS &lt;= 20</code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2581,13 +2580,13 @@ modulate novel and difficult target classes that have large, flat, and groove-sh
   <div class="doc doc-contents ">
   
       <p>Compute the rule-of-4 for a molecule. The rule-of-4 define a rule of thumb for PPI inhibitors,
-which are typically larger and more lipophilic than inhibitors of more standard binding sites. It has been published in:</p>
-<p>Morelli X, Bourgeas R, Roche P. (2011) Chemical and structural lessons from recent successes in protein–protein interaction inhibition.
-Also see: Shin et al. (2020) Current Challenges and Opportunities in Designing Protein–Protein Interaction Targeted Drugs. doi:10.2147/AABC.S235542</p>
+which are typically larger and more lipophilic than inhibitors of standard binding sites. It has been published in:
+<a href="https://pubmed.ncbi.nlm.nih.gov/21684802/">Morelli X, Bourgeas R, Roche P. (2011) Chemical and structural lessons from recent successes in protein–protein interaction inhibition</a></p>
+<p>Also see: <a href="https://pubmed.ncbi.nlm.nih.gov/33209039/">Shin et al. (2020) Current Challenges and Opportunities in Designing Protein–Protein Interaction Targeted Drugs</a></p>
 <p>It computes: <code>MW &gt;= 400 &amp; logP &gt;= 4  &amp; RINGS &gt;=4 &amp; HBA &gt;= 4</code></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Do not use this for small molecules that are not PPI inhibitors</p>
+<p>Do not use this for small molecules that are not PPI inhibitors !</p>
 </div>
 
   <p><strong>Parameters:</strong></p>
@@ -2727,8 +2726,8 @@ Also see: Shin et al. (2020) Current Challenges and Opportunities in Designing P
   <div class="doc doc-contents ">
   
       <p>Compute druglikeness rule of generative design.</p>
-<p>This set of rules are proprietary of Valence Discovery and have been curated to better filters molecules
-suggested by generative models for small molecules</p>
+<p>This set of rules are proprietary to © Valence Discovery and have been curated to better prioritize molecules
+suggested by generative models for small molecules.</p>
 <p>It computes:</p>
 <div class="highlight"><pre><span></span><code>MW in [200, 600] &amp; logP &lt; in [-3, 6] &amp; HBD &lt;= 7  &amp; HBA &lt;= 12 &amp; TPSA in [40, 180] &amp;
 ROTBONDS &lt;= 15 &amp; RIGID BONDS &lt;= 30 &amp; N_AROMATIC_RINGS &lt;= 5 &amp; N_FUSED_AROMATIC_RINGS_TOGETHER &lt;= 2 &amp;
@@ -2906,9 +2905,9 @@ N_ATOM_CHARGE &lt;= 2 &amp; N_TOTAL_ATOMS &lt; 70 &amp; N_HEAVY_METALS &lt; 1
 
   <div class="doc doc-contents ">
   
-      <p>Compute druglikeness rule of generative design.</p>
-<p>This set of rules are proprietary of Valence Discovery and have been curated to better filters molecules
-suggested by generative models</p>
+      <p>Compute the strict version of the druglikeness rule of generative design, which includes long aliphatic chains.</p>
+<p>This set of rules are proprietary to © Valence Discovery and have been curated to better prioritize molecules
+suggested by generative models for small molecules.</p>
 <p>It computes:</p>
 <div class="highlight"><pre><span></span><code>MW in [200, 600] &amp; logP &lt; in [-3, 6] &amp; HBD &lt;= 7  &amp; HBA &lt;= 12 &amp; TPSA in [40, 180] &amp;
 ROTBONDS &lt;= 15 &amp; RIGID BONDS &lt;= 30 &amp; N_AROMATIC_RINGS &lt;= 5 &amp; N_FUSED_AROMATIC_RINGS_TOGETHER &lt;= 2 &amp;
@@ -3089,8 +3088,8 @@ HAS_NO_SPIDER_SIDE_CHAINS &amp; FRACTION_RING_SYSTEM &gt;= 0.25
   <div class="doc doc-contents ">
   
       <p>Compute the Ghose filter. The Ghose filter is a drug-like filter described in:
-Ghose, AK.; Viswanadhan, VN.; Wendoloski JJ. (1999) A knowledge-based approach in designing combinatorial or medicinal
-chemistry libraries for drug discovery.1. A qualitative and quantitative characterization of known drug databases.</p>
+<a href="https://pubs.acs.org/doi/10.1021/cc9800071">Ghose, AK.; Viswanadhan, VN.; Wendoloski JJ. (1999) A knowledge-based approach in designing combinatorial or medicinal
+chemistry libraries for drug discovery.1. A qualitative and quantitative characterization of known drug databases.</a></p>
 <p>It computes: <code>MW in [160, 480] &amp; logP in [-0.4, 5.6] &amp; Natoms in [20, 70] &amp; refractivity in [40, 130]</code></p>
 
   <p><strong>Parameters:</strong></p>
@@ -3215,11 +3214,11 @@ chemistry libraries for drug discovery.1. A qualitative and quantitative charact
 
   <div class="doc doc-contents ">
   
-      <p>Compute GSK Rule (4/400) for druglikeness using interpretable ADMET rule of thumb based on
-Gleeson, M. Paul (2008). Generation of a set of simple, interpretable ADMET rules of thumb.</p>
+      <p>Compute GSK Rule (4/400) for druglikeness using interpretable ADMET rule of thumb. It has been described in:
+<a href="https://pubs.acs.org/doi/10.1021/jm701122q">Gleeson, M. Paul (2008). Generation of a set of simple, interpretable ADMET rules of thumb.</a></p>
 <p>It computes: <code>MW &lt;= 400 &amp; logP &lt;= 4</code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition abstract">
+<p class="admonition-title">Summary of the paper</p>
 <ul>
 <li>The rule are based on a set of consistent structure-property guides determined from an analysis of a number of key
     ADMET assays run within GSK: solubility, permeability, bioavailability, volume of distribution, plasma protein binding,
@@ -3323,8 +3322,7 @@ Gleeson, M. Paul (2008). Generation of a set of simple, interpretable ADMET rule
 
   <div class="doc doc-contents ">
   
-      <p>Compute the Lead-Like Soft rule available in FAF-Drugs4.
-The rules are described at <a href="https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html">https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html</a></p>
+      <p>Compute the Lead-Like Soft rule available in <a href="https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html">FAF-Drugs4</a>.</p>
 <p>It computes:
 <div class="highlight"><pre><span></span><code>MW in [150, 400] &amp; logP &lt; in [-3, 4] &amp; HBD &lt;= 4 &amp; HBA &lt;= 7 &amp; TPSA &lt;=160 &amp; ROTBONDS &lt;= 9 &amp;
 RIGBONDS &lt;= 30 &amp; N_RINGS &lt;= 4 &amp; MAX_SIZE_RING &lt;= 18 &amp; N_CARBONS in [3, 35] &amp;  N_HETEROATOMS in [1, 15] &amp;
@@ -3516,11 +3514,11 @@ HC_RATIO in [0.1, 1.1] &amp; CHARGE in [-4, 4] &amp; N_ATOM_CHARGE &lt;= 4 &amp;
   <div class="doc doc-contents ">
   
       <p>Computes Oprea's rule of drug likeness obtained by comparing drug vs non drug compounds across multiple datasets.
-The rules have been described in: Oprea (2000) Property distribution of drug-related chemical databases*</p>
+The rules have been described in: <a href="https://pubmed.ncbi.nlm.nih.gov/10756480/">Oprea (2000) Property distribution of drug-related chemical databases</a></p>
 <p>It computes: <code>HBD in [0, 2] &amp; HBA in [2, 9] &amp; ROTBONDS in [2,8] and RINGS in [1, 4]</code></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Seventy percent of the `drug-like' compounds were found between the following limits: 0 ≤ HDO ≤ 2, 2 ≤ HAC ≤ 9, 2 ≤ RTB ≤ 8, and 1 ≤ RNG ≤ 4</p>
+<div class="admonition abstract">
+<p class="admonition-title">Summary of the paper</p>
+<p>Seventy percent of the <code>drug-like</code> compounds were found between the following limits: <code>0 ≤ HDO ≤ 2, 2 ≤ HAC ≤ 9, 2 ≤ RTB ≤ 8, and 1 ≤ RNG ≤ 4</code></p>
 </div>
 
   <p><strong>Parameters:</strong></p>
@@ -3639,16 +3637,16 @@ The rules have been described in: Oprea (2000) Property distribution of drug-rel
 
   <div class="doc doc-contents ">
   
-      <p>Compute Pfizer Rule(3/75 Rule) for invivo toxicity. It has been described in:
-* Hughes, et al. (2008) Physiochemical drug properties associated with in vivo toxicological outcomes.
-* Price et al. (2009) Physicochemical drug properties associated with in vivo toxicological outcomes: a review</p>
-<p>It computes: <code>! (TPSA &lt; 75 &amp; logP &gt; 3)</code></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+      <p>Compute Pfizer 3/75 Rule for invivo toxicity. It has been described in:
+<a href="https://pubmed.ncbi.nlm.nih.gov/18691886/">Hughes, et al. (2008) Physiochemical drug properties associated with in vivo toxicological outcomes</a>
+<a href="https://pubmed.ncbi.nlm.nih.gov/19519283/">Price et al. (2009) Physicochemical drug properties associated with in vivo toxicological outcomes: a review</a></p>
+<p>It computes: <code>TPSA &gt;= 75 &amp; logP &lt;= 3</code></p>
+<div class="admonition abstract">
+<p class="admonition-title">Summary of the paper</p>
 <ul>
 <li>In vivo toleration (IVT) studies on 245 preclinical Pfizer compounds found an increased likelihood of toxic events for less polar, more lipophilic compounds.</li>
-<li>Compounds with low clogP / high TPSA are ∼ 2.5 times more likely not to have any toxity issue at a fixed concentration of 10 uM (total) or 1 uM (free);</li>
-<li>Compounds with high clogP / low TPSA are ∼ 2.5 times more likely to have a toxity finding; this represents an overall odds &gt;= 6.</li>
+<li>Compounds with <code>low clogP / high TPSA</code> are ∼ 2.5 times more likely <strong>to not have any toxity issue</strong> at a fixed concentration of 10 uM (total) or 1 uM (free);</li>
+<li>Compounds with <code>high clogP / low TPSA</code> are ∼ 2.5 times more likely <strong>to have a toxicity finding</strong>; this represents an overall odds &gt;= 6.</li>
 </ul>
 </div>
 
@@ -3761,7 +3759,7 @@ The rules have been described in: Oprea (2000) Property distribution of drug-rel
   <div class="doc doc-contents ">
   
       <p>Compute the REOS filter. The REOS filter is a filter designed to filter out unuseful compounds from HTS screening results.
-The filter is described in: Waters &amp; Namchuk (2003) Designing screens: how to make your hits a hit.</p>
+The filter is described in: <a href="https://pubmed.ncbi.nlm.nih.gov/12669025/">Waters &amp; Namchuk (2003) Designing screens: how to make your hits a hit.</a></p>
 <p>It computes: <code>MW in [200, 500] &amp; logP in [-5, 5] &amp; HBA in [0, 10] &amp; HBD in [0, 5] &amp; charge in [-2, 2] &amp; ROTBONDS in [0, 8] &amp; NHeavyAtoms in [15, 50]</code></p>
 
   <p><strong>Parameters:</strong></p>
@@ -3942,8 +3940,8 @@ The filter is described in: Waters &amp; Namchuk (2003) Designing screens: how t
 
   <div class="doc doc-contents ">
   
-      <p>Computes drug likeness rule for Respiratory (nasal/inhalatory) molecules as described in
-Ritchie et al. (2009) Analysis of the Calculated Physicochemical Properties of Respiratory Drugs: Can We Design for Inhaled Drugs Yet?</p>
+      <p>Computes drug likeness rule for Respiratory (nasal/inhalatory) molecules as described in:
+<a href="https://pubmed.ncbi.nlm.nih.gov/19275169/">Ritchie et al. (2009) Analysis of the Calculated Physicochemical Properties of Respiratory Drugs: Can We Design for Inhaled Drugs Yet?</a></p>
 <p>It computes: <code>MW in [240, 520]  &amp; logP in [-2, 4.7] &amp; HBONDS in [6, 12] &amp; TPSA in [51, 135] &amp; ROTBONDS in [3,8] &amp; RINGS in [1,5]</code></p>
 
   <p><strong>Parameters:</strong></p>
@@ -4124,8 +4122,8 @@ Ritchie et al. (2009) Analysis of the Calculated Physicochemical Properties of R
 
   <div class="doc doc-contents ">
   
-      <p>Compute the rule-of-3. The rule-of-three is a rule of thumb for molecular fragments (and not small molecules) published in:</p>
-<p>Congreve M, Carr R, Murray C, Jhoti H. (2003) <code>A "rule of three" for fragment-based lead discovery?</code>.</p>
+      <p>Compute the rule-of-3. The rule-of-three is a rule of thumb for molecular fragments (and not small molecules) published in:
+<a href="https://pubmed.ncbi.nlm.nih.gov/14554012/">Congreve M, Carr R, Murray C, Jhoti H. (2003) <code>A "rule of three" for fragment-based lead discovery?</code></a></p>
 <p>It computes: <code>MW &lt;= 300 &amp; logP &lt;= 3 &amp; HBA &lt;= 3 &amp; HBD &lt;= 3 &amp; ROTBONDS &lt;= 3</code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -4282,7 +4280,8 @@ Ritchie et al. (2009) Analysis of the Calculated Physicochemical Properties of R
 
   <div class="doc doc-contents ">
   
-      <p>Compute the extended rule-of-3. This is an extenion of the rule of three that computes:</p>
+      <p>Compute the extended rule-of-3 which is an extension of the rule of three that
+includes and <code>TPSA</code> and relaxes <code>HBA</code> constraints.</p>
 <p>It computes: <code>MW &lt;= 300 &amp; logP in [-3, 3]  &amp; HBA &lt;= 6 &amp; HBD &lt;= 3 &amp; ROTBONDS &lt;= 3 &amp; TPSA &lt;= 60</code></p>
 
   <p><strong>Parameters:</strong></p>
@@ -4451,8 +4450,7 @@ Ritchie et al. (2009) Analysis of the Calculated Physicochemical Properties of R
   
       <p>Computes rules-of-2 for reagent (building block design). It aims for prioritization of reagents that typically
 do not add more than 200 Da in MW or 2 units of clogP. The rule of two has been described in:</p>
-<p>Goldberg et al. (2015) Designing novel building blocks is an overlooked strategy to improve compound quality
-see: <a href="http://csmres.co.uk/cs.public.upd/article-downloads/Designing-novel-building-blocks.pdf">http://csmres.co.uk/cs.public.upd/article-downloads/Designing-novel-building-blocks.pdf</a></p>
+<p><a href="http://csmres.co.uk/cs.public.upd/article-downloads/Designing-novel-building-blocks.pdf">Goldberg et al. (2015) Designing novel building blocks is an overlooked strategy to improve compound quality</a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Their analysis showed that molecular weight (MW) and clogP were important factors in the frequency of use of reagents.
@@ -4597,7 +4595,7 @@ Other parameters, such as TPSA, HBA, HBD and ROTBONDS count, were less important
   <div class="doc doc-contents ">
   
       <p>Compute the Veber filter. The Veber filter is a druglike filter for orally active drugs described in:</p>
-<p>Veber et. al. (2002) Molecular Properties That Influence the Oral Bioavailability of Drug Candidates.</p>
+<p><a href="https://pubmed.ncbi.nlm.nih.gov/12036371/">Veber et. al. (2002) Molecular Properties That Influence the Oral Bioavailability of Drug Candidates</a></p>
 <p>It computes: <code>ROTBONDS &lt;= 10 &amp; TPSA &lt; 140</code></p>
 
   <p><strong>Parameters:</strong></p>
@@ -4709,7 +4707,7 @@ Other parameters, such as TPSA, HBA, HBD and ROTBONDS count, were less important
   <div class="doc doc-contents ">
   
       <p>Computes Xu's rule of drug likeness as described in:
-Xu &amp; Stevenson (2000), Drug-like Index: A New Approach To Measure Drug-like Compounds and Their Diversity</p>
+<a href="https://pubmed.ncbi.nlm.nih.gov/11045811/">Xu &amp; Stevenson (2000), Drug-like Index: A New Approach To Measure Drug-like Compounds and Their Diversity.</a></p>
 <p>It computes <code>HBD &lt;= 5 &amp; HBA &lt;= 10 &amp; ROTBONDS in [2, 35] &amp; RINGS in [1, 7] &amp; NHeavyAtoms in [10, 50]</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -4847,163 +4845,20 @@ Xu &amp; Stevenson (2000), Drug-like Index: A New Approach To Measure Drug-like 
   <div class="doc doc-contents ">
   
       <p>Compute the Zinc rule for a molecule. This rule is a rule of thumb to evaluate the druglikeness of a chemical compounds, based on:</p>
-<p>Irwin &amp; Schoichet (2005) ZINC - A Free Database of Commercially Available Compounds for Virtual Screening.</p>
+<p><a href="https://pubmed.ncbi.nlm.nih.gov/15667143/">Irwin &amp; Schoichet (2005) ZINC - A Free Database of Commercially Available Compounds for Virtual Screening</a></p>
 <p>Also see: <a href="https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html">https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html</a></p>
 <p>It computes: <code>MW in [60, 600] &amp; logP &lt; in [-4, 6] &amp; HBD &lt;= 6 &amp; HBA &lt;= 11 &amp; TPSA &lt;=150 &amp; ROTBONDS &lt;= 12 &amp; RIGBONDS &lt;= 50 &amp; N_RINGS &lt;= 7 &amp; MAX_SIZE_RING &lt;= 12 &amp; N_CARBONS &gt;=3 &amp; HC_RATIO &lt;= 2.0 &amp; CHARGE in [-4, 4]</code></p>
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>mol</code></td>
-          <td>
-                <code><span title="typing.Union">Union</span>[<span title="datamol">dm</span>.<span title="datamol.Mol">Mol</span>, str]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>input molecule</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>mw</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[float]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>precomputed molecular weight.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>clogp</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[float]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>precomputed cLogP.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>n_hba</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[float]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>precomputed number of HBA.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>n_hbd</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[float]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>precomputed number of HBD.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>tpsa</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[float]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>precomputed TPSA.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>n_rotatable_bonds</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[int]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>precomputed number of rotatable bonds.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>n_rings</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[int]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>precomputed number of rings in the molecules.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>charge</code></td>
-          <td>
-                <code><span title="typing.Optional">Optional</span>[float]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>precomputed charge.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>**kwargs</code></td>
-          <td>
-                <code><span title="typing.Any">Any</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Allow extra arguments for descriptors pre-computation.</p>
-            </div>
-          </td>
-          <td>
-                <code>{}</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+<p>Args:
+     mol: input molecule
+     mw: precomputed molecular weight.
+     clogp: precomputed cLogP.
+     n_hba: precomputed number of HBA.
+     n_hbd: precomputed number of HBD.
+     tpsa: precomputed TPSA.
+     n_rotatable_bonds: precomputed number of rotatable bonds.
+     n_rings: precomputed number of rings in the molecules.
+     charge: precomputed charge.
+     **kwargs: Allow extra arguments for descriptors pre-computation.</p>
 
   </div>
 
@@ -5105,7 +4960,7 @@ Xu &amp; Stevenson (2000), Drug-like Index: A New Approach To Measure Drug-like 
   <div class="doc doc-contents first">
   
       <p>Count the number of heavy metals in a molecule</p>
-<p>Metal are defined using the M notation in marvinjs. It's quicker to exclude atoms than to list all metals</p>
+<p>Metal atoms are defined using the M notation in marvinjs. It's quicker to exclude atoms than to list all metals</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -5158,14 +5013,14 @@ Xu &amp; Stevenson (2000), Drug-like Index: A New Approach To Measure Drug-like 
 
 
 <h3 id="medchem.rules.has_spider_chains" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">medchem</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">has_spider_chains</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">min_flagel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">min_flagel_len</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">medchem</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">has_spider_chains</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">min_appendage</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">min_appendage_len</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></code>
 
 <a href="#medchem.rules.has_spider_chains" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
   <div class="doc doc-contents first">
   
-      <p>Check whether a molecule has multiple flagel like</p>
+      <p>Check whether a molecule has multiple appendage-like structures</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -5193,13 +5048,13 @@ Xu &amp; Stevenson (2000), Drug-like Index: A New Approach To Measure Drug-like 
           </td>
         </tr>
         <tr>
-          <td><code>min_flagel</code></td>
+          <td><code>min_appendage</code></td>
           <td>
                 <code>int</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>minimum number of flagels (&gt;=)</p>
+              <p>minimum number of appendages (&gt;=)</p>
             </div>
           </td>
           <td>
@@ -5207,13 +5062,13 @@ Xu &amp; Stevenson (2000), Drug-like Index: A New Approach To Measure Drug-like 
           </td>
         </tr>
         <tr>
-          <td><code>min_flagel_len</code></td>
+          <td><code>min_appendage_len</code></td>
           <td>
                 <code>int</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>minimum length of a flagel (&gt;=)</p>
+              <p>minimum length (number of atoms in straight line) of a appendage (&gt;=)</p>
             </div>
           </td>
           <td>
@@ -5318,8 +5173,8 @@ meaning phenanthrene and anthracene would count for 2 fused aromatic rings each<
 
   <div class="doc doc-contents first">
   
-      <p>Compute the fraction of atoms that belong to any ring system of the molecule
-as defined by the scaffold</p>
+      <p>Compute the fraction of atoms that belong to any ring system of a molecule
+as defined by its murcko scaffold</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -5382,6 +5237,11 @@ as defined by the scaffold</p>
           
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </button>
+        
       </main>
       
         <footer class="md-footer">
@@ -5411,10 +5271,22 @@ as defined by the scaffold</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.expand"], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tracking", "navigation.top"], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+        
+          <script src="../_assets/js/mathjax.js"></script>
+        
+      
+        
+          <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
+      
+        
+          <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
       
     
   </body>

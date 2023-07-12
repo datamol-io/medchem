@@ -47,6 +47,8 @@
     
       <link rel="stylesheet" href="../_assets/css/custom.css">
     
+      <link rel="stylesheet" href="../_assets/css/tweak-width.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -318,9 +320,7 @@
       
       
       
-        
-      
-      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
       
       
       
@@ -357,7 +357,7 @@
   
     <li class="md-nav__item">
       <a href="../tutorials/Structural_Filters.html" class="md-nav__link">
-        Structural Filters
+        Structural Alert Filters
       </a>
     </li>
   
@@ -850,9 +850,16 @@
   <div class="doc doc-contents first">
 
   
-      <p>Complexity filters.</p>
-<p>The threshold have been re-calculated using the original new zinc-15 and focusing only on
-commercially available compounds.</p>
+      <p>Complexity-based molecular filters which compare some molecular complexity metrics to
+precomputed thresholds on large datasets of commercially available compounds.</p>
+<p>The default threshold have been calculated using all commercially available compounds of the zinc-15 dataset.</p>
+<div class="admonition example">
+<p class="admonition-title">Usage</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">medchem.complexity</span> <span class="kn">import</span> <span class="n">ComplexityFilter</span>
+<span class="n">complexity_filter</span> <span class="o">=</span> <span class="n">ComplexityFilter</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="s2">&quot;99&quot;</span><span class="p">,</span> <span class="n">complexity_metric</span><span class="o">=</span><span class="s2">&quot;bertz&quot;</span><span class="p">)</span>
+<span class="n">complexity_filter</span><span class="p">(</span><span class="s2">&quot;CC(=O)Nc1ccc(cc1)O&quot;</span><span class="p">)</span> <span class="c1"># True</span>
+</code></pre></div>
+</div>
 
 
 
@@ -1032,8 +1039,8 @@ The default available threshold stats files are
 <code class="highlight language-python"><span class="n">list_default_percentile</span><span class="p">(</span><span class="n">threshold_stats_file</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
 <a href="#medchem.complexity._filter.ComplexityFilter.list_default_percentile" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -1120,7 +1127,7 @@ The default available threshold stats files are
       <p>A chemically intuitive measure for molecular complexity. This complexity measure
 has been described in : H. W. Whitlock, J. Org. Chem., 1998, 63, 7982-7989.
 Benzyls, fenyls, etc. are not treated at all.</p>
-<p>On zinc 15 commercially available dataset, the range of this score is [0, 172] with a median of 25</p>
+<p>On the zinc 15 commercially available dataset, the range of this score is [0, 172] with a median of 25</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1222,11 +1229,9 @@ Benzyls, fenyls, etc. are not treated at all.</p>
 
   <div class="doc doc-contents first">
   
-      <p>Compute a Barone complexity measure for a molecule as described in:</p>
-<p>R. Barone and M. Chanon, J. Chem. Inf. Comput. Sci., 2001, 41 (2), pp 269–272
-Qi Huang, Lin-LiLi, Sheng-Yong Yang, J. Mol. Graph. Model. 2010, 28 (8), pp 775–787</p>
-<p>Parameter values are hardcoded as in the articles.
-On zinc 15 commercially available dataset, the range of this score is [30, 4266] with a median of 538</p>
+      <p>Compute the Barone complexity measure for a molecule as described in:
+<a href="https://pubs.acs.org/doi/abs/10.1021/ci000145p">R. Barone and M. Chanon, J. Chem. Inf. Comput. Sci., 2001, 41 (2), pp 269–272</a></p>
+<p>On zinc 15 commercially available dataset, the range of this score is [30, 4266] with a median of 538</p>
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1286,9 +1291,8 @@ On zinc 15 commercially available dataset, the range of this score is [30, 4266]
 
   <div class="doc doc-contents first">
   
-      <p>Compute synthetic and molecular complexity as described in:</p>
-<p>TK Allu, TI Oprea, J. Chem. Inf. Model. 2005, 45(5), pp. 1237-1243.
-<a href="https://sci-hub.ee/10.1021/ci0501387">https://sci-hub.ee/10.1021/ci0501387</a></p>
+      <p>Compute synthetic and molecular complexity as described in:
+<a href="https://pubs.acs.org/doi/10.1021/ci0501387">TK Allu, TI Oprea, J. Chem. Inf. Model. 2005, 45(5), pp. 1237-1243</a></p>
 <p>On zinc 15 commercially available dataset, the range of this score is [1.93, 192.00] with a median of 42.23</p>
 
   <p><strong>Parameters:</strong></p>
@@ -1336,8 +1340,9 @@ On zinc 15 commercially available dataset, the range of this score is [30, 4266]
   <div class="doc doc-contents first">
   
       <p>Compute total walk count in a molecules as proxy for complexity. This score is described in:
-<code>twc = 1/2 sum(k=1..n-1,sum(i=atoms,awc(k,i)))</code>
-Gerta Rucker and Christoph Rucker, J. Chem. Inf. Comput. Sci. 1993, 33, 683-695</p>
+<a href="https://pubs.acs.org/doi/pdf/10.1021/ci00015a005">Gerta Rucker and Christoph Rucker, J. Chem. Inf. Comput. Sci. 1993, 33, 683-695</a></p>
+<p>The total walk count is defined as: <span class="arithmatex">\(twc = \frac{1}{2} \sum_{k=1}^{n-1} \sum_{i}^{Natoms} \text{awc}(k,i)\)</span>
+where <span class="arithmatex">\(\text{awc}(k,i)\)</span> is the number of walk of length <code>k</code> starting at atom <code>i</code>.</p>
 <p>On zinc 15 commercially available dataset, the range of this score is [1.20, 39.08] with a median of 10.65</p>
 
   <p><strong>Parameters:</strong></p>
@@ -1397,6 +1402,11 @@ Gerta Rucker and Christoph Rucker, J. Chem. Inf. Comput. Sci. 1993, 33, 683-695<
           
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </button>
+        
       </main>
       
         <footer class="md-footer">
@@ -1426,10 +1436,22 @@ Gerta Rucker and Christoph Rucker, J. Chem. Inf. Comput. Sci. 1993, 33, 683-695<
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.expand"], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tracking", "navigation.top"], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+        
+          <script src="../_assets/js/mathjax.js"></script>
+        
+      
+        
+          <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
+      
+        
+          <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
       
     
   </body>

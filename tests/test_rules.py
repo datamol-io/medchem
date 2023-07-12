@@ -17,12 +17,12 @@ def test_list_descriptors():
 
 
 def test_has_spider_chains():
-    mols_with_flagels = [
+    mols_with_appendages = [
         "CCNCC1CCC(CNC(C)C)C1",
         "CCCCC1=CN(C=C1CCC)C1=CC(=CC=C1)C(C)CCO",
         "CCCCC1=CC2=C(OC(CN(C)CC)O2)C=C1",
     ]
-    mols_without_flagels = [
+    mols_without_appendages = [
         "CC(C)C(O)C(O)C(N)=O",
         "OC1=CC=CC(CC2CC2)=C1",
         "CCN(C)C1=CC=CC(CC(O)CC(C)O)=C1",
@@ -31,11 +31,11 @@ def test_has_spider_chains():
     ]
 
     assert all(
-        mc.rules.has_spider_chains(dm.to_mol(x)) for x in mols_with_flagels
-    ), "Fail flagel test for mols with flagels"
+        mc.rules.has_spider_chains(dm.to_mol(x)) for x in mols_with_appendages
+    ), "Fail appendage test for mols with appendages"
     assert all(
-        not mc.rules.has_spider_chains(dm.to_mol(x)) for x in mols_without_flagels
-    ), "Fail flagel test for mols without flagels"
+        not mc.rules.has_spider_chains(dm.to_mol(x)) for x in mols_without_appendages
+    ), "Fail appendage test for mols without appendages"
 
 
 def test_fraction_ring_system():

@@ -63,7 +63,7 @@ def test_constraints_validate():
 
     mol = dm.to_mol("CN(C)C(=O)c1cncc(C)c1")
 
-    assert Constraints.validate(mol, constraints=[constraint]) == True
+    assert Constraints.validate(mol, constraints=[constraint]) is True
 
 
 def test_constraints_validate_fails():

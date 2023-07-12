@@ -11,7 +11,7 @@ from rdkit.Chem.rdmolfiles import MolFragmentToSmiles
 
 
 class Constraints:
-    """Complex query system for matches with additional constraints
+    """Complex query system for performing substructure matches with additional constraints
 
     !!! example
 
@@ -31,7 +31,7 @@ class Constraints:
 
         Args:
             core: the scaffold/query molecule to match against. Needs to be a molecule
-            constraint_fns: a dictionary of constraints functions
+            constraint_fns: a dictionary of constraint functions that defines the required constraints after the substructure match
             prop_name: the property name to use in the match at each atom defined by the core
                 for further matches against the constraints functions
         """
@@ -107,7 +107,7 @@ class Constraints:
 
     def _check_final(self, mol: dm.Mol, vect: List[int]):
         """
-        Perform a breadth search over current matches.
+        Perform a breadth first search over current matches.
 
         !!! note
             This function is not designed to be used directly but this setup is required to make things work

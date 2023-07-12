@@ -20,12 +20,12 @@ class SMARTSUtils:
     """Collections of utils to build complex SMARTS query more efficiently for non experienced user"""
 
     @classmethod
-    def standardize_attachment(cls, smiles, attach_tokens: str = "[*:1]"):
+    def standardize_attachment(cls, smiles: str, attach_tokens: str = "[*:1]"):
         """Standardize an attachment point in a smiles
 
         Args:
-            smiles (str): SMILES string
-            attach_tokens (str): Attachment point token to use as standard token
+            smiles: SMILES string
+            attach_tokens: Attachment point token to use as standard token
         """
         if not smiles:
             return smiles
@@ -44,7 +44,7 @@ class SMARTSUtils:
     ) -> str:
         """
         Returns a recursive smarts string connecting the two input smarts in `ortho` of each other.
-        Connexion points needs to be through single or double bonds
+        Connection points needs to be through single or double bonds.
 
         Args:
             smarts_str1: first smarts pattern defining the first functional group
@@ -71,7 +71,7 @@ class SMARTSUtils:
     ) -> str:
         """
         Returns a recursive smarts string connecting the two input smarts in `meta` of each other.
-        Connexion points needs to be through single or double bonds
+        Connection points needs to be through single or double bonds.
 
         Args:
             smarts_str1: first smarts pattern defining the first functional group
@@ -99,7 +99,7 @@ class SMARTSUtils:
     ) -> str:
         """
         Returns a recursive smarts string connecting the two input smarts in `para` of each other.
-        Connexion points needs to be through single or double bonds
+        Connection points needs to be through single or double bonds.
 
         Args:
             smarts_str1: first smarts pattern defining the first functional group
@@ -163,7 +163,7 @@ class SMARTSUtils:
     @classmethod
     def atom_in_env(cls, *smarts_strs: str, include_atoms: bool = False, union: bool = False) -> str:
         """
-        Returns a recursive/group smarts to find an atom that fits in the environments as defined by all the input smarts
+        Returns a recursive/group smarts to find an atom that fits in the environments defined by all the input smarts
 
         Args:
             smarts_strs: list of input patterns defining the environment the atom must fit in. The first atom of each pattern

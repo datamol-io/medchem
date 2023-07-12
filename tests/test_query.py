@@ -100,14 +100,14 @@ def test_prop():
     with pytest.raises(Exception):
         QueryOperator.hasprop(mol, "tpsa", ">", 120)  # type: ignore
 
-    assert QueryOperator.hasprop(mol, "tpsa", operator.le, 120) == True
+    assert QueryOperator.hasprop(mol, "tpsa", operator.le, 120) is True
 
 
 def test_alert():
     mol = dm.to_mol("Oc1cscc1-c1ccc(O)cc1")  # contains tiophene hydroxy should match pains
 
-    assert QueryOperator.hasalert(mol, "pains") == True
-    assert QueryOperator.hasalert(mol, "brenk") == False
+    assert QueryOperator.hasalert(mol, "pains") is True
+    assert QueryOperator.hasalert(mol, "brenk") is False
 
     with pytest.raises(Exception):
         QueryOperator.hasalert(mol, "fake")
@@ -118,23 +118,23 @@ def test_substructure():
     substruct1 = "s1ccc(c1)-[#8;H1]"
     substruct2 = "CO"  # should match twice for SMILES and once for SMARTS
 
-    assert QueryOperator.hassubstructure(mol, substruct1, is_smarts=True) == True
-    assert QueryOperator.hassubstructure(mol, substruct2, is_smarts=True) == True
-    assert QueryOperator.hassubstructure(mol, substruct2, is_smarts=False) == True
-    assert QueryOperator.hassubstructure(mol, substruct2, True, "min", limit=1) == True
-    assert QueryOperator.hassubstructure(mol, substruct2, True, "min", limit=2) == False
-    assert QueryOperator.hassubstructure(mol, substruct2, True, None, limit=2) == False
-    assert QueryOperator.hassubstructure(mol, substruct2, True, "max", limit=2) == True
-    assert QueryOperator.hassubstructure(mol, substruct2, False, "min", limit=1) == True
-    assert QueryOperator.hassubstructure(mol, substruct2, False, "min", limit=2) == True
-    assert QueryOperator.hassubstructure(mol, substruct2, False, None, limit=2) == True
-    assert QueryOperator.hassubstructure(mol, substruct2, False, "max", limit=2) == False
+    assert QueryOperator.hassubstructure(mol, substruct1, is_smarts=True) is True
+    assert QueryOperator.hassubstructure(mol, substruct2, is_smarts=True) is True
+    assert QueryOperator.hassubstructure(mol, substruct2, is_smarts=False) is True
+    assert QueryOperator.hassubstructure(mol, substruct2, True, "min", limit=1) is True
+    assert QueryOperator.hassubstructure(mol, substruct2, True, "min", limit=2) is False
+    assert QueryOperator.hassubstructure(mol, substruct2, True, None, limit=2) is False
+    assert QueryOperator.hassubstructure(mol, substruct2, True, "max", limit=2) is True
+    assert QueryOperator.hassubstructure(mol, substruct2, False, "min", limit=1) is True
+    assert QueryOperator.hassubstructure(mol, substruct2, False, "min", limit=2) is True
+    assert QueryOperator.hassubstructure(mol, substruct2, False, None, limit=2) is True
+    assert QueryOperator.hassubstructure(mol, substruct2, False, "max", limit=2) is False
 
 
 def test_rule():
     mol = "Oc1cscc1-c1ccc(OC)cc1"
-    assert QueryOperator.matchrule(mol, "rule_of_five") == True
-    assert QueryOperator.matchrule(mol, "rule_of_three") == False
+    assert QueryOperator.matchrule(mol, "rule_of_five") is True
+    assert QueryOperator.matchrule(mol, "rule_of_three") is False
 
     with pytest.raises(Exception):
         QueryOperator.matchrule(mol, "fake")
@@ -142,13 +142,13 @@ def test_rule():
 
 def test_group():
     mol = "Oc1cscc1-c1ccc(OC)cc1"
-    assert QueryOperator.hasgroup(mol, "Ethers") == True
-    assert QueryOperator.hasgroup(mol, "Ketones") == False
+    assert QueryOperator.hasgroup(mol, "Ethers") is True
+    assert QueryOperator.hasgroup(mol, "Ketones") is False
 
     # should normally match an alcohol, but how the group as defined, the specificity is high
     # so another more specific group should match and not alcohol for the tiophene hydroxy
-    assert QueryOperator.hasgroup(mol, "Alcohols") == False
-    assert QueryOperator.hasgroup(mol, "Hydroxy compounds: alcohols or phenols") == True
+    assert QueryOperator.hasgroup(mol, "Alcohols") is False
+    assert QueryOperator.hasgroup(mol, "Hydroxy compounds: alcohols or phenols") is True
 
     with pytest.raises(Exception):
         QueryOperator.hasgroup(mol, "fake")
@@ -159,7 +159,7 @@ def test_similarity():
     mol2 = dm.to_mol("Oc1cscc1-c1ccc(O)cc1")
     dist = dm.cdist([mol1], [mol2])[0][0]
 
-    assert QueryOperator.like(mol1, mol2, operator.le, 0.8) == True
+    assert QueryOperator.like(mol1, mol2, operator.le, 0.8) is True
     assert QueryOperator.similarity(mol1, mol2) == 1 - dist
 
 
@@ -167,8 +167,8 @@ def test_superstructure():
     query = "Oc1cscc1-c1ccc(OC)cc1"
     mol = "Oc1ccsc1"
 
-    assert QueryOperator.hassuperstructure(mol, query) == True
-    assert QueryOperator.hassuperstructure(query, mol) == False
+    assert QueryOperator.hassuperstructure(mol, query) is True
+    assert QueryOperator.hassuperstructure(query, mol) is False
 
 
 def test_query_eval():

@@ -76,8 +76,10 @@ def score_symmetry(
         automorphism_kwargs: keyword for determining automorphism
     """
 
+    def _is_self_mapped(mapping):
+        return all(node1 == node2 for node1, node2 in mapping.items())
+
     mol_automorphism = automorphism(mol, **automorphism_kwargs)
-    _is_self_mapped = lambda mapping: all(node1 == node2 for node1, node2 in mapping.items())
 
     # We check and filter for identity mapping x->x for all nodes
     graph = mol_automorphism["graph"]

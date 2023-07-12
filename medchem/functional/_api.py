@@ -187,7 +187,7 @@ def catalog_filter(
         scheduler=scheduler,
         progress=progress,
         tqdm_kwargs=dict(
-            desc=f"Filtering with catalogs",
+            desc="Filtering with catalogs",
             leave=progress_leave,
         ),
         flatten_results=True,

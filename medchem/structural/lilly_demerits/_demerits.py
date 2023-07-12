@@ -24,6 +24,21 @@ BIN2PATH = find_lilly_binaries()
 
 
 class LillyDemeritsFilters:
+    """Lilly MedChem Rules published in:
+
+    [Robert F. Bruns and Ian A. Watson, Rules for Identifying Potentially Reactive or Promiscuous Compounds,
+    Journal of Medicinal Chemistry 2012 55 (22), 9763-9772](https://pubs.acs.org/doi/10.1021/jm301008n)
+
+
+    !!! abstract "Description"
+        This is a set of 275 rules, developed over an 18-year period, used to identify compounds that may interfere with biological assays,
+        allowing their removal from screening sets. Reasons for rejection include reactivity (e.g., acyl halides),
+        interference with assay measurements (fluorescence, absorbance, quenching), activities that damage proteins (oxidizers, detergents),
+        instability (e.g., latent aldehydes), and lack of druggability (e.g., compounds lacking both oxygen and nitrogen).
+
+
+    """
+
     def __init__(
         self,
         mc_first_pass_options: Optional[str] = None,
@@ -32,6 +47,8 @@ class LillyDemeritsFilters:
         **run_options: Any,
     ):
         """
+        Constructor for the Lilly MedChem Rules
+
         Args:
             mc_first_pass_options: Initial options to pass to mc_first_pass
             iwd_options: Initial options to pass to iwdemerit
@@ -77,7 +94,7 @@ class LillyDemeritsFilters:
             return self._score(mols)
 
     def _score(self, mols: Sequence[Union[str, dm.Mol]]):
-        """Run scorer on input smile list:
+        """Run lilly medchem scorer on input smile list:
 
         Args:
             mols: list of smiles
@@ -284,7 +301,7 @@ class LillyDemeritsFilters:
                         if m is not None:
                             demerit_score = int(m.group(1))
                         tmp = demerit_extractor.findall(row)
-                        demerit_string = ",".join([":".join(reversed(l.split())) for l in tmp])
+                        demerit_string = ",".join([":".join(reversed(line.split())) for line in tmp])
                         in_string += " " + demerit_string
                     parseable.append(in_string)
                     demerit_scores.append(demerit_score)

@@ -9,6 +9,7 @@ import pandas as pd
 
 
 def find_lilly_binaries():
+    """Find the required binaries to run the Lilly medchem filters"""
     binaries_list = ["mc_first_pass", "tsubstructure", "iwdemerit"]
     binary_paths = {}
     for binary_name in binaries_list:
@@ -52,7 +53,7 @@ def parse_output(rowlist):
 
 
 def run_cmd(cmd, shell=False):
-    """Run command"""
+    """Run a command"""
     res = subprocess.run(cmd, capture_output=True, shell=shell, check=False)
     if res.returncode != 0:
         logger.error("".join(res.stderr.decode("utf-8")))

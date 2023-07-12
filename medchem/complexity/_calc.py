@@ -266,8 +266,7 @@ def _AWC(k: int, atom: int, table: list, neighbors: list):
 
 
 def TWC(mol: dm.Mol, log10: bool = True):
-    """
-    Compute total walk count in a molecules as proxy for complexity. This score is described in:
+    """Compute total walk count in a molecules as proxy for complexity. This score is described in:
     [Gerta Rucker and Christoph Rucker, J. Chem. Inf. Comput. Sci. 1993, 33, 683-695](https://pubs.acs.org/doi/pdf/10.1021/ci00015a005)
 
     The total walk count is defined as: $twc = \\frac{1}{2} \sum_{k=1}^{n-1} \sum_{i}^{Natoms} \\text{awc}(k,i)$

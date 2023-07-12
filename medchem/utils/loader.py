@@ -12,7 +12,7 @@ import fsspec
 
 @functools.lru_cache(maxsize=10)
 def get_data_path(filename: str, module: str = "medchem.data"):
-    """Return the filepath of a data file."""
+    """Return the filepath of an internal data file."""
 
     path = importlib.resources.files(module).joinpath(filename)
     return str(path)
@@ -22,7 +22,7 @@ def get_grammar(
     grammar: Optional[Union[os.PathLike, str]] = None,
     as_string: bool = False,
 ):
-    """Return the default lark grammar file for queries
+    """Return the default lark grammar file for the medchem query system
 
     Args:
         grammar: The path to the grammar file. If None, the default medchem grammar file is used.

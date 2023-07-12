@@ -30,16 +30,19 @@ def list_default_chemical_groups(hierarchy: bool = False) -> list:
     return list(data.group.unique())
 
 
-def list_functional_group_names() -> list:
+def list_functional_group_names(unique: bool = True) -> list:
     """
     List common functional group names
+
+    Args:
+        unique: whether to return only unique names
 
     Returns:
         List of functional group names
     """
     data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
-    return list(data.name)
+    return list(data.name.unique())
 
 
 @functools.lru_cache(maxsize=None)
@@ -52,6 +55,10 @@ def get_functional_group_map() -> dict:
     """
     data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
+    # EN: any group that is not unique should be dropped
+    # this is because of the `basic_groups` hierarchy that is loosely defined
+    data = data.drop_duplicates(subset=["name"], keep=False)
+    data = data.sort_values("name", ascending=True)
     return dict(zip(data["name"], data["smarts"]))
 
 

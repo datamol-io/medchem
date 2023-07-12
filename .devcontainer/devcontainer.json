@@ -1,0 +1,71 @@
+{
+    "name": "medchem",
+    "containerEnv": {
+        "TZ": "America/Montreal",
+        "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
+        "CONTAINER_WORKSPACE_FOLDER": "${containerWorkspaceFolder}"
+    },
+    "remoteUser": "mambauser",
+    "runArgs": [
+        "--hostname",
+        "devcontainer"
+        // // Warning: loading .env into the environment will undermine the ability
+        // // to use .env to dynamically adjust the unspecified values.
+        // "--env-file", ".env"
+    ],
+    "build": {
+        "dockerfile": "dev.Dockerfile",
+        "context": "../",
+        "args": {
+            "CONTAINER_WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
+            "CONDA_ENV_FILE": "env.yml"
+        }
+    },
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [],
+    // allow the entrypoint to run
+    // "overrideCommand": false,
+    // Use 'postCreateCommand' to run commands after the container is created.
+    "postCreateCommand": "pip install -e .",
+    // Customize the way VS Code is started when running in the container
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-toolsai.jupyter",
+                "ms-azuretools.vscode-docker",
+                "ms-vsliveshare.vsliveshare",
+                "donjayamanne.githistory",
+                "mutantdino.resourcemonitor",
+                "github.copilot",
+                "davidanson.vscode-markdownlint"
+            ],
+            "settings": {
+                // Disable telemetry
+                "telemetry.enableTelemetry": false,
+                // For linting (code format checking), disable pylint and enable
+                // pydocstyle for docstrings and flake8 for code.
+                "python.linting.pylintEnabled": false,
+                "python.linting.pydocstyleEnabled": false,
+                "python.linting.flake8Enabled": false,
+                // Turn on "black" for automatic code formatting
+                "python.formatting.provider": "black",
+                // Disable barely usable scrollbar
+                "workbench.editor.wrapTabs": true,
+                // Use Pylance
+                "python.languageServer": "Pylance",
+                "python.analysis.typeCheckingMode": "basic",
+                // Path of the default Python environment
+                "python.pythonPath": "/opt/conda/bin/python",
+                "python.defaultInterpreterPath": "/opt/conda/bin/python",
+                // Disable the "conda activate base" command when opening a new terminal
+                "python.terminal.activateEnvironment": false,
+                // Make sure that key combos like Ctrl+K are not intercepted by VS Code
+                // when using the terminal
+                "terminal.integrated.allowChords": false,
+                "terminal.integrated.inheritEnv": false
+            }
+        }
+    }
+}

@@ -32,18 +32,25 @@ def alert_filter(
 ) -> np.ndarray:
     """Filter a dataset of molecules, based on common structural alerts and specific rules.
 
-    Arguments:
+    ??? tip "True is good"
+        Returning `True` means the molecule does not match any of the structural alerts.
+
+    !!! info "See Also"
+        `alert_filter` is a convenient functional API for the `medchem.structural.CommonAlertsFilters` class.
+
+    Args:
         mols: List of molecules to filter
         alerts: List of alert collections to screen for. See `CommonAlertsFilters.list_default_available_alerts()`
         alerts_db: Path to the alert file name.
-            The internal default file (alerts.csv) will be used if not provided
-        n_jobs: Number of cpu to use
+            The internal default file (`alerts.csv`) will be used if not provided
+        n_jobs: Number of workers to use
         progress: Whether to show progress bar
         return_idx: Whether to return the filtered index
 
     Returns:
         filtered_mask: boolean array (or index array) where true means
             the molecule IS OK (not found in the alert catalog).
+
     """
 
     custom_filters = CommonAlertsFilters(alerts_set=alerts, alerts_db_path=alerts_db)
@@ -63,13 +70,17 @@ def nibr_filter(
     return_idx: bool = False,
 ) -> np.ndarray:
     """
-    Filter a set of molecules based on novartis screening deck curation process
-    Schuffenhauer, A. et al. Evolution of Novartis' small molecule screening deck design, J. Med. Chem. (2020)
-    DOI. https://dx.doi.org/10.1021/acs.jmedchem.0c01332
+    Filter a set of molecules based on the Novartis Institutes for BioMedical Research screening deck curation process
+    [Schuffenhauer, A. et al. Evolution of Novartis' small molecule screening deck design, J. Med. Chem. (2020)](https://dx.doi.org/10.1021/acs.jmedchem.0c01332)
 
-    !!! note
-        The severity argument corresponds to the accumulated severity for a compounds accross all pattern in the
-        catalog.
+
+    The severity argument corresponds to the accumulated severity for a compounds accross all pattern in the catalog.
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not match any of the structural alerts.
+
+    !!! info "See Also"
+        `nibr_filter` is a convenient functional API for the `medchem.structural.NIBRFilters` class.
 
     Args:
         mols: list of input molecules
@@ -105,7 +116,11 @@ def catalog_filter(
     scheduler: str = "processes",
     batch_size: int = 100,
 ) -> np.ndarray:
-    """Filter a list of compounds according to catalog of structures alerts and patterns
+    """Filter a list of compounds according to a catalog of structural alerts and patterns
+
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not match any of the structural alerts.
 
     Args:
         mols: list of input molecules
@@ -126,14 +141,15 @@ def catalog_filter(
     named_catalogs = []
     for catalog in catalogs:
         if catalog == "bredt":
-            logger.warning(
-                "It is not recommended to use the 'bredt' catalog here. Please use the `bredt_filter` function instead or be sure to use kekulized molecules as inputs."
+            raise ValueError(
+                "It is not recommended to use the 'bredt' catalog here. Please use the `bredt_filter`."
             )
         if catalog == "nibr":
             raise ValueError(
                 "You shouldn't use the nibr catalog here. Please use the `screening_filter` function instead."
             )
-        elif catalog == "bredt-kekulized":
+        if catalog == "bredt-kekulized":
+            # we know the compounds have been kekulized
             catalog = "bredt"
         if isinstance(catalog, str):
             catalog_fn = getattr(NamedCatalogs, catalog, None)
@@ -197,8 +213,11 @@ def chemical_group_filter(
 ) -> np.ndarray:
     """Filter a list of compounds according to a chemical group instance.
 
-    !!! note
-        This function will return the list of molecules that DO NOT match the chemical group
+    !!! warning
+        This function will return the list of molecules that **DO NOT** match the chemical group.
+
+    !!! info "See Also"
+        Consider exploring the `medchem.groups.ChemicalGroup` class.
 
     Args:
         mols: list of input molecules
@@ -238,6 +257,12 @@ def rules_filter(
 ) -> np.ndarray:
     """Filter a list of compounds according to a predefined set of rules
 
+    ??? tip "True is good"
+        Returning `True` means the molecule passes all the rules.
+
+    !!! info "See Also"
+        Consider exploring the `medchem.rules.RuleFilters` class.
+
     Args:
         mols: list of input molecules
         rules: list of rules to apply to the input molecules.
@@ -247,7 +272,7 @@ def rules_filter(
         scheduler: joblib scheduler to use
 
     Returns:
-        filtered_mask: boolean array (or index array) where true means the molecule MATCH the rules.
+        filtered_mask: boolean array (or index array) where true means the molecule MATCH the rule constraints.
     """
 
     if not isinstance(rules, RuleFilters):
@@ -280,22 +305,31 @@ def complexity_filter(
     progress_leave: bool = False,
     scheduler: str = "processes",
 ) -> np.ndarray:
-    """Filter a list of compounds according to a chemical group instance
+    """Filter a list of compounds according to a complexity metric
+
+
+    ??? tip "True is good"
+        Returning `True` means the molecule passes the complexity filters.
+
+    !!! info "See Also"
+        Consider exploring the `medchem.complexity.ComplexityFilter` class.
 
     Args:
         mols: list of input molecules
         complexity_metric: complexity metric to use
             Use `ComplexityFilter.list_default_available_filters` to list default filters.
-            The following complexity metrics are supported by default
-            * "bertz": bertz complexity index
-            * "sas": synthetic accessibility score  (`zinc_15_available` only)
-            * "qed": qed score  (`zinc_15_available` only)
-            * "clogp": clogp for how greasy a molecule is compared to other in the same mw range  (`zinc_15_available` only)
-            * "whitlock": whitlock complexity index
-            * "barone": barone complexity index
-            * "smcm": synthetic and molecular complexity
-            * "twc":  total walk count complexity  (`zinc_15_available` only)
-        threshold_stats_file: complexity threshold statistic origin to use
+            The following complexity metrics are supported by default:
+
+            - `bertz`: bertz complexity index
+            - `sas`: synthetic accessibility score  (`zinc_15_available` only)
+            - `qed`: qed score  (`zinc_15_available` only)
+            - `clogp`: clogp for how greasy a molecule is compared to other in the same mw range  (`zinc_15_available` only)
+            - `whitlock`: whitlock complexity index
+            - `barone`: barone complexity index
+            - `smcm`: synthetic and molecular complexity
+            - `twc`:  total walk count complexity  (`zinc_15_available` only)
+
+        threshold_stats_file: complexity threshold statistics file to use
         limit: complexity outlier percentile to use
         return_idx: whether to return index or a boolean mask
         n_jobs: number of parallel job to run. Sequential by default
@@ -342,8 +376,10 @@ def bredt_filter(
     scheduler: str = "threads",
     batch_size: int = 100,
 ) -> np.ndarray:
-    """Filter a list of compounds according to Bredt's rules
-    https://en.wikipedia.org/wiki/Bredt%27s_rule
+    """Filter a list of compounds according to [Bredt's rules](https://en.wikipedia.org/wiki/Bredt%27s_rule)
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not violate the Bredt's rules.
 
     Args:
         mols: list of input molecules
@@ -388,13 +424,18 @@ def molecular_graph_filter(
     progress_leave: bool = False,
     scheduler: str = "threads",
 ) -> np.ndarray:
-    """Filter a list of compounds according to unstable molecular graph filter list.
+    """Filter a list of compounds according to unstable molecular graph patterns.
+    This list was obtained from observation around technically valid molecular graphs from
+    deep generative models that are not stable.
 
-    This list was obtained from observation around The disallowed graphs are:
+    The disallowed graphs are:
 
-    * K3,3 or K2,4 structure
-    * Cone of P4 or K4 with 3-ear
-    * Node in more than one ring of length 3 or 4
+    -  K3,3 or K2,4 structures
+    -  Cone of P4 or K4 with 3-ear
+    -  Node in more than one ring of length 3 or 4
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not violate the molecular graph instability rules.
 
     Args:
         mols: list of input molecules
@@ -412,7 +453,7 @@ def molecular_graph_filter(
     if max_severity is None:
         max_severity = 5
 
-    catalog = NamedCatalogs.unstable_graph(max_severity=max_severity)
+    catalog = NamedCatalogs.unstable_graph(severity_threshold=max_severity)
 
     if isinstance(mols[0], str):
         mols = dm.parallelized(
@@ -451,7 +492,13 @@ def lilly_demerit_filter(
     batch_size: int = 5_000,
     **kwargs: Any,
 ) -> np.ndarray:
-    """Run Lilly demerit filtering on current list of molecules
+    """Run the Eli Lilly's demerit filter on current list of molecules
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not violate the demerit rules.
+
+    !!! info "See Also"
+        Consider exploring the `LillyDemeritsFilters` class in `medchem.structural.lilly_demerits`
 
     Args:
         mols: list of input molecules as smiles preferably
@@ -510,24 +557,31 @@ def protecting_groups_filter(
     progress_leave: bool = False,
     scheduler: str = "threads",
 ) -> np.ndarray:
-    """Filter a list of compounds according to match to  known protecting groups.
-    Note that is a syntaxic sugar for calling chemical_group_filter with the protecting groups subset
+    """Filter a list of compounds according to match to known protecting groups.
 
-    Args:
-        mols: list of input molecules
-        protecting_groups: type of protection group to consider if not provided, will use all (not advised)
-        return_idx: whether to return index or a boolean mask
-        n_jobs: number of parallel job to run. Sequential by default
-        progress: whether to show progress bar
-        progress_leave: whether to leave the progress bar after completion
-        scheduler: joblib scheduler to use
 
-    Returns:
-        filtered_mask: boolean array (or index array) where true means the molecule DOES NOT MATCH the groups.
+    !!! warning
+         This function will return the list of molecules that **DO NOT** have the protecting groups.
+
+     !!! info "See Also"
+         This is a syntaxic sugar for calling chemical_group_filter with the protecting groups subset.
+
+     Args:
+         mols: list of input molecules
+         protecting_groups: type of protection group to consider if not provided, will use all **(not advised)**
+         return_idx: whether to return index or a boolean mask
+         n_jobs: number of parallel job to run. Sequential by default
+         progress: whether to show progress bar
+         progress_leave: whether to leave the progress bar after completion
+         scheduler: joblib scheduler to use
+
+     Returns:
+         filtered_mask: boolean array (or index array) where true means the molecule DOES NOT MATCH the groups.
     """
 
     chemical_group = ChemicalGroup("protecting_groups")
-    chemical_group = chemical_group.filter(protecting_groups)
+    if protecting_groups and len(protecting_groups) > 0:
+        chemical_group = chemical_group.filter(protecting_groups)
 
     return chemical_group_filter(
         mols,

@@ -40,7 +40,9 @@ theme:
   # color check `docs/assets/css/custom.css`.
   features:
     - navigation.tabs
-    - navigation.expand
+    - navigation.tracking
+    - navigation.top
+
   favicon: images/logo.png
   logo: images/logo.svg
 

@@ -368,7 +368,9 @@ class NamedCatalogs:
     @functools.lru_cache(maxsize=32)
     def unstable_graph(severity_threshold: int = 5):
         """Unstable molecular graph to filter out, ideal for generated *de novo* molecules.
-        This method returns problematic patterns and thus patterns with higher severity than the threshold.
+
+        !!! warning
+            This method returns problematic patterns and thus patterns with higher severity than the threshold.
 
         Args:
             severity_threshold: minimum severity for a pattern to **be returned**.

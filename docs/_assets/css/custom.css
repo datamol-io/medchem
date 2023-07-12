@@ -33,8 +33,8 @@ td p {
 }
 
 :root {
-  --custom-primary: rgb(255, 153, 0);
-  --custom-secondary: #343a40;
+  --custom-primary: rgb(218, 71, 45);
+  --custom-secondary: #3f5851;
 
   /* Primary color shades */
   --md-primary-fg-color: var(--custom-primary);
@@ -67,15 +67,15 @@ td p {
 }
 
 .md-header {
-  background-image: linear-gradient(to right, #70ad47ff, #70ad47ff);
+  background-image: linear-gradient(to right, #008080, #00adad);
 }
 
 .md-footer {
-  background-image: linear-gradient(to right, #70ad47ff, #70ad47ff);
+  background-image: linear-gradient(to right, #008080, #00adad);
 }
 
 .md-tabs {
-  background-image: linear-gradient(to right, #F4F6F9, #E2CEC3);
+  background-image: linear-gradient(to right, #F4F6F9, #d7f1dc);
 }
 
 .md-header__topic {
@@ -124,11 +124,6 @@ td p {
 .md-container .jp-Cell-outputWrapper .jp-OutputPrompt.jp-OutputArea-prompt,
 .md-container .jp-Cell-inputWrapper .jp-InputPrompt.jp-InputArea-prompt {
   display: none !important;
-}
-
-/* Increase the width */
-.md-grid {
-  max-width: 75rem;
 }
 
 /* Jupyter Tweaks */

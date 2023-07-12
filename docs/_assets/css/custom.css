@@ -33,7 +33,7 @@ td p {
 }
 
 :root {
-  --custom-primary: rgb(218, 71, 45);
+  --custom-primary: rgb(193, 61, 38);
   --custom-secondary: #3f5851;
 
   /* Primary color shades */
@@ -67,11 +67,11 @@ td p {
 }
 
 .md-header {
-  background-image: linear-gradient(to right, #008080, #00adad);
+  background-image: linear-gradient(to right, #008080, #00B3B3);
 }
 
 .md-footer {
-  background-image: linear-gradient(to right, #008080, #00adad);
+  background-image: linear-gradient(to right, #008080, #00B3B3);
 }
 
 .md-tabs {

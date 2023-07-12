@@ -81,10 +81,10 @@ def test_chemical_group():
     assert len(c_group.smarts) == rings_numbers
 
     out_false = c_group.has_match("CCCCCCCCCC")
-    assert out_false == False
+    assert out_false is False
 
     out_true = c_group.has_match("C1CCCCC1")
-    assert out_true == True
+    assert out_true is True
 
 
 def test_chemical_group_query():
@@ -115,4 +115,4 @@ def test_external_bank():
     expected_match = set(["HBA", "HBD", "Hydrogen", "SP3 Nitrogen", "SP2 Carbon"])
 
     assert out is not None
-    assert expected_match.issubset(set(out["name"].values)) == True
+    assert expected_match.issubset(set(out["name"].values)) is True

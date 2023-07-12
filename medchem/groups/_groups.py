@@ -12,11 +12,11 @@ from medchem.utils.loader import get_data_path
 
 
 def list_default_chemical_groups(hierarchy: bool = False) -> list:
-    """List all the chemical groups available.
+    """List all the available chemical groups.
 
     !!! note
         chemical groups defines how a collection of patterns are organized.
-        They do not correspond to individual pattern name.
+        They **do not** correspond to individual pattern name.
 
     Args:
         hierarchy: whether to return the full hierarchy or the group name only
@@ -30,28 +30,35 @@ def list_default_chemical_groups(hierarchy: bool = False) -> list:
     return list(data.group.unique())
 
 
-def list_functional_group_names() -> list:
+def list_functional_group_names(unique: bool = True) -> list:
     """
     List common functional group names
+
+    Args:
+        unique: whether to return only unique names
 
     Returns:
         List of functional group names
     """
     data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
-    return list(data.name)
+    return list(data.name.unique())
 
 
 @functools.lru_cache(maxsize=None)
 def get_functional_group_map() -> dict:
     """
-    List common functional group names
+    Map functional groups to their corresponding SMARTS string.
 
     Returns:
         List of functional group names
     """
     data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
+    # EN: any group that is not unique should be dropped
+    # this is because of the `basic_groups` hierarchy that is loosely defined
+    data = data.drop_duplicates(subset=["name"], keep=False)
+    data = data.sort_values("name", ascending=True)
     return dict(zip(data["name"], data["smarts"]))
 
 
@@ -81,7 +88,7 @@ class ChemicalGroup:
         Args:
             groups: List of groups to use. Defaults to None where all functional groups are used
             n_jobs: Optional number of jobs to run in parallel for internally building the data. Defaults to None.
-            groups_db: Path to a file containing the dump of the chemical groups. Defaults is internal dataset
+            groups_db: Path to a file containing the dump of the chemical groups. Default is internal dataset
         """
 
         if isinstance(groups, str):
@@ -98,7 +105,7 @@ class ChemicalGroup:
         if self.groups:
             self.data = self.data[self.data.hierarchy.str.contains("|".join(self.groups))]
         # EN: fill smiles and smarts with empty string when they are missing
-        # this prevent error in apply dm.to_mol, dm.from_smarts and building the FilterCatalog
+        # this prevent error when applying dm.to_mol, dm.from_smarts and building the FilterCatalog
         self.data["smiles"] = self.data["smiles"].fillna("")
         self.data["smarts"] = self.data["smarts"].fillna("")
         self._initialize_data()

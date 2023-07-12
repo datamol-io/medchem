@@ -64,7 +64,7 @@ def in_range(
 def n_heavy_metals(mol: dm.Mol, allowed_metals: List[str] = ["Li", "Be", "K", "Na", "Ca", "Mg"]):
     """Count the number of heavy metals in a molecule
 
-    Metal are defined using the M notation in marvinjs. It's quicker to exclude atoms than to list all metals
+    Metal atoms are defined using the M notation in marvinjs. It's quicker to exclude atoms than to list all metals
 
     Args:
         mol: input molecule
@@ -102,17 +102,18 @@ def n_heavy_metals(mol: dm.Mol, allowed_metals: List[str] = ["Li", "Be", "K", "N
     return len(heavy_metals)
 
 
-def has_spider_chains(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4):
-    """Check whether a molecule has multiple flagel like
+def has_spider_chains(mol: dm.Mol, min_appendage: int = 2, min_appendage_len: int = 4):
+    """Check whether a molecule has multiple appendage-like structures
+
     Args:
         mol: input molecule
-        min_flagel: minimum number of flagels (>=)
-        min_flagel_len: minimum length of a flagel (>=)
+        min_appendage: minimum number of appendages (>=)
+        min_appendage_len: minimum length (number of atoms in straight line) of a appendage (>=)
     """
     # we first need to remove all rings systems (so scaffold from the molecules)
-    # then we can count the both condition for spider/flagel like look
+    # then we can count the both condition for spider/appendage like look
     side_chains = [mol]
-    flagel_query = SMARTSUtils.aliphatic_chain(min_size=min_flagel_len)
+    appendage_query = SMARTSUtils.aliphatic_chain(min_size=min_appendage_len)
     scaffold = MurckoScaffold.GetScaffoldForMol(mol)
     try:
         scaffold = dm.sanitize_mol(scaffold)
@@ -122,7 +123,7 @@ def has_spider_chains(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4)
             side_chains = [dm.to_smiles(x) for x in side_chains]
             side_chains = [SMARTSUtils.standardize_attachment(x, "[1*]") for x in side_chains]
             side_chains = [dm.to_mol(x) for x in side_chains]
-            flagel_query = "[1*]-,=" + flagel_query
+            appendage_query = "[1*]-,=" + appendage_query
         else:
             side_chains = [mol]
     except Exception as e:
@@ -131,19 +132,19 @@ def has_spider_chains(mol: dm.Mol, min_flagel: int = 2, min_flagel_len: int = 4)
     assert all([isinstance(x, dm.Mol) for x in side_chains])
 
     # extract side chains from the scaffold
-    flagel_query = dm.from_smarts(flagel_query)
+    appendage_query = dm.from_smarts(appendage_query)
 
-    if flagel_query is None:
-        raise ValueError("Invalid flagel query")
+    if appendage_query is None:
+        raise ValueError("Invalid appendage query")
 
     matches = []
     for x in side_chains:
         if x is None or isinstance(x, str):
             raise ValueError("None molecule in side chains")
 
-        matches.append(x.HasSubstructMatch(flagel_query))
+        matches.append(x.HasSubstructMatch(appendage_query))
 
-    return sum(matches) >= min_flagel
+    return sum(matches) >= min_appendage
 
 
 def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairwise: bool = False):
@@ -211,8 +212,8 @@ def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairw
 
 
 def fraction_atom_in_scaff(mol: dm.Mol):
-    """Compute the fraction of atoms that belong to any ring system of the molecule
-    as defined by the scaffold
+    """Compute the fraction of atoms that belong to any ring system of a molecule
+    as defined by its murcko scaffold
 
     Args:
         mol: input molecule

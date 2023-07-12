@@ -28,9 +28,16 @@ class QueryOperator:
     """A class to hold all the operators that can be used in queries"""
 
     AVAILABLES_PROPERTIES = list_descriptors()  # list of available molecular properties
+    """Default list of available properties in medchem's query system"""
+
     AVAILABLE_CATALOGS = list_named_catalogs()  # list of available catalogs
+    """Default list of available catalogs in medchem's query system"""
+
     AVAILABLE_RULES = RuleFilters.list_available_rules_names()  # list of available rules
+    """Default list of available rules in medchem's query system"""
+
     AVAILABLE_FUNCTIONAL_GROUPS = list_functional_group_names()  # list of available functional groups
+    """Default list of available functional groups in medchem's query system"""
 
     @staticmethod
     def hassubstructure(
@@ -40,7 +47,7 @@ class QueryOperator:
         operator: Optional[str] = "min",
         limit: int = 1,
     ):
-        """Check if a molecule has substructure provided by a query
+        """Check if a molecule has the substructure provided by a query
 
         Args:
             mol: input molecule
@@ -76,7 +83,7 @@ class QueryOperator:
     @staticmethod
     def hassuperstructure(mol: Union[dm.Mol, str], query: str):
         """Check if a molecule has a superstructure defined by a query.
-        Note that a superstructure cannot be a query (smarts)
+        Note that a superstructure cannot be a query (SMARTS)
 
         Args:
             mol: input molecule
@@ -163,8 +170,6 @@ class QueryOperator:
     @staticmethod
     def hasgroup(mol: Union[dm.Mol, str], group: str):
         """Check if a molecule has a specific functional group.
-        Internally, this is done fetching the smarts corresponding to the group
-        then calling `QueryOperator.hassubstructure`
 
         Args:
             mol: input molecule
@@ -184,7 +189,7 @@ class QueryOperator:
 
     @staticmethod
     def hasprop(mol: Union[dm.Mol, str], prop: str, comparator: Callable, limit: float):
-        """Check if a molecule has a molecule property within desired range
+        """Check if a molecule has a property within a desired range
 
         Args:
             mol: input molecule
@@ -215,7 +220,7 @@ class QueryOperator:
 
     @staticmethod
     def getprop(mol: Union[dm.Mol, str], prop: str):
-        """Compute the molecular property if a molecule.
+        """Compute the molecular property of a molecule.
         This is an alternative to the hasprop function, that does not enforce any comparison.
 
         Args:
@@ -251,7 +256,6 @@ class QueryOperator:
         limit: float,
     ):
         """Check if a molecule is similar or distant enough from another molecule using tanimoto ECFP distance.
-        and is useful for letting python handles the binary comparison operators.
 
         Args:
             mol: input molecule
@@ -276,7 +280,7 @@ class QueryOperator:
     ):
         """Compute the ECFP tanimoto similarity between two molecules.
         This is an alternative to the like function, that does not enforce any comparison,
-        and is useful for letting python handles the binary comparison operators.
+        and lets python handles the binary comparison operators.
 
         Args:
             mol: input molecule
@@ -293,7 +297,7 @@ class QueryOperator:
 
 
 class _NodeEvaluator:
-    """Representation and evaluation of a single node"""
+    """Representation and evaluation of a single node in the grammar tree"""
 
     def __init__(self, node_expr: str):
         """Initialize a node evaluator
@@ -308,7 +312,7 @@ class _NodeEvaluator:
         self.node_fn = None
         if self.node_expr.startswith("fn("):
             # EN: revisit this with a regexp eventually for robustness
-            node_expr = node_expr[3:-1]  # remove fn( and )
+            node_expr = node_expr[3:-1]  # remove `fn(` and `)`
             node_arg_list = node_expr.split(", ")
             _fn = getattr(QueryOperator, node_arg_list[0], None)
             if _fn is None:
@@ -369,7 +373,7 @@ class QueryFilter:
         """Constructor for query filtering system
 
         Args:
-            query (str): input unparsed query
+            query: input unparsed query
             grammar: path to grammar language to use. Defaults to None, which will use the default grammar.
             parser: which Lark language parser to use. Defaults to "lalr".
         """
@@ -397,8 +401,8 @@ class QueryFilter:
 
         Args:
             mols: list of input molecules to filter
-            n_jobs: whether to run job in parallel and number of jobs to consider.
-            scheduler: scheduler to use.
+            n_jobs: whether to run jobs in parallel and number of jobs to consider.
+            scheduler: joblib scheduler to use.
             progress: whether to show job progress.
         """
         tqdm_kwargs = {}

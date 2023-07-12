@@ -18,10 +18,17 @@ from ._calc import TWC
 
 
 class ComplexityFilter:
-    """Complexity filters.
+    """Complexity-based molecular filters which compare some molecular complexity metrics to
+    precomputed thresholds on large datasets of commercially available compounds.
 
-    The threshold have been re-calculated using the original new zinc-15 and focusing only on
-    commercially available compounds.
+    The default threshold have been calculated using all commercially available compounds of the zinc-15 dataset.
+
+    !!! example "Usage"
+        ```python
+        from medchem.complexity import ComplexityFilter
+        complexity_filter = ComplexityFilter(limit="99", complexity_metric="bertz")
+        complexity_filter("CC(=O)Nc1ccc(cc1)O") # True
+        ```
     """
 
     COMPLEXITY_FNS = {

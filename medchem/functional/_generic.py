@@ -22,14 +22,18 @@ def _generic_filter(
     progress_leave: bool = False,
     scheduler: str = "processes",
 ) -> np.ndarray:
-    """Apply any generic filter to a molecule
+    """Apply any generic filters to a molecule
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not fail the rejection function.
 
     Args:
         mols: list of input molecules
-        rejection_fn: function to reject a molecule. Return True is the molecule is rejected
+        rejection_fn: function that apply rejection rules on a single molecule. Return True is the molecule is rejected.
         return_idx: whether to return index or a boolean mask
         n_jobs: number of parallel job to run. Sequential by default
         progress: whether to show progress bar
+        progress_leave: whether to keep or leave the progress bar after completion
         scheduler: joblib scheduler to use
 
     Returns:
@@ -41,7 +45,7 @@ def _generic_filter(
             mols,
             n_jobs=n_jobs,
             progress=progress,
-            tqdm_kwargs=dict(desc="TO mol", leave=progress_leave),
+            tqdm_kwargs=dict(desc="To mol", leave=progress_leave),
         )
 
     toxic = dm.parallelized(
@@ -70,7 +74,11 @@ def macrocycle_filter(
     progress: bool = False,
     scheduler: str = "processes",
 ) -> np.ndarray:
-    """Find molecules that do not infringe the strict maximum cycle size.
+    """Find valid molecules that do not infringe the strict maximum cycle size.
+
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not have rings larger than `max_cycle_size`
 
     Args:
         mols: list of input molecules
@@ -110,15 +118,18 @@ def atom_list_filter(
     progress: bool = False,
     scheduler: str = "processes",
 ) -> np.ndarray:
-    """Find molecule without any atom from a set of unwanted atom symbols
-    and with all atoms in the set of desirable atom list
+    """Find molecules without any atom from a set of unwanted atomic symbols
+    and with all atoms in the set of wanted atom list.
+
+    ??? tip "True is good"
+        Returning `True` means the molecule only has desirable atom types
 
     Args:
         mols: list of input molecules
-        unwanted_atom_list: list of undesirable atom symbol
-        wanted_atom_list: list of desirable atom symbol
+        unwanted_atom_list: list of undesirable atomic symbol
+        wanted_atom_list: list of desirable atomic symbol
         return_idx: whether to return index or a boolean mask
-        n_jobs: number of parallel job to run. Sequential by default
+        n_jobs: number of parallel jobs to run. Sequential by default
         progress: whether to show progress bar
         scheduler: joblib scheduler to use
 
@@ -158,8 +169,11 @@ def ring_infraction_filter(
     scheduler: str = "processes",
 ) -> np.ndarray:
     """
-    Find molecules that have a ring infraction filter.
-    Returning True means the molecule is fine
+    Find molecules that have a ring infraction filter. This filter focuses on checking for rings that are too small to have an heteroatom.
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not infringe the ring infraction filter.
+
 
     Args:
         mols: list of input molecules
@@ -222,8 +236,11 @@ def num_atom_filter(
     scheduler: str = "processes",
 ) -> np.ndarray:
     """
-    Find a molecule that match the atom number constraints
-    Returning True means the molecule is fine
+    Find molecules that match the number of atom range constraints
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not infringe the number of atom filter.
+
 
     Args:
         mols: list of input molecules
@@ -266,8 +283,12 @@ def num_stereo_center_filter(
     scheduler: str = "processes",
 ) -> np.ndarray:
     """
-    Find a molecule that match the number of stereo center constraints.
-    Returning True means the molecule is fine
+    Find molecules that match the number of stereo center constraints. In general, molecules with
+    too many undefined stereo centers are not desirable. This filter is useful for generated molecules.
+
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not have issues with stereo centers.
 
     Args:
         mols: list of input molecules
@@ -309,7 +330,15 @@ def halogenicity_filter(
     progress: bool = False,
     scheduler: str = "processes",
 ) -> np.ndarray:
-    """Find molecule that do not exceed halogen threshold. These thresholds are:
+    """Find molecules that do not exceed halogen count threshold. This filter is useful for removing halogen biases
+    in generated or enumerated chemical space during goal-directed optimization.
+
+    - 6 for fluorine
+    - 3 for bromine
+    - 3 for chlorine
+
+    ??? tip "True is good"
+        Returning `True` means the molecule does not have too many halogen atoms.
 
     Args:
         mols: list of input molecules
@@ -354,7 +383,12 @@ def symmetry_filter(
     progress: bool = False,
     scheduler: str = "processes",
 ) -> np.ndarray:
-    """Find molecules that are not symmetrical, given a symmetry threshold
+    """Find molecules that are not symmetrical, given a symmetry threshold.
+    This filter was designed to offset the symmetry issue in molecular design,
+    where some models tend to generate highly symmetrical molecules due to substructure bias.
+
+    ??? tip "True is good"
+        Returning `True` means the molecule is not too symmetrical
 
     Args:
         mols: list of input molecules

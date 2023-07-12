@@ -57,8 +57,6 @@ if TYPE_CHECKING or os.environ.get("MEDCHEM_DISABLE_LAZY_LOADING", "0") == "1":
     # These types are imported lazily at runtime, but we need to tell type
     # checkers what they are.
 
-    from ._version import __version__
-
     from . import utils
     from . import groups
     from . import catalogs

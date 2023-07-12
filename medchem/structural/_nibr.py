@@ -25,6 +25,8 @@ class NIBRFilters:
         - `>= 10`:  default exclusion criterion used in the paper
     - **special_mol**: whether the compound/parts of the compound belongs to a special class of molecules
         (e.g peptides, glycosides, fatty acid). In that case, you should review the rejection reasons.
+    - **pass_filter**: whether the compound passed the filter or not.
+    - **details**: optional additional details of the evaluation, including matching patterns if `keep_details` is True.
     """
 
     def __init__(self):

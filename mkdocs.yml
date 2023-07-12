@@ -40,12 +40,21 @@ theme:
   # color check `docs/assets/css/custom.css`.
   features:
     - navigation.tabs
-    - navigation.expand
+    - navigation.tracking
+    - navigation.top
+
   favicon: images/logo.png
   logo: images/logo.svg
 
 extra_css:
   - _assets/css/custom.css
+  - _assets/css/tweak-width.css
+
+
+extra_javascript:
+  - _assets/js/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 markdown_extensions:
   - admonition

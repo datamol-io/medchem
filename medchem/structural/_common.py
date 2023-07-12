@@ -18,6 +18,14 @@ class CommonAlertsFilters:
     """Filtering class for building a library based on a list of structural alerts
 
     To list the available alerts, use the `list_default_available_alerts` method.
+
+    The output of the filter are explained below:
+    - **status**: one of `["exclude", "flag", "annotations", "ok"]` (ordered by quality).
+        Generally, you can keep anything without the "exclude" label, as long as you also apply
+        a maximum severity score for compounds that collects too many flags.
+    - **reasons**: list of reasons why the compound was flagged.
+    - **pass_filter**: whether the compound passed the filter or not.
+    - **details**: optional additional details of the evaluation, including matching patterns if `keep_details` is True.
     """
 
     def __init__(
@@ -73,7 +81,7 @@ class CommonAlertsFilters:
     @functools.lru_cache()
     def list_default_available_alerts():
         """
-        Return a list of unique rule set names
+        Return a list of unique alert set names
         """
         alerts_db = get_data_path(filename="common_alerts_collection.csv")
         rule_df = pd.read_csv(alerts_db)
@@ -99,7 +107,7 @@ class CommonAlertsFilters:
         keep_details: bool = False,
     ):
         """
-        Evaluate structure alerts on a molecule
+        Evaluate structural alerts on a molecule
 
         Args:
             mol: input molecule

@@ -20,7 +20,7 @@ def list_named_catalogs():
     """
     List all available named catalogs. This list will not report chemical groups !
 
-    !!! tips
+    !!! tip
         For a list of chemical groups that can be queried using `NamedCatalog.chemical_groups`,
         use `medchem.groups.list_default_chemical_groups`
     """

@@ -40,6 +40,25 @@ RUN mkdir -p /etc/bash_completion.d \
     && sh -c "curl -L https://raw.githubusercontent.com/docker/cli/v20.10.13/contrib/completion/bash/docker > /etc/bash_completion.d/docker" \
     && sh -c "curl -L https://raw.githubusercontent.com/git/git/v2.35.1/contrib/completion/git-completion.bash > /etc/bash_completion.d/git"
 
+# Make sure everyone can access the workspaces directory.
+ENV WORKSPACES_DIR="/workspaces"
+RUN : \
+    && mkdir --parents --mode=777 "${WORKSPACES_DIR}" \
+    && chown "$MAMBA_USER:$MAMBA_USER" "${WORKSPACES_DIR}"
+
+# Sane defaults for Git
+RUN : \
+    # Switch default editor from vim to nano
+    && git config --system core.editor nano \
+    # Prevent unintentional merges
+    # <https://blog.sffc.xyz/post/185195398930/why-you-should-use-git-pull-ff-only-git-is-a>
+    && git config --system pull.ff only \
+    # Use default branch name "main" instead of "master"
+    && git config --system init.defaultBranch main \
+    # Initialize Git LFS
+    && git lfs install --system --skip-repo \
+    ;
+
 # Go back to regular user
 USER $MAMBA_USER
 

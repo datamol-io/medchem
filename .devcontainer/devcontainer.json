@@ -1,4 +1,5 @@
 {
+    "name": "medchem",
     "containerEnv": {
         "TZ": "America/Montreal",
         "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",

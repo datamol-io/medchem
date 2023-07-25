@@ -177,20 +177,20 @@ def test_rule_filters_invalid():
 
 
 def test_rule_filters_list():
-    l = mc.rules.RuleFilters.list_available_rules()
-    assert isinstance(l, pd.DataFrame)
-    assert "name" in l.columns
+    ll = mc.rules.RuleFilters.list_available_rules()
+    assert isinstance(ll, pd.DataFrame)
+    assert "name" in ll.columns
 
-    l = mc.rules.RuleFilters.list_available_rules_names()
-    assert isinstance(l, list)
-    assert all(isinstance(x, str) for x in l)
-    assert len(l) > 0
+    ll = mc.rules.RuleFilters.list_available_rules_names()
+    assert isinstance(ll, list)
+    assert all(isinstance(x, str) for x in ll)
+    assert len(ll) > 0
 
-    l = mc.rules.RuleFilters.list_available_rules("building block")
-    assert isinstance(l, pd.DataFrame)
-    assert "name" in l.columns
+    ll = mc.rules.RuleFilters.list_available_rules("building block")
+    assert isinstance(ll, pd.DataFrame)
+    assert "name" in ll.columns
 
-    l = mc.rules.RuleFilters.list_available_rules_names("building block", "fragment")
-    assert isinstance(l, list)
-    assert all(isinstance(x, str) for x in l)
-    assert len(l) > 0
+    ll = mc.rules.RuleFilters.list_available_rules_names("building block", "fragment")
+    assert isinstance(ll, list)
+    assert all(isinstance(x, str) for x in ll)
+    assert len(ll) > 0

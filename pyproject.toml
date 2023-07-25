@@ -86,3 +86,16 @@ omit = ["medchem/__init__.py", "medchem/_version.py"]
 
 [tool.coverage.xml]
 output = "coverage.xml"
+
+[tool.ruff]
+ignore = [
+    "E501", # Never enforce `E501` (line length violations).
+]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = [
+    "F401", # imported but unused
+    "E402", # Module level import not at top of file
+]

@@ -13,19 +13,19 @@ from medchem.utils.loader import get_data_path
 
 def test_list_default_chemical_groups():
     assert len(list_default_chemical_groups()) > 0
-    assert all([isinstance(l, str) for l in list_default_chemical_groups()])
+    assert all([isinstance(ll, str) for ll in list_default_chemical_groups()])
 
     with_hierarchy = list_default_chemical_groups(hierarchy=True)
     assert len(with_hierarchy) > 0
-    assert all([isinstance(l, str) for l in with_hierarchy])
-    assert all(["." in l for l in with_hierarchy])
+    assert all([isinstance(ll, str) for ll in with_hierarchy])
+    assert all(["." in ll for ll in with_hierarchy])
 
 
 def test_list_functional_group_names():
     group_names = list_functional_group_names()
 
     assert len(group_names) > 0
-    assert all([isinstance(l, str) for l in group_names])
+    assert all([isinstance(ll, str) for ll in group_names])
 
 
 def test_get_functional_group_map():

@@ -258,7 +258,7 @@ def SMCM(mol: dm.Mol):
 
 def _AWC(k: int, atom: int, table: list, neighbors: list):
     """Compute walk count for atom"""
-    if not atom in table[k]:
+    if atom not in table[k]:
         table[k][atom] = 0
         for i in neighbors[atom]:
             table[k][atom] += _AWC(k - 1, i, table, neighbors)

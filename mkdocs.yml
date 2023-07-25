@@ -17,6 +17,7 @@ nav:
   - CLI: cli.md
   - Tutorials:
       - Basic Concepts: tutorials/Basic_Concepts.ipynb
+      - Functional API: tutorials/Functional_API.ipynb
       - Medchem Rules: tutorials/Medchem_Rules.ipynb
       - Structural Filters: tutorials/Structural_Filters.ipynb
       - Catalogs: tutorials/Catalogs.ipynb
@@ -93,6 +94,10 @@ plugins:
 
   - mkdocs-jupyter:
       execute: False
+      remove_tag_config:
+        remove_cell_tags: [remove_cell]
+        remove_all_outputs_tags: [remove_output]
+        remove_input_tags: [remove_input]
 
   - mike:
       version_selector: true

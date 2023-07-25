@@ -171,9 +171,9 @@ def test_rule_filters_invalid():
     assert pd.isna(results.iloc[0]["pass_any"])
     assert pd.isna(results.iloc[0]["rule_of_five"])
 
-    assert results.iloc[1]["pass_all"] == True
-    assert results.iloc[1]["pass_any"] == True
-    assert results.iloc[1]["rule_of_five"] == True
+    assert results.iloc[1]["pass_all"] is True
+    assert results.iloc[1]["pass_any"] is True
+    assert results.iloc[1]["rule_of_five"] is True
 
 
 def test_rule_filters_list():

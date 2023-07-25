@@ -16,6 +16,7 @@ nav:
   - Overview: index.md
   - CLI: cli.md
   - Tutorials:
+      - Basic Concepts: tutorials/Basic_Concepts.ipynb
       - Medchem Rules: tutorials/Medchem_Rules.ipynb
       - Structural Filters: tutorials/Structural_Filters.ipynb
       - Catalogs: tutorials/Catalogs.ipynb

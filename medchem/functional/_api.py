@@ -205,6 +205,7 @@ def catalog_filter(
 def chemical_group_filter(
     mols: Sequence[Union[str, dm.Mol]],
     chemical_group: ChemicalGroup,
+    exact_match: bool = False,
     return_idx: bool = False,
     n_jobs: Optional[int] = None,
     progress: bool = False,
@@ -222,6 +223,7 @@ def chemical_group_filter(
     Args:
         mols: list of input molecules
         chemical_group: a chemical group instance with the required functional groups to use.
+        exact_match: whether to use an exact match of the chemical group patterns (will switch to smiles )
         return_idx: whether to return index or a boolean mask
         n_jobs: number of parallel job to run. Sequential by default
         progress: whether to show progress bar
@@ -233,7 +235,7 @@ def chemical_group_filter(
     """
 
     if isinstance(chemical_group, ChemicalGroup):
-        chemical_group = chemical_group.get_catalog()
+        chemical_group = chemical_group.get_catalog(exact_match=exact_match)
 
     return catalog_filter(
         mols,
@@ -529,7 +531,7 @@ def lilly_demerit_filter(
     )
 
     results = results[
-        (results["pass_filter"] == True)
+        (results["pass_filter"] is True)
         & ((results["demerit_score"].isna()) | (results["demerit_score"] < max_demerits))
     ]
 
@@ -583,12 +585,17 @@ def protecting_groups_filter(
     if protecting_groups and len(protecting_groups) > 0:
         chemical_group = chemical_group.filter(protecting_groups)
 
-    return chemical_group_filter(
+    protected = dm.parallelized(
+        partial(chemical_group.has_match, exact_match=True, terminal_only=True),
         mols,
-        chemical_group,
-        return_idx=return_idx,
         n_jobs=n_jobs,
         progress=progress,
-        progress_leave=progress_leave,
         scheduler=scheduler,
+        tqdm_kwargs={"desc": "Checking protecting groups", "leave": progress_leave},
     )
+    filtered_idx = [i for i, bad in enumerate(protected) if not bad]
+
+    if return_idx:
+        return np.asarray(filtered_idx)
+
+    return np.bitwise_not(protected)

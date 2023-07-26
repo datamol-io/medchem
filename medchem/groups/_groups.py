@@ -7,6 +7,12 @@ import functools
 import pandas as pd
 import datamol as dm
 
+from rdkit.Chem import GetMolFrags
+from rdkit.Chem.rdmolops import ReplaceCore
+from rdkit.Chem.rdmolops import AdjustQueryParameters
+from rdkit.Chem.rdmolops import AdjustQueryProperties
+from rdkit.Chem.rdmolops import AdjustQueryWhichFlags
+
 from medchem.catalogs import catalog_from_smarts
 from medchem.utils.loader import get_data_path
 
@@ -173,13 +179,38 @@ class ChemicalGroup:
         return self.data.mol_smarts.tolist()
 
     @property
+    def mol_adjusted(self):
+        """Get the Molecules object of the SMILES, adjusted for stricter match for the chemical groups in this instance"""
+        # EN: beware of pickling issues with AdjustQueryParameters
+        query_adjust = AdjustQueryParameters()
+        query_adjust.adjustRingChain = True
+        query_adjust.adjustHeavyDegree = True
+        query_adjust.adjustDegree = True
+        query_adjust.adjustDegreeFlags = (
+            AdjustQueryWhichFlags.ADJUST_IGNORERINGS | AdjustQueryWhichFlags.ADJUST_IGNORECHAINS
+        )
+        mols = self.data.mol.apply(lambda x: AdjustQueryProperties(x, query_adjust))
+        return mols.tolist()
+
+    @property
     def dataframe(self):
         """Get the dataframe of the chemical groups"""
         return self.data
 
-    @functools.lru_cache(maxsize=32)
-    def get_catalog(self):
-        """Build an rdkit catalog from the current chemical group data"""
+    # @functools.lru_cache(maxsize=32)
+    def get_catalog(self, exact_match: bool = True):
+        """Build an rdkit catalog from the current chemical group data
+
+        Args:
+            exact_match: whether to adjust the queries for a more stringent match
+        """
+
+        if exact_match:
+            return catalog_from_smarts(
+                self.mol_adjusted,
+                self.name,
+                entry_as_inds=False,
+            )
         return catalog_from_smarts(
             self.mol_smarts,
             self.name,
@@ -196,12 +227,21 @@ class ChemicalGroup:
         """
         return list(self.data.hierarchy.unique())
 
-    def get_matches(self, mol: Union[dm.Mol, str], use_smiles: bool = True):
+    def get_matches(
+        self,
+        mol: Union[dm.Mol, str],
+        use_smiles: bool = True,
+        exact_match: bool = False,
+        terminal_only: bool = False,
+    ):
         """Get all the functional groups in this instance that matches the input molecule
 
         Args:
             mol: input molecule
             use_smiles: whether to use the smiles representation of the catalog or the smarts
+            exact_match: whether to use exact matching by adjusting the query
+            terminal_only: ensure whether the matches to the functional group are terminal,
+                meaning that any subgraph matching should not be in the middle of the molecules.
         """
         if isinstance(mol, str):
             mol = dm.to_mol(mol)
@@ -209,8 +249,21 @@ class ChemicalGroup:
         if mol is None:
             return None
 
+        # EN: beware of pickling issues with AdjustQueryParameters
+        query_adjust = AdjustQueryParameters()
+        query_adjust.adjustRingChain = True
+        query_adjust.adjustDegree = True
+
+        # display(mol)
         def matcher(query):
-            return mol.GetSubstructMatches(query) or None
+            if exact_match:
+                query = AdjustQueryProperties(query, query_adjust)
+            matches = mol.GetSubstructMatches(query, uniquify=True) or None
+            if matches is not None and terminal_only:
+                side_chains = [ReplaceCore(mol, query, match) for match in matches]
+                side_chains = [GetMolFrags(x, asMols=True) for x in side_chains]
+                matches = [x for x, y in zip(matches, side_chains) if len(y) == 1]
+            return matches or None
 
         if use_smiles:
             matches = dm.parallelized(matcher, self.data.mol.values, n_jobs=self.n_jobs, progress=False)
@@ -223,11 +276,13 @@ class ChemicalGroup:
         out = out.dropna(subset=["matches"])
         return out
 
-    def has_match(self, mol: Union[dm.Mol, str]):
+    def has_match(self, mol: Union[dm.Mol, str], exact_match: bool = False, terminal_only: bool = False):
         """Check whether the input molecule has any functional group in this instance
 
         Args:
             mol: input molecule
+            exact_match: whether to use exact matching by adjusting the query
+            terminal_only: ensure the matches to the functional group are terminal
         """
-        matches = self.get_matches(mol)
+        matches = self.get_matches(mol, exact_match=exact_match, terminal_only=terminal_only)
         return matches is not None and len(matches) > 0

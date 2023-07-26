@@ -254,7 +254,6 @@ class ChemicalGroup:
         query_adjust.adjustRingChain = True
         query_adjust.adjustDegree = True
 
-        # display(mol)
         def matcher(query):
             if exact_match:
                 query = AdjustQueryProperties(query, query_adjust)

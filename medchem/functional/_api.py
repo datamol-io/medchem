@@ -531,7 +531,7 @@ def lilly_demerit_filter(
     )
 
     results = results[
-        (results["pass_filter"] is True)
+        (results["pass_filter"] == True)  # noqa: E712
         & ((results["demerit_score"].isna()) | (results["demerit_score"] < max_demerits))
     ]
 

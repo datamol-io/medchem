@@ -72,9 +72,7 @@ include = '\.pyi?$'
 minversion = "6.0"
 addopts = "--verbose --durations=10 -n auto --cov=medchem --cov-fail-under=90 --cov-report xml --cov-report term"
 testpaths = ["tests"]
-filterwarnings = [
-    "ignore::DeprecationWarning:jupyter_client.connect.*:",
-]
+filterwarnings = ["ignore::DeprecationWarning:jupyter_client.connect.*:"]
 
 [tool.coverage.run]
 source = ["medchem/"]
@@ -99,3 +97,6 @@ target-version = "py311"
     "F401", # imported but unused
     "E402", # Module level import not at top of file
 ]
+
+[tool.ruff.pycodestyle]
+max-doc-length = 150

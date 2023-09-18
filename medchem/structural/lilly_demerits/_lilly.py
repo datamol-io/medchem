@@ -46,7 +46,7 @@ def parse_output(rowlist):
         ]
     )
     flux = io.StringIO(content)
-    df = pd.read_csv(flux, sep=r"\s+", doublequote=True, names=["smiles", "ID", "reasons"])
+    df = pd.read_csv(flux, sep=" ", doublequote=True, names=["smiles", "ID", "reasons"])
     df["ID"] = pd.to_numeric(df["ID"])
     df["reasons"] = df["reasons"].apply(lambda x: x.strip("'") if x and isinstance(x, str) else x)
     return df

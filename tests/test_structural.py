@@ -45,8 +45,8 @@ def test_common_alerts_invalid():
 
 
 def test_common_alerts_list():
-    l = mc.structural.CommonAlertsFilters.list_default_available_alerts()
-    assert l.columns.tolist() == ["rule_set_name", "smarts", "catalog_description", "rule_set", "source"]
+    ll = mc.structural.CommonAlertsFilters.list_default_available_alerts()
+    assert ll.columns.tolist() == ["rule_set_name", "smarts", "catalog_description", "rule_set", "source"]
 
 
 def test_nibr():

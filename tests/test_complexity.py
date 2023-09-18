@@ -64,7 +64,7 @@ def test_baronect():
 
 
 def test_smcm():
-    """Tsest SMCM"""
+    """Test SMCM"""
     mols = [
         dm.to_mol(x)
         for x in [

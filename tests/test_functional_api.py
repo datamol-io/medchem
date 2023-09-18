@@ -200,13 +200,27 @@ def test_lilly_demerit_filter():
 
 
 def test_protecting_groups_filter():
-    data = dm.data.freesolv()
-    data = data.iloc[:10]
+    non_protected_smiles = [
+        "C1=CC=C2C(=C1)C(=O)OC2(C3=CC=C(C=C3)O)C4=CC=C(C=C4)O",
+        "CC(=CCCC(C)(C=C)OC(=O)C)C",
+        "CCC1(C(=O)N(C(=O)O1)C)C",
+        "CC1=CCC(CC1)C(C)(C)OC(=O)C",
+        "CCC(=O)OC(C)(C)C1CCC(=CC1)C",
+    ]
+    protected_smiles = [
+        "CC(C)(C)OC(=O)N1CCC(CC1)N",
+        "CC(C)(C)OC(=O)NCC(=O)O",
+        "CC(C)(C)OC(=O)N1CCCC1C(=O)O",
+        "CC(C)(C)OC(=O)NC(COCC1=CC=CC=C1)C(=O)O",
+        "CC(=O)OC(C)(C)C",
+    ]
+    non_protected_mols = [dm.to_mol(x) for x in non_protected_smiles]
+    protected_mols = [dm.to_mol(x) for x in protected_smiles]
+    data = non_protected_mols + protected_mols
+    results = mc.functional.protecting_groups_filter(data, return_idx=False)
 
-    results = mc.functional.protecting_groups_filter(mols=data["smiles"].tolist(), return_idx=False)
+    assert results.tolist() == [True, True, True, True, True, False, False, False, False, False]
 
-    assert results.tolist() == [True, True, True, True, True, True, True, True, True, True]
+    results = mc.functional.protecting_groups_filter(mols=data, return_idx=True)
 
-    results = mc.functional.protecting_groups_filter(mols=data["smiles"].tolist(), return_idx=True)
-
-    assert results.tolist() == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert results.tolist() == [0, 1, 2, 3, 4]

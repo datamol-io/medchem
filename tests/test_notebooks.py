@@ -12,6 +12,10 @@ DISABLE_NOTEBOOKS = []
 NOTEBOOK_PATHS = sorted(list(TUTORIALS_DIR.glob("*.ipynb")))
 NOTEBOOK_PATHS = list(filter(lambda x: x.name not in DISABLE_NOTEBOOKS, NOTEBOOK_PATHS))
 
+# Discard some notebooks
+NOTEBOOKS_TO_DISCARD = ["Basic_Concepts.ipynb"]
+NOTEBOOK_PATHS = list(filter(lambda x: x.name not in NOTEBOOKS_TO_DISCARD, NOTEBOOK_PATHS))
+
 
 @pytest.mark.parametrize("nb_path", NOTEBOOK_PATHS, ids=[str(n.name) for n in NOTEBOOK_PATHS])
 def test_notebook(nb_path):

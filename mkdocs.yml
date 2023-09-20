@@ -14,7 +14,6 @@ strict: true
 
 nav:
   - Overview: index.md
-  - CLI: cli.md
   - Tutorials:
       - Basic Concepts: tutorials/Basic_Concepts.ipynb
       - Functional API: tutorials/Functional_API.ipynb
@@ -25,6 +24,7 @@ nav:
       - Medchem Query Language: tutorials/Medchem_Query_Language.ipynb
       - Molecular Complexity: tutorials/Molecular_Complexity.ipynb
       - Constraints Filtering: tutorials/Constraints_Filtering.ipynb
+  - CLI: cli.md
   - API:
       - medchem.rules: api/medchem.rules.md
       - medchem.structural: api/medchem.structural.md

@@ -12,7 +12,7 @@ micromamba install -c conda-forge medchem
 
 ## Getting Started
 
-The best way to get started is by going through the tutorials.
+The best way to get started is by going through [**the tutorials**](./tutorials/Basic_Concepts.ipynb).
 
 ## Usage Notice
 

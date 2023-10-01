@@ -8,6 +8,9 @@ Medchem is a Python library that proposes molecular filters and prioritization r
 
 ```bash
 micromamba install -c conda-forge medchem
+
+# or using pip
+pip install medchem
 ```
 
 ## Getting Started
@@ -23,7 +26,6 @@ When using medchem filters, alerts, and rules to triage a list of drug-like comp
 ## Acknowledgement
 
 Medchem incorporates a comprehensive collection of medchem filters, alerts, and rules that have been developed by the scientific community over the years. We extend our gratitude to all the contributors to these collections and filtering methods.
-
 
 ### Eli Lilly Medchem Rules
 

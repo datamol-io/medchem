@@ -38,6 +38,7 @@ dependencies = [
     "pandas",
     "networkx",
     "datamol >=0.10",
+    "rdkit",
 ]
 
 [project.scripts]

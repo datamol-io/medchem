@@ -2,102 +2,102 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/index.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/cli.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.catalogs.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.complexity.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.constraints.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.functional.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.groups.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.query.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.rules.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.structural.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/api/medchem.utils.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Basic_Concepts.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Catalogs.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Chemical_Groups.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Constraints_Filtering.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Functional_API.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Medchem_Query_Language.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Medchem_Rules.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Molecular_Complexity.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/datamol-io/medchem/stable/tutorials/Structural_Filters.html</loc>
-         <lastmod>2023-10-01</lastmod>
+         <lastmod>2023-12-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

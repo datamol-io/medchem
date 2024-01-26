@@ -24,7 +24,6 @@ def get_data_path(filename: str, module: str = "medchem.data"):
             path = p
     else:
         path = importlib_resources.files(module).joinpath(filename)
-
     return str(path)
 
 

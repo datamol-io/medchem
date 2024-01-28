@@ -4,8 +4,13 @@ from typing import Union
 
 import os
 import io
+import sys
 import functools
-import importlib.resources
+
+try:
+    import importlib.resources as importlib_resources
+except ImportError:
+    import importlib_resources
 
 import fsspec
 
@@ -14,7 +19,11 @@ import fsspec
 def get_data_path(filename: str, module: str = "medchem.data"):
     """Return the filepath of an internal data file."""
 
-    path = importlib.resources.files(module).joinpath(filename)
+    if sys.version_info < (3, 9, 0):
+        with importlib_resources.path(module, filename) as p:
+            path = p
+    else:
+        path = importlib_resources.files(module).joinpath(filename)
     return str(path)
 
 
@@ -29,7 +38,7 @@ def get_grammar(
         as_string: If True, return the grammar as a string. Defaults to False.
     """
     if grammar is None:
-        _grammar = importlib.resources.files("medchem.data").joinpath("grammar.lark")
+        _grammar = get_data_path("grammar.lark")
         _grammar = str(_grammar)
     else:
         _grammar = str(grammar)

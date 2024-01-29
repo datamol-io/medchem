@@ -1,0 +1,137 @@
+/* Indentation. */
+div.doc-contents:not(.first) {
+  padding-left: 25px;
+  border-left: 4px solid rgba(230, 230, 230);
+  margin-bottom: 80px;
+}
+
+/* Don't capitalize names. */
+h5.doc-heading {
+  text-transform: none !important;
+}
+
+/* Don't use vertical space on hidden ToC entries. */
+.hidden-toc::before {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Don't show permalink of hidden ToC entries. */
+.hidden-toc a.headerlink {
+  display: none;
+}
+
+/* Avoid breaking parameters name, etc. in table cells. */
+td code {
+  word-break: normal !important;
+}
+
+/* For pieces of Markdown rendered in table cells. */
+td p {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+:root {
+  --custom-primary: rgb(193, 61, 38);
+  --custom-secondary: #3f5851;
+
+  /* Primary color shades */
+  --md-primary-fg-color: var(--custom-primary);
+  --md-primary-fg-color--light: var(--custom-primary);
+  --md-primary-fg-color--dark: var(--custom-primary);
+  --md-primary-bg-color: var(--custom-secondary);
+  --md-primary-bg-color--light: var(--custom-secondary);
+  --md-text-link-color: var(--custom-secondary);
+
+  /* Accent color shades */
+  --md-accent-fg-color: var(--custom-secondary);
+  --md-accent-fg-color--transparent: var(--custom-secondary);
+  --md-accent-bg-color: var(--custom-secondary);
+  --md-accent-bg-color--light: var(--custom-secondary);
+}
+
+:root>* {
+  /* Code block color shades */
+  --md-code-bg-color: hsla(0, 0%, 96%, 1);
+  --md-code-fg-color: hsla(200, 18%, 26%, 1);
+
+  /* Footer */
+  --md-footer-bg-color: var(--custom-primary);
+  /* --md-footer-bg-color--dark: hsla(0, 0%, 0%, 0.32); */
+  --md-footer-fg-color: var(--custom-secondary);
+  --md-footer-fg-color--light: var(--custom-secondary);
+  --md-footer-fg-color--lighter: var(--custom-secondary);
+
+
+}
+
+.md-header {
+  background-image: linear-gradient(to right, #008080, #00B3B3);
+}
+
+.md-footer {
+  background-image: linear-gradient(to right, #008080, #00B3B3);
+}
+
+.md-tabs {
+  background-image: linear-gradient(to right, #F4F6F9, #d7f1dc);
+}
+
+.md-header__topic {
+  color: rgb(255, 255, 255);
+}
+
+.md-source__repository,
+.md-source__icon,
+.md-search__input,
+.md-search__input::placeholder,
+.md-search__input~.md-search__icon,
+.md-footer__inner.md-grid,
+.md-copyright__highlight,
+.md-copyright,
+.md-footer-meta.md-typeset a,
+.md-version {
+  color: rgb(255, 255, 255) !important;
+}
+
+.md-search__form {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.md-search__input {
+  color: #222222 !important;
+}
+
+.md-header__topic {
+  color: rgb(255, 255, 255);
+  font-size: 1.4em;
+}
+
+/* Increase the size of the logo */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 2rem !important;
+}
+
+/* Reduce the margin around the logo */
+.md-header__button.md-logo {
+  margin: 0.4em;
+  padding: 0.4em;
+}
+
+/* Remove the `In` and `Out` block in rendered Jupyter notebooks */
+.md-container .jp-Cell-outputWrapper .jp-OutputPrompt.jp-OutputArea-prompt,
+.md-container .jp-Cell-inputWrapper .jp-InputPrompt.jp-InputArea-prompt {
+  display: none !important;
+}
+
+/* Jupyter Tweaks */
+
+.jupyter-wrapper {
+  --jp-code-font-size: 0.8em !important;
+}
+
+.jupyter-wrapper table.dataframe {
+  font-size: 0.7em !important;
+}

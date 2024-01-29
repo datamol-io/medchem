@@ -1,0 +1,8 @@
+Drug,Drug SMILES,Prodrug,Prodrug SMILES
+Gabapentin,O=C(O)CC1(CN)CCCCC1,Gabapentin enacarbil,CC(C)C(=O)OC(C)OC(=O)NCC1(CCCCC1)CC(=O)O
+Dabigatran,CN1C2=C(C=C(C=C2)C(=O)N(CCC(=O)O)C3=CC=CC=N3)N=C1CNC4=CC=C(C=C4)C(=N)N,Dabigatran etexilate,CCCCCCOC(=O)N=C(C1=CC=C(C=C1)NCC2=NC3=C(N2C)C=CC(=C3)C(=O)N(CCC(=O)OCC)C4=CC=CC=N4)N
+Sofosbuvir,OP(OC[C@@H]1[C@@H](O)[C@@](C)(F)[C@H](N2C=CC(NC2=O)=O)O1)(O)=O,Sofosbuvir,C[C@@H](C(=O)OC(C)C)N[P@](=O)(OC[C@@H]1[C@H]([C@@]([C@@H](O1)N2C=CC(=O)NC2=O)(C)F)O)OC3=CC=CC=C3
+Tedizolid,O=C4O[C@H](CN4c3cc(F)c(c1ccc(nc1)c2nn(nn2)C)cc3)CO,Tedizolid phosphate,CN1N=NC(=N1)C1=CC=C(C=N1)C1=CC=C(C=C1F)N1C[C@H](COP(O)(O)=O)OC1=O
+Isavuconazole,C[C@H]([C@](c1c(F)ccc(F)c1)(O)Cn2ncnc2)c3scc(c4ccc(C#N)cc4)n3,Isavuconazonium,C[C@H]([C@](c1c(F)ccc(F)c1)(O)Cn2nc[n+](C(OC(N(c3ncccc3COC(CNC)=O)C)=O)C)c2)c4scc(c5ccc(C#N)cc5)n4
+Aripiprazole,Clc4cccc(N3CCN(CCCCOc2ccc1c(NC(=O)CC1)c2)CC3)c4Cl,Aripiprazole lauroxil,CCCCCCCCCCCC(=O)OCN1C(=O)CCC2=C1C=C(C=C2)OCCCCN3CCN(CC3)C4=C(C(=CC=C4)Cl)Cl
+ACT-333679,CC(N(C1=CN=C(C2=CC=CC=C2)C(C3=CC=CC=C3)=N1)CCCCOCC(O)=O)C,Selexipag,CC(C)N(CCCCOCC(=O)NS(=O)(=O)C)C1=CN=C(C(=N1)C2=CC=CC=C2)C3=CC=CC=C3

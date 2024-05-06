@@ -1,5 +1,6 @@
 import math
 
+import contextlib
 from rdkit.Chem.rdmolops import GetMolFrags
 from rdkit.Chem.rdmolops import FindPotentialStereo
 from rdkit.Chem import FindMolChiralCenters
@@ -299,3 +300,22 @@ def TWC(mol: dm.Mol, log10: bool = True):
         except ValueError:
             return float("nan")
     return twc
+
+
+def SPS(mol: dm.Mol, normalize=True):
+    """Calculates the SpacialScore descriptor, as described in:
+    [1] Krzyzanowski, A.; Pahl, A.; Grigalunas, M.; Waldmann, H. Spacial Score─A Comprehensive Topological Indicator for Small-Molecule Complexity. J. Med. Chem. 2023. https://doi.org/10.1021/acs.jmedchem.3c00689.
+
+    Args:
+        normalize: whether to normalize the score by the number of heavy atoms (nSPS).
+    """
+
+    score = None
+    with contextlib.suppress(ImportError):
+        mol = dm.to_mol(mol)
+        from rdkit.Chem import SpacialScore
+
+        score = SpacialScore.SPS(mol, normalize=normalize)
+    if score is None:
+        raise ValueError("SpacialScore is not available in your RDKit version, please update to 2023.09.1")
+    return score

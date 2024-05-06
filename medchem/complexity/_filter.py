@@ -15,6 +15,7 @@ from ._calc import WhitlockCT
 from ._calc import BaroneCT
 from ._calc import SMCM
 from ._calc import TWC
+from ._calc import SPS
 
 
 class ComplexityFilter:
@@ -39,7 +40,8 @@ class ComplexityFilter:
         "whitlock": WhitlockCT,  # whitlock complexity index
         "barone": BaroneCT,  # barone complexity index
         "smcm": SMCM,  # synthetic and molecular complexity
-        "twc": TWC,  # Total walk count complexity
+        "twc": TWC,  # Total walk count complexity,
+        "spacialscore": SPS,
     }
 
     def __init__(

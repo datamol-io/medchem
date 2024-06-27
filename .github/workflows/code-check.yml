@@ -46,4 +46,4 @@ jobs:
           pip install ruff
 
       - name: Lint
-        run: ruff .
+        run: ruff check .

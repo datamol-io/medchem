@@ -31,7 +31,9 @@ jobs:
           cache-downloads: true
 
       - name: Install library
-        run: python -m pip install --no-deps .
+        run: |
+          pip install "mkdocs-jupyter>=0.24.7" # EN: tmp fix
+          python -m pip install --no-deps .
 
       - name: Configure git
         run: |

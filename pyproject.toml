@@ -38,7 +38,7 @@ dependencies = [
     "pandas",
     "networkx",
     "datamol >=0.10",
-    "rdkit",
+    "rdkit >=2023.09.3",
 ]
 
 [project.scripts]
@@ -87,17 +87,17 @@ omit = ["medchem/__init__.py", "medchem/_version.py"]
 output = "coverage.xml"
 
 [tool.ruff]
-ignore = [
+lint.ignore = [
     "E501", # Never enforce `E501` (line length violations).
 ]
-line-length = 110
+line-length = 120
 target-version = "py311"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = [
     "F401", # imported but unused
     "E402", # Module level import not at top of file
 ]
 
-[tool.ruff.pycodestyle]
+[tool.ruff.lint.pycodestyle]
 max-doc-length = 150

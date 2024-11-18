@@ -187,7 +187,9 @@ class CommonAlertsFilters:
                 scheduler = "threads"
         if batch_size:
             results = dm.parallelized_with_batches(
-                lambda batch: [functools.partial(self._evaluate, keep_details=keep_details)(mol) for mol in batch],
+                lambda batch: [
+                    functools.partial(self._evaluate, keep_details=keep_details)(mol) for mol in batch
+                ],
                 mols,
                 progress=progress,
                 n_jobs=n_jobs,

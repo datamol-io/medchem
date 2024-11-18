@@ -165,8 +165,9 @@ class CommonAlertsFilters:
         progress: bool = False,
         progress_leave: bool = False,
         scheduler: str = "auto",
+        batch_size: Optional[int] = None,
         keep_details: bool = False,
-    ):
+    ) -> pd.DataFrame:
         """Run alert evaluation on this list of molecule and return the full dataframe
 
         Args:
@@ -175,6 +176,7 @@ class CommonAlertsFilters:
             progress: whether to show progress or not.
             progress_leave: whether to leave the progress bar or not.
             scheduler: which scheduler to use. If "auto", will use "processes" if `len(mols) > 500` else "threads".
+            batch_size: batch size to use for parallelization.
             keep_details: whether to keep the details of the evaluation or not.
         """
 
@@ -183,18 +185,31 @@ class CommonAlertsFilters:
                 scheduler = "processes"  # pragma: no cover
             else:
                 scheduler = "threads"
-
-        results = dm.parallelized(
-            functools.partial(self._evaluate, keep_details=keep_details),
-            mols,
-            progress=progress,
-            n_jobs=n_jobs,
-            scheduler=scheduler,
-            tqdm_kwargs=dict(
-                desc="Common alerts filtering",
-                leave=progress_leave,
-            ),
-        )
+        if batch_size:
+            results = dm.parallelized_with_batches(
+                lambda batch: [functools.partial(self._evaluate, keep_details=keep_details)(mol) for mol in batch],
+                mols,
+                progress=progress,
+                n_jobs=n_jobs,
+                scheduler=scheduler,
+                batch_size=batch_size,
+                tqdm_kwargs=dict(
+                    desc="Common alerts filtering",
+                    leave=progress_leave,
+                ),
+            )
+        else:
+            results = dm.parallelized(
+                functools.partial(self._evaluate, keep_details=keep_details),
+                mols,
+                progress=progress,
+                n_jobs=n_jobs,
+                scheduler=scheduler,
+                tqdm_kwargs=dict(
+                    desc="Common alerts filtering",
+                    leave=progress_leave,
+                ),
+            )
         results = pd.DataFrame(results)
 
         return results

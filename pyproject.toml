@@ -87,17 +87,20 @@ omit = ["medchem/__init__.py", "medchem/_version.py"]
 output = "coverage.xml"
 
 [tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["*.ipynb"]  # Exclude Jupyter notebooks
+
+[tool.ruff.lint]
 ignore = [
     "E501", # Never enforce `E501` (line length violations).
 ]
-line-length = 110
-target-version = "py311"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = [
     "F401", # imported but unused
     "E402", # Module level import not at top of file
 ]
 
-[tool.ruff.pycodestyle]
+[tool.ruff.lint.pycodestyle]
 max-doc-length = 150

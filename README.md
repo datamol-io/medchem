@@ -55,3 +55,8 @@ pytest
 ## License
 
 Under the Apache-2.0 license. See [LICENSE.md](LICENSE.md).
+
+## Citation
+
+[![DOI](https://zenodo.org/badge/653814138.svg)](https://doi.org/10.5281/zenodo.14588937)
+

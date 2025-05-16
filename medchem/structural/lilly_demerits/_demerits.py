@@ -312,7 +312,7 @@ class LillyDemeritsFilters:
             df["demerit_score"] = demerit_scores
             data_list.append(df)
             i += 1
-        results = pd.concat(data_list).sort_values("ID").reset_index(drop=True)
+        results = pd.concat(data_list)
 
         # Postprocessing
         results["status"] = results["rejected"].apply(lambda x: "Exclude" if x else "Ok")
@@ -320,8 +320,28 @@ class LillyDemeritsFilters:
 
         results["status"] = results["status"].str.lower()
         results["pass_filter"] = ~results["rejected"]
-        results = results.drop(columns=["ID", "rejected"])
-        results["mol"] = mols
+        results["mol"] = [mols[i] for i in results["ID"]]
+
+        missing_entries = [
+            {
+                "smiles": dm.to_smiles(dm.to_mol(mols[i])),
+                "ID": i,
+                "reasons": "lillymol_invalid",
+                "step": 0,
+                "demerit_score": np.nan,
+                "status": "Exclude",
+                "pass_filter": False,
+                "mol": mols[i],
+            }
+            for i in (set(range(len(mols))) - set(results["ID"]))
+        ]
+        missing_df = pd.DataFrame(missing_entries)
+        results = (
+            pd.concat([results, missing_df], ignore_index=True)
+            .sort_values("ID")
+            .drop(columns=["ID", "rejected"])
+            .reset_index(drop=True)
+        )
 
         # clean
         for to_del in files_to_be_deleted:

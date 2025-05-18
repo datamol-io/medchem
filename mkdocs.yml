@@ -81,10 +81,9 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          setup_commands:
-            - import sys
-            - sys.path.append("docs")
-            - sys.path.append("medchem")
+          paths:
+            - docs
+            - medchem
           options:
             new_path_syntax: yes
             show_root_heading: yes

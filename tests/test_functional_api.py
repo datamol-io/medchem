@@ -1,5 +1,10 @@
+import shutil
+
 import datamol as dm
 import medchem as mc
+import pytest
+
+HAS_LILLY_TOOLS = all(shutil.which(name) for name in ("mc_first_pass", "tsubstructure", "iwdemerit"))
 
 
 def test_alert_filter():
@@ -187,6 +192,11 @@ def test_molecular_graph_filter():
     assert results.tolist() == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
+@pytest.mark.lilly
+@pytest.mark.skipif(
+    not HAS_LILLY_TOOLS,
+    reason="requires the optional Lilly MedChem Rules command-line tools",
+)
 def test_lilly_demerit_filter():
     data = dm.data.cdk2()
     data = data.iloc[:10]

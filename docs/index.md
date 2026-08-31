@@ -13,6 +13,9 @@ micromamba install -c conda-forge medchem
 pip install medchem
 ```
 
+Medchem 3.x requires Python 3.11 or newer and RDKit 2024.09 or newer. Existing
+2.x users should read the [migration guide](./migration.md) before upgrading.
+
 ## Getting Started
 
 The best way to get started is by going through [**the tutorials**](./tutorials/Basic_Concepts.ipynb).
@@ -32,6 +35,8 @@ Medchem incorporates a comprehensive collection of medchem filters, alerts, and 
 Originally proposed in ["Rules for Identifying Potentially Reactive or Promiscuous Compounds" in 2012](https://doi.org/10.1021/jm301008n) by Robert F. Bruns and Ian A. Watson. Medchem is re-using the implementation from <https://github.com/IanAWatson/Lilly-Medchem-Rules>.
 
 The Medchem implementation is accessible through `medchem.structural.lilly_demerits`.
+The external command-line tools are optional and can be installed with
+`mamba install -c conda-forge lilly-medchem-rules`.
 
 ### NIBR Filters
 

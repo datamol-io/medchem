@@ -1,9 +1,9 @@
 site_name: "medchem"
 site_description: "Medchem: Molecular filtering for drug discovery."
-site_url: "https://github.com/datamol-io/medchem"
+site_url: "https://medchem-docs.datamol.io/"
 repo_url: "https://github.com/datamol-io/medchem"
 repo_name: "datamol-io/medchem"
-copyright: Copyright 2020 - 2023 datamol.io
+copyright: Copyright 2020 - 2026 datamol.io
 
 remote_branch: "gh-pages"
 use_directory_urls: false
@@ -25,6 +25,7 @@ nav:
       - Molecular Complexity: tutorials/Molecular_Complexity.ipynb
       - Constraints Filtering: tutorials/Constraints_Filtering.ipynb
   - CLI: cli.md
+  - Migrating to 3.x: migration.md
   - API:
       - medchem.rules: api/medchem.rules.md
       - medchem.structural: api/medchem.structural.md
@@ -54,7 +55,7 @@ extra_css:
 
 
 extra_javascript:
-  - _assets/js/mathjax.js
+  - _assets/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 markdown_extensions:
@@ -81,17 +82,18 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths:
-            - docs
-            - medchem
+          paths: ["docs", "medchem"]
           options:
-            new_path_syntax: yes
-            show_root_heading: yes
+            docstring_style: google
+            docstring_options:
+              warn_missing_types: false
+              warn_unknown_params: false
+            show_root_heading: true
             heading_level: 3
             show_source: false
 
   - mkdocs-jupyter:
-      execute: False
+      execute: false
       remove_tag_config:
         remove_cell_tags: [remove_cell]
         remove_all_outputs_tags: [remove_output]

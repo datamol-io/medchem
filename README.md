@@ -29,6 +29,16 @@ micromamba install -c conda-forge medchem
 pip install medchem
 ```
 
+Medchem 3.x supports Python 3.11 through 3.14 and RDKit 2024.09 or newer. See
+the [migration guide](https://medchem-docs.datamol.io/stable/migration.html)
+for dependency and optional-integration details.
+
+The Lilly MedChem Rules require separate command-line tools:
+
+```bash
+mamba install -c conda-forge lilly-medchem-rules
+```
+
 ## Documentation
 
 Visit <https://medchem-docs.datamol.io/>.
@@ -40,8 +50,6 @@ Visit <https://medchem-docs.datamol.io/>.
 ```bash
 micromamba create -n medchem -f env.yml
 micromamba activate medchem
-
-pip install --no-deps -e .
 ```
 
 ### Tests
@@ -52,6 +60,10 @@ You can run tests locally with:
 pytest
 ```
 
+The core suite skips Lilly-specific checks when its optional executables are
+not installed. CI runs those checks, together with the tutorial notebooks, in
+a dedicated conda-backed environment.
+
 ## License
 
 Under the Apache-2.0 license. See [LICENSE.md](LICENSE.md).
@@ -59,4 +71,3 @@ Under the Apache-2.0 license. See [LICENSE.md](LICENSE.md).
 ## Citation
 
 [![DOI](https://zenodo.org/badge/653814138.svg)](https://doi.org/10.5281/zenodo.14588937)
-

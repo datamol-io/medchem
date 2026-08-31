@@ -2,23 +2,33 @@ import io
 import re
 import shutil
 import subprocess
+from collections.abc import Sequence
+from pathlib import Path
 
 from loguru import logger
 
 import pandas as pd
 
 
-def find_lilly_binaries():
-    """Find the required binaries to run the Lilly medchem filters"""
+def find_lilly_binaries() -> dict[str, str]:
+    """Find the command-line tools required by the Lilly filters.
+
+    Returns:
+        A mapping from each command name to its resolved executable path.
+
+    Raises:
+        ImportError: If any of the optional Lilly command-line tools is missing.
+    """
     binaries_list = ["mc_first_pass", "tsubstructure", "iwdemerit"]
-    binary_paths = {}
+    binary_paths: dict[str, str] = {}
     for binary_name in binaries_list:
         binary_path = shutil.which(binary_name)
 
         if binary_path is None:
             raise ImportError(
-                "The Lilly binaries required to use the `medchem.structural.demerits` module seems to be missing. "
-                "Install with `mamba install lilly-medchem-rules`."
+                "The Lilly command-line tools required by `medchem.structural.lilly_demerits` "
+                "are not installed. Install them with "
+                "`mamba install -c conda-forge lilly-medchem-rules`."
             )
 
         binary_paths[binary_name] = binary_path
@@ -26,13 +36,13 @@ def find_lilly_binaries():
     return binary_paths
 
 
-def rreplace(input_str, old, rep, occurrence):
-    """Replace last occurence of 'old' in 'input_str' by 'rep'"""
+def rreplace(input_str: str, old: str, rep: str, occurrence: int) -> str:
+    """Replace the last ``occurrence`` instances of ``old`` with ``rep``."""
     tmp = input_str.rsplit(old, occurrence)
     return rep.join(tmp)
 
 
-def parse_output(rowlist):
+def parse_output(rowlist: Sequence[str]) -> pd.DataFrame:
     """Parse content of `rowlist` to dataframe"""
     content = "\n".join(
         [
@@ -52,11 +62,11 @@ def parse_output(rowlist):
     return df
 
 
-def run_cmd(cmd, shell=False):
+def run_cmd(cmd: Sequence[str | Path], shell: bool = False) -> subprocess.CompletedProcess:
     """Run a command"""
     res = subprocess.run(cmd, capture_output=True, shell=shell, check=False)
     if res.returncode != 0:
         logger.error("".join(res.stderr.decode("utf-8")))
-        logger.error(" ".join(cmd))
+        logger.error(" ".join(map(str, cmd)))
         res.check_returncode()
     return res

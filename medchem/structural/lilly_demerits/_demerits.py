@@ -20,9 +20,6 @@ from ._lilly import parse_output
 from ._lilly import run_cmd
 
 
-BIN2PATH = find_lilly_binaries()
-
-
 class LillyDemeritsFilters:
     """Lilly MedChem Rules published in:
 
@@ -59,6 +56,13 @@ class LillyDemeritsFilters:
         self.iwd_options = iwd_options
         self.stop_after_step = stop_after_step
         self.run_options = run_options
+        self._binary_paths: Optional[dict[str, str]] = None
+
+    def _get_binary_paths(self) -> dict[str, str]:
+        """Resolve the optional Lilly tools only when the filter is executed."""
+        if self._binary_paths is None:
+            self._binary_paths = find_lilly_binaries()
+        return self._binary_paths
 
     def __call__(
         self,
@@ -100,6 +104,7 @@ class LillyDemeritsFilters:
             mols: list of smiles
         """
 
+        binary_paths = self._get_binary_paths()
         mc_first_pass_options = self.mc_first_pass_options
         iwd_options = self.iwd_options
         stop_after_step = self.stop_after_step
@@ -227,7 +232,7 @@ class LillyDemeritsFilters:
             smiles_file = smiles_tmp_files.name
             files_to_be_deleted.append(smiles_file)
 
-        cmd = [BIN2PATH["mc_first_pass"]]
+        cmd = [binary_paths["mc_first_pass"]]
         if ring_bond_ratio >= 0:
             cmd.extend(["-b", str(ring_bond_ratio)])
 
@@ -244,7 +249,7 @@ class LillyDemeritsFilters:
 
         if stop_after_step >= 1:
             cmd = []
-            cmd.extend((BIN2PATH["tsubstructure"] + " -E autocreate -b -u -i smi -o smi -A D ").split())
+            cmd.extend((binary_paths["tsubstructure"] + " -E autocreate -b -u -i smi -o smi -A D ").split())
             cmd.extend(("-m " + bad_file_1 + " -m QDT").split())
             cmd.extend(
                 (f"-n {tsub_out_1} -q F:" + query_files[0] + optional_queries + f" {mc_pass_out}").split()
@@ -253,7 +258,7 @@ class LillyDemeritsFilters:
 
         if stop_after_step >= 2:
             cmd = []
-            cmd.extend((BIN2PATH["tsubstructure"] + " -A D -E autocreate -b -u -i smi -o smi ").split())
+            cmd.extend((binary_paths["tsubstructure"] + " -A D -E autocreate -b -u -i smi -o smi ").split())
             cmd.extend(("-m " + bad_file_2 + " -m QDT").split())
             cmd.extend((f"-n {tsub_out_2} -q F:" + query_files[1] + f" {tsub_out_1}").split())
             out.append(run_cmd(cmd))
@@ -262,7 +267,7 @@ class LillyDemeritsFilters:
             cmd = []
             cmd.extend(
                 (
-                    BIN2PATH["iwdemerit"]
+                    binary_paths["iwdemerit"]
                     + " -u -k -x -t "
                     + extra_iwdemerit_options
                     + " -E autocreate -A D -i smi -o smi -q F:"

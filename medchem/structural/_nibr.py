@@ -155,5 +155,8 @@ class NIBRFilters:
             ),
         )
         results = pd.DataFrame(results)
+        # Preserve the historical ``None`` sentinel for molecules without a
+        # rejection reason when pandas uses its dedicated string dtype.
+        results["reasons"] = results["reasons"].astype(object).where(results["reasons"].notna(), None)
 
         return results

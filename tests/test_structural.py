@@ -1,9 +1,17 @@
+import shutil
+
 import pytest
 
 import medchem as mc
 import datamol as dm
 
 from medchem.structural.lilly_demerits import LillyDemeritsFilters
+
+HAS_LILLY_TOOLS = all(shutil.which(name) for name in ("mc_first_pass", "tsubstructure", "iwdemerit"))
+requires_lilly = pytest.mark.skipif(
+    not HAS_LILLY_TOOLS,
+    reason="requires the optional Lilly MedChem Rules command-line tools",
+)
 
 
 def test_common_alerts():
@@ -94,6 +102,8 @@ def test_nibr_invalid():
     }
 
 
+@pytest.mark.lilly
+@requires_lilly
 def test_lilly_demerits():
     dfilters = LillyDemeritsFilters()
 
@@ -114,6 +124,8 @@ def test_lilly_demerits():
     }
 
 
+@pytest.mark.lilly
+@requires_lilly
 def test_lilly_demerits_config():
     test_config = {
         "output": "test",
@@ -147,8 +159,23 @@ def test_lilly_demerits_config():
     }
 
 
+@pytest.mark.lilly
+@requires_lilly
 def test_demerits_invalid():
     dfilters = LillyDemeritsFilters()
 
     with pytest.raises(ValueError):
         dfilters(mols=[None, "CC9888", "CCCCO"])
+
+
+def test_lilly_tools_are_resolved_lazily(monkeypatch):
+    import medchem.structural.lilly_demerits._demerits as demerits_module
+
+    def missing_tools():
+        raise ImportError("missing Lilly tools")
+
+    monkeypatch.setattr(demerits_module, "find_lilly_binaries", missing_tools)
+
+    dfilters = LillyDemeritsFilters()
+    with pytest.raises(ImportError, match="missing Lilly tools"):
+        dfilters(mols=["CC"])

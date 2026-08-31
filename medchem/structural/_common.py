@@ -213,5 +213,9 @@ class CommonAlertsFilters:
                 ),
             )
         results = pd.DataFrame(results)
+        # pandas 3 infers the dedicated string dtype and converts ``None`` to
+        # ``NaN``. Keep the established API contract for molecules without an
+        # alert: ``reasons`` contains ``None``.
+        results["reasons"] = results["reasons"].astype(object).where(results["reasons"].notna(), None)
 
         return results

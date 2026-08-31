@@ -6,3 +6,4 @@ def test_import():
     import medchem.constraints  # noqa: F401
     import medchem.complexity  # noqa: F401
     import medchem.rules  # noqa: F401
+    import medchem.structural.lilly_demerits  # noqa: F401

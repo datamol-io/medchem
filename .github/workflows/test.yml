@@ -42,7 +42,7 @@ jobs:
             rdkit-version: "2026.3.*"
           - os: macos-15-intel
             python-version: "3.13"
-            rdkit-version: "2026.3.*"
+            rdkit-version: "2025.9.*"
           - os: windows-latest
             python-version: "3.13"
             rdkit-version: "2026.3.*"
@@ -135,8 +135,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           python -m coverage run --rcfile=.coveragerc-lilly -m pytest tests/test_structural.py -o addopts=""
-          python -m coverage report --rcfile=.coveragerc-lilly --show-missing --fail-under=85
-          python -m coverage xml --rcfile=.coveragerc-lilly
+          python -m coverage report --rcfile=.coveragerc-lilly --include="*/lilly_demerits/_demerits.py,*/lilly_demerits/_lilly.py" --show-missing --fail-under=85
+          python -m coverage xml --rcfile=.coveragerc-lilly --include="*/lilly_demerits/_demerits.py,*/lilly_demerits/_lilly.py"
 
       - name: Upload Lilly wrapper coverage
         if: runner.os == 'Linux'

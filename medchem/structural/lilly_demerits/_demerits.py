@@ -82,7 +82,6 @@ class LillyDemeritsFilters:
 
         if n_splits > 1:
             mols_batch_list = np.array_split(mols, n_splits)
-            # EN: cannot run this code in processes or loky mode
             results = dm.parallelized(
                 self._score,
                 mols_batch_list,

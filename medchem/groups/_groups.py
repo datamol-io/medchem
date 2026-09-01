@@ -53,16 +53,14 @@ def list_functional_group_names(unique: bool = True) -> list:
 
 @functools.lru_cache(maxsize=None)
 def get_functional_group_map() -> dict:
-    """
-    Map functional groups to their corresponding SMARTS string.
+    """Map unique functional-group names to their SMARTS definitions.
 
     Returns:
-        List of functional group names
+        Mapping from functional-group name to SMARTS.
     """
     data = pd.read_csv(get_data_path("chemical_groups.csv"))
     data = data[data.hierarchy.str.contains("functional_groups")]
-    # EN: any group that is not unique should be dropped
-    # this is because of the `basic_groups` hierarchy that is loosely defined
+    # Ambiguous names in the loosely defined hierarchy cannot form stable keys.
     data = data.drop_duplicates(subset=["name"], keep=False)
     data = data.sort_values("name", ascending=True)
     return dict(zip(data["name"], data["smarts"]))
@@ -110,8 +108,7 @@ class ChemicalGroup:
             self.data["hierarchy"] = self.data["group"]
         if self.groups:
             self.data = self.data[self.data.hierarchy.str.contains("|".join(self.groups))]
-        # EN: fill smiles and smarts with empty string when they are missing
-        # this prevent error when applying dm.to_mol, dm.from_smarts and building the FilterCatalog
+        # Empty strings keep missing definitions parseable by the matching and catalog paths.
         self.data["smiles"] = self.data["smiles"].fillna("")
         self.data["smarts"] = self.data["smarts"].fillna("")
         self._initialize_data()

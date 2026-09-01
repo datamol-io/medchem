@@ -99,8 +99,8 @@ def test_chemical_group_query():
     assert set(out.group.unique()) == {"rings_in_drugs"}
     assert set(out.name.unique()) == {"diazine", "1H-pyrrole"}
 
-    # however, if we use smiles, we would have 3
-    # this is a bug that needs to be fixed
+    # SMILES matching currently includes a third group; preserve this known
+    # discrepancy between the SMILES and SMARTS paths.
     out_smiles = c_group.get_matches(mol, use_smiles=True)
     assert out_smiles is not None
     assert out_smiles.shape[0] == 3

@@ -131,8 +131,28 @@ jobs:
         shell: msys2 {0}
         run: python -m medchem.cli install-lilly
 
-      - name: Run Lilly integration tests
-        if: runner.os != 'Windows'
+      - name: Run Lilly integration tests with wrapper coverage
+        if: runner.os == 'Linux'
+        run: >-
+          python -m pytest tests/test_structural.py
+          -o addopts=""
+          --cov=medchem.structural.lilly_demerits._demerits
+          --cov=medchem.structural.lilly_demerits._lilly
+          --cov-config=.coveragerc-lilly
+          --cov-report=term-missing
+          --cov-report=xml
+          --cov-fail-under=85
+
+      - name: Upload Lilly wrapper coverage
+        if: runner.os == 'Linux'
+        uses: codecov/codecov-action@a99c28d3f0da835de33ff2feb2e15691c7b9641f # v7
+        with:
+          files: coverage-lilly.xml
+          fail_ci_if_error: false
+          flags: lilly
+
+      - name: Run Lilly integration tests on macOS
+        if: runner.os == 'macOS'
         run: python -m pytest -m "integration and lilly" --no-cov -n 0
 
       - name: Run Lilly integration tests on Windows

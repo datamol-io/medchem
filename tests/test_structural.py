@@ -1,4 +1,5 @@
 import sys
+import subprocess
 
 import pandas as pd
 import pytest
@@ -8,6 +9,7 @@ import datamol as dm
 
 from medchem.structural.lilly_demerits import LillyDemeritsFilters
 from medchem.structural.lilly_demerits._lilly import find_lilly_binaries
+from medchem.structural.lilly_demerits._lilly import run_pipeline
 
 try:
     find_lilly_binaries()
@@ -263,6 +265,34 @@ def test_lilly_forwards_parallel_batch_configuration(monkeypatch):
     assert result["batch_size"].tolist() == [4, 4, 3]
     assert captured["n_jobs"] == 3
     assert captured["scheduler"] == "threads"
+
+
+def test_lilly_pipeline_connects_native_stages(tmp_path):
+    output = tmp_path / "pipeline-output.txt"
+    commands = [
+        [sys.executable, "-c", "import sys; sys.stdout.write('alpha\\nbeta\\n')"],
+        [sys.executable, "-c", "import sys; sys.stdout.write(sys.stdin.read().upper())"],
+    ]
+
+    run_pipeline(commands, output)
+
+    assert output.read_text(encoding="utf-8") == "ALPHA\nBETA\n"
+
+
+def test_lilly_pipeline_propagates_stage_failures(tmp_path):
+    output = tmp_path / "pipeline-output.txt"
+    commands = [[sys.executable, "-c", "import sys; sys.stderr.write('failed stage'); sys.exit(7)"]]
+
+    with pytest.raises(subprocess.CalledProcessError) as error:
+        run_pipeline(commands, output)
+
+    assert error.value.returncode == 7
+    assert error.value.stderr == "failed stage"
+
+
+def test_lilly_pipeline_requires_a_stage(tmp_path):
+    with pytest.raises(ValueError, match="at least one command"):
+        run_pipeline([], tmp_path / "pipeline-output.txt")
 
 
 @pytest.mark.integration

@@ -9,6 +9,7 @@ import datamol as dm
 
 from medchem.structural.lilly_demerits import LillyDemeritsFilters
 from medchem.structural.lilly_demerits._lilly import find_lilly_binaries
+from medchem.structural.lilly_demerits._lilly import materialize_query_manifest
 from medchem.structural.lilly_demerits._lilly import run_pipeline
 
 try:
@@ -293,6 +294,34 @@ def test_lilly_pipeline_propagates_stage_failures(tmp_path):
 def test_lilly_pipeline_requires_a_stage(tmp_path):
     with pytest.raises(ValueError, match="at least one command"):
         run_pipeline([], tmp_path / "pipeline-output.txt")
+
+
+def test_lilly_query_manifests_use_absolute_paths(tmp_path):
+    query_dir = tmp_path / "queries"
+    query_dir.mkdir()
+    first_query = query_dir / "first.qry"
+    second_query = query_dir / "second.qry"
+    first_query.touch()
+    second_query.touch()
+    source = query_dir / "manifest"
+    source.write_bytes(f"first.qry\r\n\r\n{second_query.resolve()}\r\n".encode())
+    destination = tmp_path / "resolved-manifest"
+
+    result = materialize_query_manifest(source, destination)
+
+    assert result == str(destination)
+    assert destination.read_text(encoding="utf-8").splitlines() == [
+        str(first_query.resolve()),
+        str(second_query.resolve()),
+    ]
+
+
+def test_lilly_query_manifest_rejects_missing_files(tmp_path):
+    source = tmp_path / "manifest"
+    source.write_text("missing.qry\n", encoding="utf-8")
+
+    with pytest.raises(FileNotFoundError, match="missing.qry"):
+        materialize_query_manifest(source, tmp_path / "resolved-manifest")
 
 
 @pytest.mark.integration

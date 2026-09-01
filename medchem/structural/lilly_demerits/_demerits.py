@@ -15,6 +15,7 @@ import numpy as np
 
 
 from ._lilly import find_lilly_binaries
+from ._lilly import materialize_query_manifest
 from ._lilly import parse_output
 from ._lilly import run_cmd
 from ._lilly import run_pipeline
@@ -146,14 +147,19 @@ class LillyDemeritsFilters:
             mc_first_pass_options += "-k "
         mc_first_pass_options += " -A I -A ipp"
 
-        query_files = ["reject1", "reject2", "demerits"]
-        for i, query_file in enumerate(query_files):
-            query_files[i] = str(importlib_resources.files("medchem.data.queries").joinpath(query_file))
-
         # output file dir
         run_id = str(uuid.uuid4())[:8]
         temporary_dir = tempfile.TemporaryDirectory(suffix=f"_lilly_{run_id}")
         bad_file_dir = temporary_dir.name
+
+        query_resources = importlib_resources.files("medchem.data.queries")
+        query_files = [
+            materialize_query_manifest(
+                str(query_resources.joinpath(query_file)),
+                os.path.join(bad_file_dir, query_file),
+            )
+            for query_file in ("reject1", "reject2", "demerits")
+        ]
         bad_file_0 = os.path.join(bad_file_dir, "bad0")
         bad_file_1 = os.path.join(bad_file_dir, "bad1")
         bad_file_2 = os.path.join(bad_file_dir, "bad2")
@@ -186,8 +192,9 @@ class LillyDemeritsFilters:
         if iwd_options:
             extra_iwdemerit_options += " " + iwd_options
 
-        charge_assigner_path = str(
-            importlib_resources.files("medchem.data.charge_assigner").joinpath("queries")
+        charge_assigner_path = materialize_query_manifest(
+            str(importlib_resources.files("medchem.data.charge_assigner").joinpath("queries")),
+            os.path.join(bad_file_dir, "charge_assigner_queries"),
         )
         extra_iwdemerit_options += " -N F:" + charge_assigner_path
 

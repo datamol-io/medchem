@@ -111,6 +111,36 @@ def parse_output(rowlist: Sequence[str]) -> pd.DataFrame:
     return df
 
 
+def materialize_query_manifest(
+    source_path: str | Path,
+    destination_path: str | Path,
+) -> str:
+    """Write a Lilly query manifest with fully resolved query paths.
+
+    Lilly's Windows binaries resolve entries relative to the process working
+    directory rather than the manifest location. Absolute entries keep the
+    bundled rules portable without changing their contents.
+    """
+    source = Path(source_path)
+    query_root = source.resolve().parent
+    resolved_queries = []
+    for entry in source.read_text(encoding="utf-8").splitlines():
+        entry = entry.strip()
+        if not entry:
+            continue
+        query_path = Path(entry)
+        if not query_path.is_absolute():
+            query_path = query_root / query_path
+        query_path = query_path.resolve()
+        if not query_path.is_file():
+            raise FileNotFoundError(f"Lilly query file not found: {query_path}")
+        resolved_queries.append(str(query_path))
+
+    destination = Path(destination_path)
+    destination.write_text("\n".join(resolved_queries) + "\n", encoding="utf-8")
+    return str(destination)
+
+
 def run_cmd(cmd: Sequence[str | Path], shell: bool = False) -> subprocess.CompletedProcess:
     """Run a command"""
     res = subprocess.run(cmd, capture_output=True, shell=shell, check=False)

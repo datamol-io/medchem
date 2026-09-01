@@ -1,6 +1,9 @@
 [run]
 branch = True
 data_file = .coverage/lilly
+source =
+    medchem.structural.lilly_demerits._demerits
+    medchem.structural.lilly_demerits._lilly
 
 [report]
 show_missing = True

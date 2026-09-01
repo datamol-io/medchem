@@ -133,15 +133,10 @@ jobs:
 
       - name: Run Lilly integration tests with wrapper coverage
         if: runner.os == 'Linux'
-        run: >-
-          python -m pytest tests/test_structural.py
-          -o addopts=""
-          --cov=medchem.structural.lilly_demerits._demerits
-          --cov=medchem.structural.lilly_demerits._lilly
-          --cov-config=.coveragerc-lilly
-          --cov-report=term-missing
-          --cov-report=xml
-          --cov-fail-under=85
+        run: |
+          python -m coverage run --rcfile=.coveragerc-lilly -m pytest tests/test_structural.py -o addopts=""
+          python -m coverage report --rcfile=.coveragerc-lilly --show-missing --fail-under=85
+          python -m coverage xml --rcfile=.coveragerc-lilly
 
       - name: Upload Lilly wrapper coverage
         if: runner.os == 'Linux'

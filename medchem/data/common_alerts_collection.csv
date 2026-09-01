@@ -2392,8 +2392,8 @@ rule_id,rule_set,description,smarts,rule_set_name,priority,mincount,source,catal
 2390,23,maleimide,C1=CC(=[OX1])NC1=[OX1],Toxicophore,1,1,Litterature,General Toxicophores
 2391,23,masked_aniline,"[$([n]),$([#7H1]),$([#7H0;!$([NX3]=[O])])]c1ccccc1",Toxicophore,1,1,Litterature,General Toxicophores
 2392,23,meta_aminophenol,c1([NX3&!R])cc([OX2&!RH1])ccc1,Toxicophore,1,1,Litterature,General Toxicophores
-2393,23,michael_acceptors_double,"[#6]=[#6][$([#6]=[OX1&!R]),$([#6][#7&!R]),$([#6][#16!R])]",Toxicophore,1,1,Litterature,General Toxicophores
-2394,23,michael_acceptors_triple,"[#6]#[#6][$([#6]=[OX1&!R]),$([#6][#7&!R]),$([#6][#16!R])]",Toxicophore,1,1,Litterature,General Toxicophores
+2393,23,michael_acceptors_double,"[#6]=[#6][$([#6]=[OX1&!R]),$([#6]=[#7&!R]),$([#6]=[#16!R])]",Toxicophore,1,1,Litterature,General Toxicophores
+2394,23,michael_acceptors_triple,"[#6]#[#6][$([#6]=[OX1&!R]),$([#6]=[#7&!R]),$([#6]=[#16!R])]",Toxicophore,1,1,Litterature,General Toxicophores
 2395,23,mustard_gas,[Cl]CCSCC[Cl],Toxicophore,1,1,Litterature,General Toxicophores
 2396,23,n_acylated_azoles,[#6][CX3&!R]([r5])=[OX1],Toxicophore,1,1,Litterature,General Toxicophores
 2397,23,n_oxide,C[N+]1(CCN(CC1)C2=C3C=CC=CC3=NC4=C(N2)C=C(C=C4)Cl)[O-],Toxicophore,1,1,Litterature,General Toxicophores

@@ -7,10 +7,11 @@ Medchem is a Python library that proposes molecular filters and prioritization r
 ## Installation
 
 ```bash
-micromamba install -c conda-forge medchem
+uv add medchem
 
-# or using pip
+# pip and conda-forge remain supported
 pip install medchem
+micromamba install -c conda-forge medchem
 ```
 
 Medchem 3.x requires Python 3.11 or newer and RDKit 2024.09 or newer. Existing
@@ -35,8 +36,17 @@ Medchem incorporates a comprehensive collection of medchem filters, alerts, and 
 Originally proposed in ["Rules for Identifying Potentially Reactive or Promiscuous Compounds" in 2012](https://doi.org/10.1021/jm301008n) by Robert F. Bruns and Ian A. Watson. Medchem is re-using the implementation from <https://github.com/IanAWatson/Lilly-Medchem-Rules>.
 
 The Medchem implementation is accessible through `medchem.structural.lilly_demerits`.
-The external command-line tools are optional and can be installed with
-`mamba install -c conda-forge lilly-medchem-rules`.
+Install the checksum-pinned, compatible upstream 2.1 tools with
+`medchem install-lilly`. The installer builds the native reference engine and
+runs its 35,862-molecule regression suite; it adds no Medchem runtime
+dependency. This is never run by `pip install medchem`: it is an explicit
+optional command that installs three executables, not Python bindings. Windows
+builds use an MSYS2 MSYS shell.
+
+uv users can run `uv add medchem` followed by
+`uv run medchem install-lilly`. A single `medchem[lilly]` extra is intentionally
+not advertised without separately built and tested platform wheels: packaging
+extras resolve dependencies but do not run a compiler after installation.
 
 ### NIBR Filters
 

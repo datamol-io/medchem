@@ -15,8 +15,9 @@ NOTEBOOK_PATHS = list(filter(lambda x: x.name not in DISABLE_NOTEBOOKS, NOTEBOOK
 NOTEBOOKS_TO_DISCARD = ["Basic_Concepts.ipynb"]
 NOTEBOOK_PATHS = list(filter(lambda x: x.name not in NOTEBOOKS_TO_DISCARD, NOTEBOOK_PATHS))
 
+pytestmark = [pytest.mark.integration, pytest.mark.notebook]
 
-@pytest.mark.notebook
+
 @pytest.mark.parametrize("nb_path", NOTEBOOK_PATHS, ids=[str(n.name) for n in NOTEBOOK_PATHS])
 def test_notebook(nb_path):
     # Setup and configure the processor to execute the notebook

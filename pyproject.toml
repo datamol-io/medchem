@@ -2,6 +2,9 @@
 requires = ["setuptools>=77", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
+[tool.uv]
+required-version = ">=0.12.8"
+
 [project]
 name = "medchem"
 description = "Medchem: Molecular filtering for drug discovery."
@@ -111,6 +114,7 @@ minversion = "8.0"
 addopts = "--verbose --durations=10 -n auto --cov=medchem --cov-fail-under=90 --cov-report xml --cov-report term"
 testpaths = ["tests"]
 markers = [
+    "integration: runs optional external tools and executable tutorials",
     "lilly: requires the optional Lilly MedChem Rules command-line tools",
     "notebook: executes a tutorial notebook",
 ]

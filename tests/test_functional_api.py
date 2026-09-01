@@ -1,10 +1,13 @@
-import shutil
-
 import datamol as dm
 import medchem as mc
 import pytest
+from medchem.structural.lilly_demerits._lilly import find_lilly_binaries
 
-HAS_LILLY_TOOLS = all(shutil.which(name) for name in ("mc_first_pass", "tsubstructure", "iwdemerit"))
+try:
+    find_lilly_binaries()
+    HAS_LILLY_TOOLS = True
+except ImportError:
+    HAS_LILLY_TOOLS = False
 
 
 def test_alert_filter():
@@ -192,6 +195,7 @@ def test_molecular_graph_filter():
     assert results.tolist() == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
+@pytest.mark.integration
 @pytest.mark.lilly
 @pytest.mark.skipif(
     not HAS_LILLY_TOOLS,

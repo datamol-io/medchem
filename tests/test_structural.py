@@ -1,13 +1,19 @@
-import shutil
+import sys
 
+import pandas as pd
 import pytest
 
 import medchem as mc
 import datamol as dm
 
 from medchem.structural.lilly_demerits import LillyDemeritsFilters
+from medchem.structural.lilly_demerits._lilly import find_lilly_binaries
 
-HAS_LILLY_TOOLS = all(shutil.which(name) for name in ("mc_first_pass", "tsubstructure", "iwdemerit"))
+try:
+    find_lilly_binaries()
+    HAS_LILLY_TOOLS = True
+except ImportError:
+    HAS_LILLY_TOOLS = False
 requires_lilly = pytest.mark.skipif(
     not HAS_LILLY_TOOLS,
     reason="requires the optional Lilly MedChem Rules command-line tools",
@@ -102,6 +108,7 @@ def test_nibr_invalid():
     }
 
 
+@pytest.mark.integration
 @pytest.mark.lilly
 @requires_lilly
 def test_lilly_demerits():
@@ -112,7 +119,7 @@ def test_lilly_demerits():
 
     results = dfilters(mols=data["mol"].tolist())
 
-    assert results["pass_filter"].sum() == 30
+    assert results["pass_filter"].sum() == 29
     assert set(results.columns.tolist()) == {
         "smiles",
         "reasons",
@@ -124,6 +131,7 @@ def test_lilly_demerits():
     }
 
 
+@pytest.mark.integration
 @pytest.mark.lilly
 @requires_lilly
 def test_lilly_demerits_config():
@@ -159,6 +167,105 @@ def test_lilly_demerits_config():
     }
 
 
+@pytest.mark.integration
+@pytest.mark.lilly
+@requires_lilly
+def test_lilly_21_regression_examples():
+    """Pin rule-query and executable behavior that changed after 1.0.1."""
+    smiles = [
+        "C1=CC=CC(=C1C(C(=O)OCC)C[N+](=O)[O-])Cl",
+        "C1=CC=CC=C1C(C(=O)OCC)C[N+](=O)[O-]",
+        "C1=CC=C(Cl)C=C1C(C(=O)OCC)C[N+](=O)[O-]",
+        "C1=CC(=CC=C1C(C(=O)OCC)C[N+](=O)[O-])C",
+        "C1=CC(=CC=C1C(C(=O)OCC)C[N+](=O)[O-])C(F)(F)F",
+        "C(=O)(O)CCCC=CCC=CCC=CCC(O)C(O)CCCCC",
+        "C(=O)(O)CCCC=CCC=CCC=CCC=CCCCCC",
+        "C(=O)(O)CCCC=CCC=CCC(O)C(O)CC=CCCCCC",
+    ]
+
+    results = LillyDemeritsFilters(
+        min_atoms=7,
+        soft_max_atoms=25,
+        hard_max_atoms=40,
+    )(smiles)
+
+    assert results["pass_filter"].tolist() == [False] * 5 + [True] * 3
+    assert results["demerit_score"].tolist() == [110, 110, 110, 110, 110, 65, 90, 90]
+
+
+@pytest.mark.integration
+@pytest.mark.lilly
+@requires_lilly
+def test_lilly_uses_reference_valence_model_for_raw_smiles():
+    smiles = "P(F)(F)(F)(F)(F)F.C1=CC(=CC=C1N(C)C)N(C)C"
+
+    result = LillyDemeritsFilters()([smiles])
+
+    assert result.loc[0, "smiles"] == smiles
+    assert result.loc[0, "reasons"] == "phenylenediamine"
+
+
+@pytest.mark.integration
+@pytest.mark.lilly
+@requires_lilly
+def test_lilly_defaults_match_upstream_kill_thresholds():
+    smiles = "Brc1cc(N=c2[nH]c(=N)[n]c(CSc3c(O)cc4c(=O)[n](ccc4c3)C)[nH]2)c(C)cc1"
+
+    result = LillyDemeritsFilters()([smiles])
+
+    assert not result.loc[0, "pass_filter"]
+    assert result.loc[0, "demerit_score"] == 134
+    assert "too_many_atoms:D40" in result.loc[0, "reasons"]
+
+
+@pytest.mark.integration
+@pytest.mark.lilly
+@requires_lilly
+def test_lilly_handles_smiles_suppressed_by_the_native_tools():
+    result = LillyDemeritsFilters()(["C1CC"])
+
+    assert result.loc[0, "smiles"] == "C1CC"
+    assert result.loc[0, "reasons"] == "lillymol_invalid"
+    assert result.loc[0, "status"] == "exclude"
+    assert not result.loc[0, "pass_filter"]
+
+
+@pytest.mark.integration
+@pytest.mark.lilly
+@requires_lilly
+@pytest.mark.parametrize("stop_after_step", [0, 1, 2])
+def test_lilly_can_stop_after_intermediate_steps(stop_after_step):
+    smiles = ["CCO", "[Na+].[Cl-]", "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"]
+
+    result = LillyDemeritsFilters(stop_after_step=stop_after_step)(smiles)
+
+    assert result["mol"].tolist() == smiles
+    assert result["pass_filter"].dtype == bool
+    assert result["step"].max() <= stop_after_step + 1
+
+
+def test_lilly_rejects_invalid_stop_step():
+    with pytest.raises(ValueError, match="between 0 and 3"):
+        LillyDemeritsFilters(stop_after_step=4)
+
+
+def test_lilly_forwards_parallel_batch_configuration(monkeypatch):
+    captured = {}
+
+    def fake_parallelized(_fn, batches, **kwargs):
+        captured.update(kwargs)
+        return [pd.DataFrame({"batch_size": [len(batch)]}) for batch in batches]
+
+    monkeypatch.setattr(dm, "parallelized", fake_parallelized)
+
+    result = LillyDemeritsFilters()(["CC"] * 11, n_jobs=3, batch_size=5)
+
+    assert result["batch_size"].tolist() == [4, 4, 3]
+    assert captured["n_jobs"] == 3
+    assert captured["scheduler"] == "threads"
+
+
+@pytest.mark.integration
 @pytest.mark.lilly
 @requires_lilly
 def test_demerits_invalid():
@@ -179,3 +286,72 @@ def test_lilly_tools_are_resolved_lazily(monkeypatch):
     dfilters = LillyDemeritsFilters()
     with pytest.raises(ImportError, match="missing Lilly tools"):
         dfilters(mols=["CC"])
+
+
+def test_lilly_tools_are_found_beside_interpreter(monkeypatch, tmp_path):
+    import medchem.structural.lilly_demerits._lilly as lilly_module
+
+    interpreter = tmp_path / "bin" / "python"
+    interpreter.parent.mkdir()
+    interpreter.touch()
+    for name in ("mc_first_pass", "tsubstructure", "iwdemerit"):
+        (interpreter.parent / name).touch()
+    (interpreter.parent / ".lilly-medchem-rules-version").write_text("2.1.0\n")
+
+    monkeypatch.setattr(lilly_module.shutil, "which", lambda name: None)
+    monkeypatch.setattr(sys, "executable", str(interpreter))
+    monkeypatch.setattr(sys, "prefix", str(tmp_path))
+
+    binaries = lilly_module.find_lilly_binaries()
+
+    assert binaries == {
+        name: str(interpreter.parent / name) for name in ("mc_first_pass", "tsubstructure", "iwdemerit")
+    }
+
+
+def test_lilly_windows_layout_uses_scripts_and_exe(monkeypatch, tmp_path):
+    import medchem.structural.lilly_demerits._installer as installer_module
+    import medchem.structural.lilly_demerits._lilly as lilly_module
+
+    scripts = tmp_path / "Scripts"
+    scripts.mkdir()
+    expected = {}
+    for name in ("mc_first_pass", "tsubstructure", "iwdemerit"):
+        binary = scripts / f"{name}.exe"
+        binary.touch()
+        expected[name] = str(binary)
+    (scripts / ".lilly-medchem-rules-version").write_text("2.1.0\n")
+
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setattr(sys, "prefix", str(tmp_path))
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "python.exe"))
+    monkeypatch.setattr(lilly_module.shutil, "which", lambda name: None)
+    monkeypatch.setenv("MSYSTEM", "MSYS")
+
+    assert installer_module.install_lilly_rules(prefix=tmp_path) == expected
+    assert lilly_module.find_lilly_binaries() == expected
+
+
+def test_lilly_windows_build_requires_msys2(monkeypatch, tmp_path):
+    import medchem.structural.lilly_demerits._installer as installer_module
+
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.delenv("MSYSTEM", raising=False)
+
+    with pytest.raises(RuntimeError, match="MSYS2 MSYS shell"):
+        installer_module.install_lilly_rules(prefix=tmp_path)
+
+
+def test_lilly_rejects_unverified_binary_version(monkeypatch, tmp_path):
+    import medchem.structural.lilly_demerits._lilly as lilly_module
+
+    binaries = {}
+    for name in ("mc_first_pass", "tsubstructure", "iwdemerit"):
+        binary = tmp_path / name
+        binary.touch()
+        binaries[name] = str(binary)
+
+    monkeypatch.setattr(lilly_module.shutil, "which", binaries.get)
+
+    with pytest.raises(ImportError, match="unverified.*medchem install-lilly"):
+        lilly_module.find_lilly_binaries()

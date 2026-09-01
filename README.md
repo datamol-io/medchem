@@ -23,21 +23,47 @@ Medchem is a Python library that proposes multiple molecular medchem filters to 
 ## Installation
 
 ```bash
-micromamba install -c conda-forge medchem
+uv add medchem
 
-# or using pip
+# pip and conda-forge remain supported
 pip install medchem
+micromamba install -c conda-forge medchem
 ```
 
 Medchem 3.x supports Python 3.11 through 3.14 and RDKit 2024.09 or newer. See
 the [migration guide](https://medchem-docs.datamol.io/stable/migration.html)
 for dependency and optional-integration details.
 
-The Lilly MedChem Rules require separate command-line tools:
+The optional Lilly MedChem Rules integration uses the current upstream 2.1
+rules. Install its checksum-pinned native tools beside the active Python:
 
 ```bash
-mamba install -c conda-forge lilly-medchem-rules
+medchem install-lilly
 ```
+
+This is an explicit optional step: `pip install medchem` never downloads or
+compiles Lilly. The command builds three upstream executables rather than a
+Python extension, verifies the source archive, and runs Lilly's complete
+35,862-molecule regression suite. Linux needs a C++ compiler, GNU Make, zlib,
+and Ruby for the upstream test driver; macOS needs the Xcode command-line tools
+and Ruby; Windows uses an MSYS2 MSYS shell with the `gcc`, `make`, `ruby`, and
+`zlib-devel` packages. The conda-forge
+package is still version 1.0.1 and is not compatible with the vendored 2.1
+rule set.
+
+With uv, install Medchem into the project and run the same explicit installer
+inside its managed environment:
+
+```bash
+uv add medchem
+uv run medchem install-lilly
+```
+
+Python extras can only select other distributions; they cannot safely run a
+post-install compiler. A future one-command `medchem[lilly]` extra would
+therefore require separately published, platform-specific Lilly binary wheels.
+Until those wheels exist, the explicit second command avoids a misleading
+empty extra and works identically with pip and uv.
 
 ## Documentation
 
@@ -48,21 +74,25 @@ Visit <https://medchem-docs.datamol.io/>.
 ### Setup dev environment
 
 ```bash
-micromamba create -n medchem -f env.yml
-micromamba activate medchem
+uv sync --all-extras
+uv run medchem install-lilly
 ```
+
+`env.yml` remains available when a Conda development environment is required.
 
 ### Tests
 
 You can run tests locally with:
 
 ```bash
-pytest
+uv run python -m pytest -m "not integration"
+uv run python -m pytest -m integration --no-cov -n 0
 ```
 
-The core suite skips Lilly-specific checks when its optional executables are
-not installed. CI runs those checks, together with the tutorial notebooks, in
-a dedicated conda-backed environment.
+The first command is the fast core suite. The second runs the available Lilly
+2.1 checks and executable tutorials. GitHub Actions validates the Python core
+on Linux, Windows, macOS Apple Silicon, and macOS Intel, and builds the pinned
+Lilly release separately on the same four targets.
 
 ## License
 

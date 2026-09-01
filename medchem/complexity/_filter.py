@@ -15,6 +15,7 @@ from ._calc import WhitlockCT
 from ._calc import BaroneCT
 from ._calc import SMCM
 from ._calc import TWC
+from ._calc import SPS
 
 
 class ComplexityFilter:
@@ -40,6 +41,7 @@ class ComplexityFilter:
         "barone": BaroneCT,  # barone complexity index
         "smcm": SMCM,  # synthetic and molecular complexity
         "twc": TWC,  # Total walk count complexity
+        "spacialscore": SPS,  # normalized SpacialScore
     }
 
     def __init__(
@@ -64,6 +66,7 @@ class ComplexityFilter:
                 * "barone": barone complexity index
                 * "smcm": synthetic and molecular complexity
                 * "twc":  total walk count complexity  (`zinc_15_available` only)
+                * "spacialscore": normalized SpacialScore (custom threshold file required)
             threshold_stats_file: The path to or type the threshold file to be used.
                 The default available threshold stats files are
                 * "zinc_12"

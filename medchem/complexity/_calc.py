@@ -3,6 +3,7 @@ import math
 from rdkit.Chem.rdmolops import GetMolFrags
 from rdkit.Chem.rdmolops import FindPotentialStereo
 from rdkit.Chem import FindMolChiralCenters
+from rdkit.Chem import SpacialScore
 from rdkit.Chem import rdchem
 
 import datamol as dm
@@ -13,6 +14,24 @@ def _get_explicit_valence(atom: rdchem.Atom) -> int:
     if hasattr(atom, "GetValence"):
         return atom.GetValence(rdchem.ValenceType.EXPLICIT)
     return atom.GetExplicitValence()
+
+
+def SPS(mol: dm.Mol, normalize: bool = True):
+    """Compute RDKit's SpacialScore descriptor.
+
+    The score is described by Krzyzanowski et al., J. Med. Chem. 2023,
+    https://doi.org/10.1021/acs.jmedchem.3c00689.
+
+    Args:
+        mol: Input molecule.
+        normalize: Divide the score by the number of heavy atoms (nSPS).
+    """
+    if mol is None:
+        raise ValueError("Invalid molecule")
+    mol = dm.to_mol(mol)
+    if mol is None:
+        raise ValueError("Invalid molecule")
+    return SpacialScore.SPS(mol, normalize=normalize)
 
 
 def WhitlockCT(

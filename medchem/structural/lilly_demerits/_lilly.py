@@ -153,7 +153,7 @@ def _query_path_for_lilly(query_path: str | Path) -> str:
     tail = tail.replace("\\", "/").lstrip("/")
     if not drive:
         return tail
-    return f"/{drive[0].lower()}/{tail}"
+    return f"{drive}/{tail}"
 
 
 def run_cmd(cmd: Sequence[str | Path], shell: bool = False) -> subprocess.CompletedProcess:

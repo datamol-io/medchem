@@ -326,10 +326,10 @@ def test_lilly_query_manifest_rejects_missing_files(tmp_path):
         materialize_query_manifest(source, tmp_path / "resolved-manifest")
 
 
-def test_lilly_query_manifest_uses_msys_paths_on_windows(monkeypatch):
+def test_lilly_query_manifest_uses_forward_slashes_on_windows(monkeypatch):
     monkeypatch.setattr(sys, "platform", "win32")
 
-    assert _query_path_for_lilly(r"D:\a\medchem\query.qry") == "/d/a/medchem/query.qry"
+    assert _query_path_for_lilly(r"D:\a\medchem\query.qry") == "D:/a/medchem/query.qry"
 
 
 @pytest.mark.integration

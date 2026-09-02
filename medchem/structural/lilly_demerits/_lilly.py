@@ -138,7 +138,8 @@ def materialize_query_manifest(
         resolved_queries.append(_query_path_for_lilly(query_path))
 
     destination = Path(destination_path)
-    destination.write_text("\n".join(resolved_queries) + "\n", encoding="utf-8")
+    with destination.open("w", encoding="utf-8", newline="\n") as stream:
+        stream.write("\n".join(resolved_queries) + "\n")
     return str(destination)
 
 

@@ -312,9 +312,10 @@ def test_lilly_query_manifests_use_absolute_paths(tmp_path):
 
     assert result == str(destination)
     assert destination.read_text(encoding="utf-8").splitlines() == [
-        str(first_query.resolve()),
-        str(second_query.resolve()),
+        _query_path_for_lilly(first_query.resolve()),
+        _query_path_for_lilly(second_query.resolve()),
     ]
+    assert b"\r" not in destination.read_bytes()
 
 
 def test_lilly_query_manifest_rejects_missing_files(tmp_path):

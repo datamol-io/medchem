@@ -10,7 +10,7 @@ name = "medchem"
 description = "Medchem: Molecular filtering for drug discovery."
 dynamic = ["version"]
 license = "Apache-2.0"
-license-files = ["LICENSE.md"]
+license-files = ["LICENSE.md", "medchem/data/LILLY_NOTICE"]
 authors = [
     { name = "Emmanuel Noutahi", email = "emmanuel@valencediscovery.com" },
     { name = "Hadrien Mary", email = "hadrien@valencediscovery.com" },

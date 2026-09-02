@@ -26,6 +26,7 @@ nav:
       - Constraints Filtering: tutorials/Constraints_Filtering.ipynb
   - CLI: cli.md
   - Migrating to 3.x: migration.md
+  - Releasing: releasing.md
   - API:
       - medchem.rules: api/medchem.rules.md
       - medchem.structural: api/medchem.structural.md

@@ -11,7 +11,7 @@ filter, and updates the optional Lilly integration to the upstream 2.1
 reference engine. See the
 [changelog](https://github.com/datamol-io/medchem/blob/dev/CHANGELOG.md) and
 [migration guide](migration.md) for changes and installation limits.
-This work is on `dev` and is not yet a published release.
+These changes are not yet a published release.
 
 ## Installation
 

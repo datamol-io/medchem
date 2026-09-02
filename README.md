@@ -10,7 +10,7 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/medchem)](https://pypi.org/project/medchem/)
 [![Conda](https://img.shields.io/conda/dn/conda-forge/medchem)](https://anaconda.org/conda-forge/medchem)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/medchem)](https://pypi.org/project/medchem/)
-[![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/datamol-io/medchem/blob/main/LICENSE.md)
+[![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
 [![GitHub Repo stars](https://img.shields.io/github/stars/datamol-io/medchem)](https://github.com/datamol-io/medchem/stargazers)
 [![GitHub Repo stars](https://img.shields.io/github/forks/datamol-io/medchem)](https://github.com/datamol-io/medchem/network/members)
 [![test](https://github.com/datamol-io/medchem/actions/workflows/test.yml/badge.svg)](https://github.com/datamol-io/medchem/actions/workflows/test.yml)
@@ -29,9 +29,10 @@ The Lilly wrapper now preserves every input row, uses the reference thresholds
 and query set, supports parallel batches, and streams its native stages.
 
 See the [complete changelog](CHANGELOG.md) and the
-[3.x migration guide](docs/migration.md). These changes are currently on the
-`dev` branch; the latest PyPI and conda-forge packages remain the stable
-releases.
+[3.x migration guide](docs/migration.md). These notes describe the upcoming
+major release; PyPI and conda-forge still provide the published stable versions.
+
+Release maintainers: see the [manual release guide](docs/releasing.md).
 
 ## Installation
 
@@ -44,7 +45,7 @@ micromamba install -c conda-forge medchem
 ```
 
 Medchem 3.x supports Python 3.11 through 3.14 and RDKit 2024.09 or newer. See
-the [migration guide](https://medchem-docs.datamol.io/stable/migration.html)
+the [migration guide](docs/migration.md)
 for dependency and optional-integration details.
 
 The optional Lilly MedChem Rules integration uses the current upstream 2.1
@@ -61,7 +62,7 @@ Python extension, verifies the source archive, and runs Lilly's complete
 and Ruby for the upstream test driver; macOS needs the Xcode command-line tools
 and Ruby. Native Windows is not supported by upstream 2.1 because its query
 reader cannot resolve the bundled manifests; Windows users can run it through
-WSL. The conda-forge
+WSL. The conda-forge `lilly-medchem-rules`
 package is still version 1.0.1 and is not compatible with the vendored 2.1
 rule set.
 
@@ -111,6 +112,8 @@ release is built and tested separately on Linux and both macOS architectures.
 ## License
 
 Under the Apache-2.0 license. See [LICENSE.md](LICENSE.md).
+Bundled Lilly query data retain their [upstream attribution](medchem/data/LILLY_NOTICE).
+The optional native tools are a separate upstream distribution.
 
 ## Citation
 

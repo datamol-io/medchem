@@ -63,6 +63,8 @@ for earlier release notes.
 - Validate core Medchem on Linux, Windows, macOS Apple Silicon and macOS Intel;
   run Lilly, notebook, documentation, formatting and distribution checks in
   separate jobs.
-- Build each release once, smoke-test wheel and source distributions, and
-  publish to PyPI through Trusted Publishing with PEP 740 attestations.
-  Conda-forge remains a supported, bot-updated downstream channel.
+- Keep publication manual through the `release` action and `PYPI_API_TOKEN`,
+  with PEP 740 attestations. Release tests and isolated wheel/source checks
+  gate publication; prereleases never replace the stable documentation.
+- Add a non-publishing dry run and a [release guide](docs/releasing.md).
+  Conda-forge remains a separate channel requiring recipe updates.

@@ -20,6 +20,19 @@
 
 Medchem is a Python library that proposes multiple molecular medchem filters to a wide range of use cases relevant in a drug discovery context.
 
+## Updates
+
+Medchem 3.x updates the supported Python and RDKit stack, adds RDKit
+SpacialScore support, corrects the Toxicophore Michael-acceptor rule, and
+refreshes the optional Lilly MedChem Rules integration against upstream 2.1.
+The Lilly wrapper now preserves every input row, uses the reference thresholds
+and query set, supports parallel batches, and streams its native stages.
+
+See the [complete changelog](CHANGELOG.md) and the
+[3.x migration guide](docs/migration.md). These changes are currently on the
+`dev` branch; the latest PyPI and conda-forge packages remain the stable
+releases.
+
 ## Installation
 
 ```bash

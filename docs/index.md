@@ -4,6 +4,15 @@ _Medchem - Molecular filtering for drug discovery._
 
 Medchem is a Python library that proposes molecular filters and prioritization rules for a wide range of use cases relevant in drug discovery.
 
+## Updates
+
+The upcoming 3.x release adds SpacialScore, corrects the Michael-acceptor
+filter, and updates the optional Lilly integration to the upstream 2.1
+reference engine. See the
+[changelog](https://github.com/datamol-io/medchem/blob/dev/CHANGELOG.md) and
+[migration guide](migration.md) for changes and installation limits.
+This work is on `dev` and is not yet a published release.
+
 ## Installation
 
 ```bash

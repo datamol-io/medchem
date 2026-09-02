@@ -1,5 +1,4 @@
 import io
-import os
 import re
 import shutil
 import subprocess
@@ -119,7 +118,7 @@ def materialize_query_manifest(
     """Write a Lilly query manifest with portable query paths.
 
     The native tools do not recognise Windows absolute paths read from a
-    manifest. Paths relative to the execution directory work on every platform.
+    manifest. Local copies with simple names work on every platform.
     """
     source = Path(source_path)
     destination = Path(destination_path).resolve()
@@ -135,8 +134,9 @@ def materialize_query_manifest(
         query_path = query_path.resolve()
         if not query_path.is_file():
             raise FileNotFoundError(f"Lilly query file not found: {query_path}")
-        relative_path = os.path.relpath(query_path, start=destination.parent)
-        resolved_queries.append(relative_path.replace(os.sep, "/"))
+        local_query = destination.parent / f"{destination.name}.{len(resolved_queries)}.qry"
+        shutil.copyfile(query_path, local_query)
+        resolved_queries.append(local_query.name)
 
     with destination.open("w", encoding="utf-8", newline="\n") as stream:
         stream.write("\n".join(resolved_queries) + "\n")

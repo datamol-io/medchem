@@ -296,13 +296,13 @@ def test_lilly_pipeline_requires_a_stage(tmp_path):
         run_pipeline([], tmp_path / "pipeline-output.txt")
 
 
-def test_lilly_query_manifests_use_resolvable_relative_paths(tmp_path):
+def test_lilly_query_manifests_use_local_query_copies(tmp_path):
     query_dir = tmp_path / "queries"
     query_dir.mkdir()
     first_query = query_dir / "first.qry"
     second_query = query_dir / "second.qry"
-    first_query.touch()
-    second_query.touch()
+    first_query.write_text("first query", encoding="utf-8")
+    second_query.write_text("second query", encoding="utf-8")
     source = query_dir / "manifest"
     source.write_bytes(f"first.qry\r\n\r\n{second_query.resolve()}\r\n".encode())
     destination = tmp_path / "resolved-manifest"
@@ -311,9 +311,10 @@ def test_lilly_query_manifests_use_resolvable_relative_paths(tmp_path):
 
     assert result == str(destination.resolve())
     entries = destination.read_text(encoding="utf-8").splitlines()
-    assert [(destination.parent / entry).resolve() for entry in entries] == [
-        first_query.resolve(),
-        second_query.resolve(),
+    assert entries == ["resolved-manifest.0.qry", "resolved-manifest.1.qry"]
+    assert [(destination.parent / entry).read_bytes() for entry in entries] == [
+        first_query.read_bytes(),
+        second_query.read_bytes(),
     ]
     assert b"\r" not in destination.read_bytes()
 

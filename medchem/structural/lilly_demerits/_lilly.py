@@ -1,4 +1,5 @@
 import io
+import ntpath
 import re
 import shutil
 import subprocess
@@ -134,11 +135,24 @@ def materialize_query_manifest(
         query_path = query_path.resolve()
         if not query_path.is_file():
             raise FileNotFoundError(f"Lilly query file not found: {query_path}")
-        resolved_queries.append(str(query_path))
+        resolved_queries.append(_query_path_for_lilly(query_path))
 
     destination = Path(destination_path)
     destination.write_text("\n".join(resolved_queries) + "\n", encoding="utf-8")
     return str(destination)
+
+
+def _query_path_for_lilly(query_path: str | Path) -> str:
+    """Return the path syntax expected inside a Lilly query manifest."""
+    path = str(query_path)
+    if sys.platform != "win32":
+        return path
+
+    drive, tail = ntpath.splitdrive(path)
+    tail = tail.replace("\\", "/").lstrip("/")
+    if not drive:
+        return tail
+    return f"/{drive[0].lower()}/{tail}"
 
 
 def run_cmd(cmd: Sequence[str | Path], shell: bool = False) -> subprocess.CompletedProcess:

@@ -8,6 +8,7 @@ import medchem as mc
 import datamol as dm
 
 from medchem.structural.lilly_demerits import LillyDemeritsFilters
+from medchem.structural.lilly_demerits._lilly import _query_path_for_lilly
 from medchem.structural.lilly_demerits._lilly import find_lilly_binaries
 from medchem.structural.lilly_demerits._lilly import materialize_query_manifest
 from medchem.structural.lilly_demerits._lilly import run_pipeline
@@ -322,6 +323,12 @@ def test_lilly_query_manifest_rejects_missing_files(tmp_path):
 
     with pytest.raises(FileNotFoundError, match="missing.qry"):
         materialize_query_manifest(source, tmp_path / "resolved-manifest")
+
+
+def test_lilly_query_manifest_uses_msys_paths_on_windows(monkeypatch):
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _query_path_for_lilly(r"D:\a\medchem\query.qry") == "/d/a/medchem/query.qry"
 
 
 @pytest.mark.integration

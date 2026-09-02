@@ -236,7 +236,8 @@ class LillyDemeritsFilters:
             )
 
         pipeline_commands = []
-        use_pipeline = stop_after_step == 3
+        # The MSYS-built tools cannot consume native Python pipes on Windows.
+        use_pipeline = stop_after_step == 3 and os.name != "nt"
 
         cmd = [binary_paths["mc_first_pass"]]
         if ring_bond_ratio >= 0:

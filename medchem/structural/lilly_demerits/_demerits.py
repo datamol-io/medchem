@@ -255,7 +255,7 @@ class LillyDemeritsFilters:
         if use_pipeline:
             pipeline_commands.append(cmd)
         else:
-            out.append(run_cmd(cmd))
+            out.append(run_cmd(cmd, cwd=bad_file_dir))
 
         if stop_after_step >= 1:
             cmd = []
@@ -269,7 +269,7 @@ class LillyDemeritsFilters:
             if use_pipeline:
                 pipeline_commands.append(cmd)
             else:
-                out.append(run_cmd(cmd))
+                out.append(run_cmd(cmd, cwd=bad_file_dir))
 
         if stop_after_step >= 2:
             cmd = []
@@ -281,7 +281,7 @@ class LillyDemeritsFilters:
             if use_pipeline:
                 pipeline_commands.append(cmd)
             else:
-                out.append(run_cmd(cmd))
+                out.append(run_cmd(cmd, cwd=bad_file_dir))
 
         if stop_after_step >= 3:
             cmd = []
@@ -303,10 +303,10 @@ class LillyDemeritsFilters:
             if use_pipeline:
                 pipeline_commands.append(cmd)
             else:
-                out.append(run_cmd(cmd))
+                out.append(run_cmd(cmd, cwd=bad_file_dir))
 
         if use_pipeline:
-            run_pipeline(pipeline_commands, iwd_out)
+            run_pipeline(pipeline_commands, iwd_out, cwd=bad_file_dir)
 
         data_list = []
         completed_bad_files = [bad_file_0, bad_file_1, bad_file_2][: stop_after_step + 1]

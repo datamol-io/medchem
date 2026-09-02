@@ -8,7 +8,6 @@ import medchem as mc
 import datamol as dm
 
 from medchem.structural.lilly_demerits import LillyDemeritsFilters
-from medchem.structural.lilly_demerits._lilly import _query_path_for_lilly
 from medchem.structural.lilly_demerits._lilly import find_lilly_binaries
 from medchem.structural.lilly_demerits._lilly import materialize_query_manifest
 from medchem.structural.lilly_demerits._lilly import run_pipeline
@@ -297,7 +296,7 @@ def test_lilly_pipeline_requires_a_stage(tmp_path):
         run_pipeline([], tmp_path / "pipeline-output.txt")
 
 
-def test_lilly_query_manifests_use_absolute_paths(tmp_path):
+def test_lilly_query_manifests_use_resolvable_relative_paths(tmp_path):
     query_dir = tmp_path / "queries"
     query_dir.mkdir()
     first_query = query_dir / "first.qry"
@@ -310,10 +309,11 @@ def test_lilly_query_manifests_use_absolute_paths(tmp_path):
 
     result = materialize_query_manifest(source, destination)
 
-    assert result == str(destination)
-    assert destination.read_text(encoding="utf-8").splitlines() == [
-        _query_path_for_lilly(first_query.resolve()),
-        _query_path_for_lilly(second_query.resolve()),
+    assert result == str(destination.resolve())
+    entries = destination.read_text(encoding="utf-8").splitlines()
+    assert [(destination.parent / entry).resolve() for entry in entries] == [
+        first_query.resolve(),
+        second_query.resolve(),
     ]
     assert b"\r" not in destination.read_bytes()
 
@@ -324,12 +324,6 @@ def test_lilly_query_manifest_rejects_missing_files(tmp_path):
 
     with pytest.raises(FileNotFoundError, match="missing.qry"):
         materialize_query_manifest(source, tmp_path / "resolved-manifest")
-
-
-def test_lilly_query_manifest_uses_forward_slashes_on_windows(monkeypatch):
-    monkeypatch.setattr(sys, "platform", "win32")
-
-    assert _query_path_for_lilly(r"D:\a\medchem\query.qry") == "D:/a/medchem/query.qry"
 
 
 @pytest.mark.integration

@@ -1,5 +1,5 @@
 import io
-import ntpath
+import os
 import re
 import shutil
 import subprocess
@@ -116,13 +116,13 @@ def materialize_query_manifest(
     source_path: str | Path,
     destination_path: str | Path,
 ) -> str:
-    """Write a Lilly query manifest with fully resolved query paths.
+    """Write a Lilly query manifest with portable query paths.
 
-    Lilly's Windows binaries resolve entries relative to the process working
-    directory rather than the manifest location. Absolute entries keep the
-    bundled rules portable without changing their contents.
+    The native tools do not recognise Windows absolute paths read from a
+    manifest. Paths relative to the execution directory work on every platform.
     """
     source = Path(source_path)
+    destination = Path(destination_path).resolve()
     query_root = source.resolve().parent
     resolved_queries = []
     for entry in source.read_text(encoding="utf-8").splitlines():
@@ -135,30 +135,21 @@ def materialize_query_manifest(
         query_path = query_path.resolve()
         if not query_path.is_file():
             raise FileNotFoundError(f"Lilly query file not found: {query_path}")
-        resolved_queries.append(_query_path_for_lilly(query_path))
+        relative_path = os.path.relpath(query_path, start=destination.parent)
+        resolved_queries.append(relative_path.replace(os.sep, "/"))
 
-    destination = Path(destination_path)
     with destination.open("w", encoding="utf-8", newline="\n") as stream:
         stream.write("\n".join(resolved_queries) + "\n")
     return str(destination)
 
 
-def _query_path_for_lilly(query_path: str | Path) -> str:
-    """Return the path syntax expected inside a Lilly query manifest."""
-    path = str(query_path)
-    if sys.platform != "win32":
-        return path
-
-    drive, tail = ntpath.splitdrive(path)
-    tail = tail.replace("\\", "/").lstrip("/")
-    if not drive:
-        return tail
-    return f"{drive}/{tail}"
-
-
-def run_cmd(cmd: Sequence[str | Path], shell: bool = False) -> subprocess.CompletedProcess:
+def run_cmd(
+    cmd: Sequence[str | Path],
+    shell: bool = False,
+    cwd: str | Path | None = None,
+) -> subprocess.CompletedProcess:
     """Run a command"""
-    res = subprocess.run(cmd, capture_output=True, shell=shell, check=False)
+    res = subprocess.run(cmd, capture_output=True, shell=shell, check=False, cwd=cwd)
     if res.returncode != 0:
         logger.error("".join(res.stderr.decode("utf-8")))
         logger.error(" ".join(map(str, cmd)))
@@ -166,7 +157,11 @@ def run_cmd(cmd: Sequence[str | Path], shell: bool = False) -> subprocess.Comple
     return res
 
 
-def run_pipeline(commands: Sequence[Sequence[str | Path]], output_path: str | Path) -> None:
+def run_pipeline(
+    commands: Sequence[Sequence[str | Path]],
+    output_path: str | Path,
+    cwd: str | Path | None = None,
+) -> None:
     """Run commands as a portable subprocess pipeline.
 
     This uses OS pipes directly rather than a shell command string, so the
@@ -187,6 +182,7 @@ def run_pipeline(commands: Sequence[Sequence[str | Path]], output_path: str | Pa
                     stdin=previous_stdout,
                     stdout=output if is_last else subprocess.PIPE,
                     stderr=error_streams[index],
+                    cwd=cwd,
                 )
                 if previous_stdout is not None:
                     previous_stdout.close()

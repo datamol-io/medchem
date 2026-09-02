@@ -46,8 +46,9 @@ compiles Lilly. The command builds three upstream executables rather than a
 Python extension, verifies the source archive, and runs Lilly's complete
 35,862-molecule regression suite. Linux needs a C++ compiler, GNU Make, zlib,
 and Ruby for the upstream test driver; macOS needs the Xcode command-line tools
-and Ruby; Windows uses an MSYS2 MSYS shell with the `gcc`, `make`, `ruby`, and
-`zlib-devel` packages. The conda-forge
+and Ruby. Native Windows is not supported by upstream 2.1 because its query
+reader cannot resolve the bundled manifests; Windows users can run it through
+WSL. The conda-forge
 package is still version 1.0.1 and is not compatible with the vendored 2.1
 rule set.
 
@@ -91,8 +92,8 @@ uv run python -m pytest -m integration --no-cov -n 0
 
 The first command is the fast core suite. The second runs the available Lilly
 2.1 checks and executable tutorials. GitHub Actions validates the Python core
-on Linux, Windows, macOS Apple Silicon, and macOS Intel, and builds the pinned
-Lilly release separately on the same four targets.
+on Linux, Windows, macOS Apple Silicon, and macOS Intel. The pinned Lilly
+release is built and tested separately on Linux and both macOS architectures.
 
 ## License
 

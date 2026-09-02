@@ -236,8 +236,7 @@ class LillyDemeritsFilters:
             )
 
         pipeline_commands = []
-        # The MSYS-built tools cannot consume native Python pipes on Windows.
-        use_pipeline = stop_after_step == 3 and os.name != "nt"
+        use_pipeline = stop_after_step == 3
 
         cmd = [binary_paths["mc_first_pass"]]
         if ring_bond_ratio >= 0:
@@ -255,7 +254,7 @@ class LillyDemeritsFilters:
         if use_pipeline:
             pipeline_commands.append(cmd)
         else:
-            out.append(run_cmd(cmd, cwd=bad_file_dir))
+            out.append(run_cmd(cmd))
 
         if stop_after_step >= 1:
             cmd = []
@@ -269,7 +268,7 @@ class LillyDemeritsFilters:
             if use_pipeline:
                 pipeline_commands.append(cmd)
             else:
-                out.append(run_cmd(cmd, cwd=bad_file_dir))
+                out.append(run_cmd(cmd))
 
         if stop_after_step >= 2:
             cmd = []
@@ -281,7 +280,7 @@ class LillyDemeritsFilters:
             if use_pipeline:
                 pipeline_commands.append(cmd)
             else:
-                out.append(run_cmd(cmd, cwd=bad_file_dir))
+                out.append(run_cmd(cmd))
 
         if stop_after_step >= 3:
             cmd = []
@@ -303,10 +302,10 @@ class LillyDemeritsFilters:
             if use_pipeline:
                 pipeline_commands.append(cmd)
             else:
-                out.append(run_cmd(cmd, cwd=bad_file_dir))
+                out.append(run_cmd(cmd))
 
         if use_pipeline:
-            run_pipeline(pipeline_commands, iwd_out, cwd=bad_file_dir)
+            run_pipeline(pipeline_commands, iwd_out)
 
         data_list = []
         completed_bad_files = [bad_file_0, bad_file_1, bad_file_2][: stop_after_step + 1]

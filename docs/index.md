@@ -41,7 +41,8 @@ Install the checksum-pinned, compatible upstream 2.1 tools with
 runs its 35,862-molecule regression suite; it adds no Medchem runtime
 dependency. This is never run by `pip install medchem`: it is an explicit
 optional command that installs three executables, not Python bindings. Windows
-builds use an MSYS2 MSYS shell.
+users should run this integration through WSL: the upstream 2.1 query reader
+cannot resolve its bundled manifests on native Windows.
 
 uv users can run `uv add medchem` followed by
 `uv run medchem install-lilly`. A single `medchem[lilly]` extra is intentionally

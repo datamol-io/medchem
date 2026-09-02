@@ -296,7 +296,7 @@ def test_lilly_pipeline_requires_a_stage(tmp_path):
         run_pipeline([], tmp_path / "pipeline-output.txt")
 
 
-def test_lilly_query_manifests_use_local_query_copies(tmp_path):
+def test_lilly_query_manifests_use_absolute_paths(tmp_path):
     query_dir = tmp_path / "queries"
     query_dir.mkdir()
     first_query = query_dir / "first.qry"
@@ -309,12 +309,10 @@ def test_lilly_query_manifests_use_local_query_copies(tmp_path):
 
     result = materialize_query_manifest(source, destination)
 
-    assert result == str(destination.resolve())
-    entries = destination.read_text(encoding="utf-8").splitlines()
-    assert entries == ["resolved-manifest.0.qry", "resolved-manifest.1.qry"]
-    assert [(destination.parent / entry).read_bytes() for entry in entries] == [
-        first_query.read_bytes(),
-        second_query.read_bytes(),
+    assert result == str(destination)
+    assert destination.read_text(encoding="utf-8").splitlines() == [
+        str(first_query.resolve()),
+        str(second_query.resolve()),
     ]
     assert b"\r" not in destination.read_bytes()
 
@@ -371,37 +369,16 @@ def test_lilly_tools_are_found_beside_interpreter(monkeypatch, tmp_path):
     }
 
 
-def test_lilly_windows_layout_uses_scripts_and_exe(monkeypatch, tmp_path):
+def test_lilly_native_windows_is_rejected(monkeypatch, tmp_path):
     import medchem.structural.lilly_demerits._installer as installer_module
     import medchem.structural.lilly_demerits._lilly as lilly_module
 
-    scripts = tmp_path / "Scripts"
-    scripts.mkdir()
-    expected = {}
-    for name in ("mc_first_pass", "tsubstructure", "iwdemerit"):
-        binary = scripts / f"{name}.exe"
-        binary.touch()
-        expected[name] = str(binary)
-    (scripts / ".lilly-medchem-rules-version").write_text("2.1.0\n")
-
     monkeypatch.setattr(sys, "platform", "win32")
-    monkeypatch.setattr(sys, "prefix", str(tmp_path))
-    monkeypatch.setattr(sys, "executable", str(tmp_path / "python.exe"))
-    monkeypatch.setattr(lilly_module.shutil, "which", lambda name: None)
-    monkeypatch.setenv("MSYSTEM", "MSYS")
 
-    assert installer_module.install_lilly_rules(prefix=tmp_path) == expected
-    assert lilly_module.find_lilly_binaries() == expected
-
-
-def test_lilly_windows_build_requires_msys2(monkeypatch, tmp_path):
-    import medchem.structural.lilly_demerits._installer as installer_module
-
-    monkeypatch.setattr(sys, "platform", "win32")
-    monkeypatch.delenv("MSYSTEM", raising=False)
-
-    with pytest.raises(RuntimeError, match="MSYS2 MSYS shell"):
+    with pytest.raises(RuntimeError, match="Use WSL or Linux"):
         installer_module.install_lilly_rules(prefix=tmp_path)
+    with pytest.raises(ImportError, match="Use WSL or Linux"):
+        lilly_module.find_lilly_binaries()
 
 
 def test_lilly_rejects_unverified_binary_version(monkeypatch, tmp_path):

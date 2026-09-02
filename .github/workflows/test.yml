@@ -85,7 +85,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
+        os: [ubuntu-latest, macos-latest, macos-15-intel]
 
     steps:
       - name: Checkout
@@ -108,28 +108,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes g++ make ruby zlib1g-dev
 
-      - name: Install Windows build toolchain
-        if: runner.os == 'Windows'
-        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2
-        with:
-          msystem: MSYS
-          update: true
-          path-type: inherit
-          install: >-
-            diffutils
-            gcc
-            make
-            ruby
-            zlib-devel
-
       - name: Build and validate Lilly MedChem Rules 2.1
-        if: runner.os != 'Windows'
         run: medchem install-lilly
-
-      - name: Build and validate Lilly MedChem Rules 2.1 on Windows
-        if: runner.os == 'Windows'
-        shell: msys2 {0}
-        run: python -m medchem.cli install-lilly
 
       - name: Run Lilly integration tests with wrapper coverage
         if: runner.os == 'Linux'
@@ -148,11 +128,6 @@ jobs:
 
       - name: Run Lilly integration tests on macOS
         if: runner.os == 'macOS'
-        run: python -m pytest -m "integration and lilly" --no-cov -n 0
-
-      - name: Run Lilly integration tests on Windows
-        if: runner.os == 'Windows'
-        shell: msys2 {0}
         run: python -m pytest -m "integration and lilly" --no-cov -n 0
 
   notebooks:

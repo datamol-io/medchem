@@ -71,17 +71,16 @@ def install_lilly_rules(
     Returns:
         A mapping from executable names to installed paths.
     """
-    if sys.platform == "win32" and not os.environ.get("MSYSTEM"):
+    if sys.platform == "win32":
         raise RuntimeError(
-            "Building Lilly MedChem Rules on Windows requires an MSYS2 MSYS shell "
-            "with the gcc, make, and zlib-devel packages installed"
+            "The Lilly MedChem Rules integration is not supported on native Windows because "
+            "the upstream query reader cannot resolve its manifests there. Use WSL or Linux."
         )
 
     install_prefix = Path(prefix).expanduser().resolve() if prefix else Path(sys.prefix).resolve()
-    executable_suffix = ".exe" if sys.platform == "win32" else ""
-    bin_dir = install_prefix / ("Scripts" if sys.platform == "win32" else "bin")
+    bin_dir = install_prefix / "bin"
     marker = bin_dir / LILLY_VERSION_MARKER
-    installed = {name: str(bin_dir / f"{name}{executable_suffix}") for name in LILLY_BINARIES}
+    installed = {name: str(bin_dir / name) for name in LILLY_BINARIES}
 
     if (
         not force
@@ -93,10 +92,7 @@ def install_lilly_rules(
 
     make = shutil.which("make")
     if make is None:
-        platform_hint = " (use an MSYS2 MSYS shell on Windows)" if sys.platform == "win32" else ""
-        raise RuntimeError(
-            "Building Lilly MedChem Rules requires `make`, a C++ compiler, and zlib" + platform_hint
-        )
+        raise RuntimeError("Building Lilly MedChem Rules requires `make`, a C++ compiler, and zlib")
     if run_tests and shutil.which("ruby") is None:
         raise RuntimeError(
             "Validating Lilly MedChem Rules requires Ruby; install Ruby or use "
@@ -132,9 +128,7 @@ def install_lilly_rules(
         for name in LILLY_BINARIES:
             candidates = [
                 source_dir / "bin" / name,
-                source_dir / "bin" / f"{name}.exe",
                 source_dir / "Molecule" / name,
-                source_dir / "Molecule" / f"{name}.exe",
             ]
             source_binary = next((path for path in candidates if path.is_file()), None)
             if source_binary is None:

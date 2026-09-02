@@ -46,8 +46,8 @@ The command downloads the official source archive, verifies its SHA-256,
 builds the three required executables and runs the upstream regression suite.
 It is an explicit optional operation, separate from `pip install medchem`, and
 does not create Python bindings. The upstream test driver also requires Ruby.
-On Windows, run it from an MSYS2 MSYS shell with `gcc`, `make`, `ruby`, and
-`zlib-devel` installed.
+Native Windows is not supported because the upstream 2.1 query reader cannot
+resolve the bundled manifests; use WSL for the Lilly integration on Windows.
 The conda-forge build remains at 1.0.1 and cannot reproduce the 2.1 rule set,
 so it was removed from the development environment. A fresh Python or Rust
 rewrite was deliberately not substituted for the reference chemistry because
@@ -92,8 +92,8 @@ uv sync --all-extras
 
 `env.yml` remains a supported Conda alternative. CI uses uv and tests the
 supported Python and RDKit series on Linux, Windows, macOS Apple
-Silicon, and macOS Intel. The Lilly integration is built and checked on the
-same four targets; executable notebooks run in a separate Linux job.
+Silicon, and macOS Intel. The Lilly integration is built and checked on Linux
+and both macOS architectures; executable notebooks run in a separate Linux job.
 Documentation, formatting and package distributions are checked separately.
 Published GitHub releases are built once, smoke-tested from both distributions,
 attested, and uploaded to PyPI with short-lived OpenID Connect credentials.

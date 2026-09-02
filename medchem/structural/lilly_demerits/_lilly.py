@@ -24,6 +24,12 @@ def find_lilly_binaries() -> dict[str, str]:
     Raises:
         ImportError: If any of the optional Lilly command-line tools is missing.
     """
+    if sys.platform == "win32":
+        raise ImportError(
+            "The Lilly MedChem Rules integration is not supported on native Windows because "
+            "the upstream query reader cannot resolve its manifests there. Use WSL or Linux."
+        )
+
     binaries_list = ["mc_first_pass", "tsubstructure", "iwdemerit"]
     prefix_dirs = [
         Path(sys.executable).resolve().parent,
@@ -40,8 +46,6 @@ def find_lilly_binaries() -> dict[str, str]:
         # PATH. Resolve executables installed beside the interpreter too.
         if binary_path is None:
             candidates = [directory / binary_name for directory in prefix_dirs]
-            if sys.platform == "win32":  # pragma: no cover - exercised in CI
-                candidates.extend(directory / f"{binary_name}.exe" for directory in prefix_dirs)
             binary_path = next((str(path) for path in candidates if path.is_file()), None)
 
         if binary_path is None:
@@ -115,13 +119,8 @@ def materialize_query_manifest(
     source_path: str | Path,
     destination_path: str | Path,
 ) -> str:
-    """Write a Lilly query manifest with portable query paths.
-
-    The native tools do not recognise Windows absolute paths read from a
-    manifest. Local copies with simple names work on every platform.
-    """
+    """Write a Lilly query manifest with fully resolved query paths."""
     source = Path(source_path)
-    destination = Path(destination_path).resolve()
     query_root = source.resolve().parent
     resolved_queries = []
     for entry in source.read_text(encoding="utf-8").splitlines():
@@ -134,10 +133,9 @@ def materialize_query_manifest(
         query_path = query_path.resolve()
         if not query_path.is_file():
             raise FileNotFoundError(f"Lilly query file not found: {query_path}")
-        local_query = destination.parent / f"{destination.name}.{len(resolved_queries)}.qry"
-        shutil.copyfile(query_path, local_query)
-        resolved_queries.append(local_query.name)
+        resolved_queries.append(str(query_path))
 
+    destination = Path(destination_path)
     with destination.open("w", encoding="utf-8", newline="\n") as stream:
         stream.write("\n".join(resolved_queries) + "\n")
     return str(destination)
@@ -146,10 +144,9 @@ def materialize_query_manifest(
 def run_cmd(
     cmd: Sequence[str | Path],
     shell: bool = False,
-    cwd: str | Path | None = None,
 ) -> subprocess.CompletedProcess:
     """Run a command"""
-    res = subprocess.run(cmd, capture_output=True, shell=shell, check=False, cwd=cwd)
+    res = subprocess.run(cmd, capture_output=True, shell=shell, check=False)
     if res.returncode != 0:
         logger.error("".join(res.stderr.decode("utf-8")))
         logger.error(" ".join(map(str, cmd)))
@@ -160,12 +157,11 @@ def run_cmd(
 def run_pipeline(
     commands: Sequence[Sequence[str | Path]],
     output_path: str | Path,
-    cwd: str | Path | None = None,
 ) -> None:
     """Run commands as a portable subprocess pipeline.
 
     This uses OS pipes directly rather than a shell command string, so the
-    Lilly pipeline has the same execution model on POSIX and Windows.
+    Lilly pipeline has the same execution model across supported platforms.
     """
     if not commands:
         raise ValueError("A pipeline requires at least one command")
@@ -182,7 +178,6 @@ def run_pipeline(
                     stdin=previous_stdout,
                     stdout=output if is_last else subprocess.PIPE,
                     stderr=error_streams[index],
-                    cwd=cwd,
                 )
                 if previous_stdout is not None:
                     previous_stdout.close()

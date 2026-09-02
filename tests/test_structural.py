@@ -348,6 +348,7 @@ def test_lilly_tools_are_resolved_lazily(monkeypatch):
         dfilters(mols=["CC"])
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="native Lilly integration is not supported")
 def test_lilly_tools_are_found_beside_interpreter(monkeypatch, tmp_path):
     import medchem.structural.lilly_demerits._lilly as lilly_module
 
@@ -381,6 +382,7 @@ def test_lilly_native_windows_is_rejected(monkeypatch, tmp_path):
         lilly_module.find_lilly_binaries()
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="native Lilly integration is not supported")
 def test_lilly_rejects_unverified_binary_version(monkeypatch, tmp_path):
     import medchem.structural.lilly_demerits._lilly as lilly_module
 

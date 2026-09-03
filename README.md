@@ -29,17 +29,11 @@ The Lilly wrapper now preserves every input row, uses the reference thresholds
 and query set, supports parallel batches, and streams its native stages.
 
 See the [complete changelog](CHANGELOG.md) and the
-[2.1.0 upgrade guide](docs/migration.md). These notes describe the upcoming
-release; PyPI and conda-forge still provide the published stable versions.
-
-Release maintainers: see the [manual release guide](docs/releasing.md).
+[2.1.0 upgrade guide](docs/migration.md).
 
 ## Installation
 
-### Core install (without Lilly)
-
-Every Medchem filter except the optional Lilly MedChem Rules works with a plain
-install from PyPI or conda-forge — no extra steps and no native build:
+Install from PyPI or conda-forge:
 
 ```bash
 # uv (recommended)
@@ -53,16 +47,12 @@ micromamba install -c conda-forge medchem
 ```
 
 Medchem 2.1.0 supports Python 3.11 through 3.14 and RDKit 2024.09 or newer. See
-the [migration guide](docs/migration.md) for dependency details.
+the [upgrade guide](docs/migration.md) for details.
 
-### With the optional Lilly MedChem Rules
+### Optional Lilly MedChem Rules
 
-`LillyDemeritsFilters` needs the upstream Lilly command-line tools, which are
-**not** bundled with the package. Installing Medchem — through pip, conda-forge
-or uv — never downloads or compiles Lilly. After installing Medchem, run the
-explicit installer once; it behaves the same regardless of how Medchem was
-installed, because it compiles the checksum-pinned upstream 2.1 tools from source
-beside the active Python:
+`LillyDemeritsFilters` uses the upstream Lilly command-line tools. Install them
+once after Medchem:
 
 ```bash
 # pip or conda-forge environment
@@ -72,19 +62,10 @@ medchem install-lilly
 uv run medchem install-lilly
 ```
 
-The installer verifies the source-archive checksum, builds three upstream
-executables (not a Python extension), and runs Lilly's complete 35,862-molecule
-regression suite. Toolchain requirements: Linux needs a C++ compiler, GNU Make,
-zlib, and Ruby (for the upstream test driver); macOS needs the Xcode
-command-line tools and Ruby. Native Windows is not supported by upstream 2.1
-because its query reader cannot resolve the bundled manifests — Windows users
-should run it through WSL.
-
-There is no `medchem[lilly]` extra: a Python extra can only pull other
-distributions, not run a post-install compiler, and no platform-specific Lilly
-wheels are published yet. Do not use the conda-forge `lilly-medchem-rules`
-package either — it is still version 1.0.1 and is incompatible with the vendored
-2.1 rule set.
+The installer compiles the pinned upstream 2.1 tools from source, so a C++
+toolchain is required: Linux needs a C++ compiler, GNU Make, zlib, and Ruby;
+macOS needs the Xcode command-line tools and Ruby. On Windows, run it through
+WSL.
 
 ## Documentation
 

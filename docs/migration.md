@@ -42,16 +42,10 @@ Install the checksum-pinned compatible tools beside the active Python:
 medchem install-lilly
 ```
 
-The command downloads the official source archive, verifies its SHA-256,
-builds the three required executables and runs the upstream regression suite.
-It is an explicit optional operation, separate from `pip install medchem`, and
-does not create Python bindings. The upstream test driver also requires Ruby.
-Native Windows is not supported because the upstream 2.1 query reader cannot
-resolve the bundled manifests; use WSL for the Lilly integration on Windows.
-The conda-forge build remains at 1.0.1 and cannot reproduce the 2.1 rule set,
-so it was removed from the development environment. A fresh Python or Rust
-rewrite was deliberately not substituted for the reference chemistry because
-it would not preserve the richer LillyMol query semantics.
+The command downloads the official source archive, verifies its SHA-256, builds
+the three required executables and runs the upstream regression suite. The
+upstream test driver also requires Ruby. On Windows, use WSL for the Lilly
+integration.
 
 Importing Medchem still performs no executable lookup or installation. The
 tools are resolved lazily, including beside an unactivated Python interpreter.
@@ -76,11 +70,6 @@ For uv-managed projects, use:
 uv add medchem
 uv run medchem install-lilly
 ```
-
-A direct `medchem[lilly]` extra needs a separately published native-wheel
-distribution for every supported platform. Extras cannot themselves run a
-post-install compiler, so this release keeps the honest two-step installation
-instead of exposing an extra that would not install Lilly.
 
 ## Development and releases
 

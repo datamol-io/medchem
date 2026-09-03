@@ -6,7 +6,7 @@ Medchem is a Python library that proposes molecular filters and prioritization r
 
 ## Updates
 
-The upcoming 3.x release adds SpacialScore, corrects the Michael-acceptor
+The upcoming 2.1.0 release adds SpacialScore, corrects the Michael-acceptor
 filter, and updates the optional Lilly integration to the upstream 2.1
 reference engine. See the
 [changelog](https://github.com/datamol-io/medchem/blob/dev/CHANGELOG.md) and
@@ -23,7 +23,7 @@ pip install medchem
 micromamba install -c conda-forge medchem
 ```
 
-Medchem 3.x requires Python 3.11 or newer and RDKit 2024.09 or newer. Existing
+Medchem 2.1.0 requires Python 3.11 or newer and RDKit 2024.09 or newer. Existing
 2.x users should read the [migration guide](./migration.md) before upgrading.
 
 ## Getting Started

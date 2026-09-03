@@ -169,10 +169,15 @@ class LillyDemeritsFilters:
         tsub_out_2 = os.path.join(bad_file_dir, "tsub2.smi")
         iwd_out = os.path.join(bad_file_dir, "iwd.smi")
 
-        # optional_queries
+        # optional_queries: each extra reject query file and SMARTS needs its
+        # own flag, and the string is concatenated after another token, so every
+        # entry keeps a leading space (a plain ``join`` dropped the first flag
+        # and glued the first entry onto the preceding query path).
         optional_queries = ""
-        optional_queries += " -q ".join(run_options.get("rej_queries", []))
-        optional_queries += " -s ".join(run_options.get("smarts", []))
+        for rej_query in run_options.get("rej_queries", []):
+            optional_queries += f" -q {rej_query}"
+        for smart in run_options.get("smarts", []):
+            optional_queries += f" -s {smart}"
 
         # extra iwdemerit options
         nodemerit = run_options.get("nodemerit", False)

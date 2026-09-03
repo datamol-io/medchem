@@ -4,7 +4,7 @@ This file records user-visible changes. See the [migration guide](docs/migration
 for upgrade instructions and [GitHub releases](https://github.com/datamol-io/medchem/releases)
 for earlier release notes.
 
-## Next major release (unreleased)
+## 2.1.0 (unreleased)
 
 ### Highlights
 
@@ -55,6 +55,10 @@ for earlier release notes.
   and thiols are not classified as Michael acceptors (#32).
 - Make complete Lilly runs use a pipeline (#34) and make parallel batch options
   effective (#33).
+- Raise a clear error instead of a `ZeroDivisionError` when the normalized
+  SpacialScore is requested for a molecule with no heavy atoms.
+- Pass the optional Lilly `rej_queries` and `smarts` extras as properly
+  separated `-q`/`-s` arguments.
 
 ### Compatibility and delivery
 

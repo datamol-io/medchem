@@ -1,6 +1,6 @@
-# Migrating to Medchem 3.x
+# Upgrading to Medchem 2.1.0
 
-Medchem 3.x refreshes the supported scientific Python stack and delivery
+Medchem 2.1.0 refreshes the supported scientific Python stack and delivery
 process without adding filtering features. Existing rules, thresholds and
 return formats remain unchanged unless a dependency required a compatibility
 correction.

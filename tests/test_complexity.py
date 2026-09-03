@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 
 import datamol as dm
+from rdkit import Chem
 
 from medchem.complexity import WhitlockCT
 from medchem.complexity import BaroneCT
@@ -108,6 +109,12 @@ def test_spacial_score():
 
     with pytest.raises(ValueError, match="Invalid molecule"):
         SPS(None)
+
+    # A molecule with no heavy atoms must raise a clear error from the
+    # normalized score rather than a bare ZeroDivisionError.
+    empty = Chem.Mol()
+    with pytest.raises(ValueError, match="no heavy atoms"):
+        SPS(empty, normalize=True)
 
 
 def test_complexity_filter(tmp_path):

@@ -22,15 +22,15 @@ Medchem is a Python library that proposes multiple molecular medchem filters to 
 
 ## Updates
 
-Medchem 3.x updates the supported Python and RDKit stack, adds RDKit
+Medchem 2.1.0 updates the supported Python and RDKit stack, adds RDKit
 SpacialScore support, corrects the Toxicophore Michael-acceptor rule, and
 refreshes the optional Lilly MedChem Rules integration against upstream 2.1.
 The Lilly wrapper now preserves every input row, uses the reference thresholds
 and query set, supports parallel batches, and streams its native stages.
 
 See the [complete changelog](CHANGELOG.md) and the
-[3.x migration guide](docs/migration.md). These notes describe the upcoming
-major release; PyPI and conda-forge still provide the published stable versions.
+[2.1.0 upgrade guide](docs/migration.md). These notes describe the upcoming
+release; PyPI and conda-forge still provide the published stable versions.
 
 Release maintainers: see the [manual release guide](docs/releasing.md).
 
@@ -44,7 +44,7 @@ pip install medchem
 micromamba install -c conda-forge medchem
 ```
 
-Medchem 3.x supports Python 3.11 through 3.14 and RDKit 2024.09 or newer. See
+Medchem 2.1.0 supports Python 3.11 through 3.14 and RDKit 2024.09 or newer. See
 the [migration guide](docs/migration.md)
 for dependency and optional-integration details.
 

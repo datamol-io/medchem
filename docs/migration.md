@@ -95,8 +95,7 @@ supported Python and RDKit series on Linux, Windows, macOS Apple
 Silicon, and macOS Intel. The Lilly integration is built and checked on Linux
 and both macOS architectures; executable notebooks run in a separate Linux job.
 Documentation, formatting and package distributions are checked separately.
-Publication remains a manual action, authenticated through PyPI Trusted
-Publishing over OpenID Connect rather than an API token.
+Publication remains a manual action using the `PYPI_API_TOKEN` secret.
 The release action reruns tests, validates both installed distributions and
 builds documentation before uploading. See the [release guide](releasing.md)
 for dry runs, prereleases and the separate conda-forge recipe updates.

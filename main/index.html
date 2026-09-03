@@ -1383,12 +1383,10 @@
 <p><em>Medchem - Molecular filtering for drug discovery.</em></p>
 <p>Medchem is a Python library that proposes molecular filters and prioritization rules for a wide range of use cases relevant in drug discovery.</p>
 <h2 id="updates">Updates<a class="headerlink" href="#updates" title="Permanent link">&para;</a></h2>
-<p>The upcoming 2.1.0 release adds SpacialScore, corrects the Michael-acceptor
-filter, and updates the optional Lilly integration to the upstream 2.1
-reference engine. See the
-<a href="https://github.com/datamol-io/medchem/blob/dev/CHANGELOG.md">changelog</a> and
-<a href="migration.html">migration guide</a> for changes and installation limits.
-These changes are not yet a published release.</p>
+<p>Medchem 2.1.0 adds SpacialScore, corrects the Michael-acceptor filter, and
+updates the optional Lilly integration to the upstream 2.1 reference engine. See
+the <a href="https://github.com/datamol-io/medchem/blob/main/CHANGELOG.md">changelog</a>
+and <a href="migration.html">upgrade guide</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>medchem
 
@@ -1410,17 +1408,8 @@ micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="
 <h3 id="eli-lilly-medchem-rules">Eli Lilly Medchem Rules<a class="headerlink" href="#eli-lilly-medchem-rules" title="Permanent link">&para;</a></h3>
 <p>Originally proposed in <a href="https://doi.org/10.1021/jm301008n">"Rules for Identifying Potentially Reactive or Promiscuous Compounds" in 2012</a> by Robert F. Bruns and Ian A. Watson. Medchem is re-using the implementation from <a href="https://github.com/IanAWatson/Lilly-Medchem-Rules">https://github.com/IanAWatson/Lilly-Medchem-Rules</a>.</p>
 <p>The Medchem implementation is accessible through <code>medchem.structural.lilly_demerits</code>.
-Install the checksum-pinned, compatible upstream 2.1 tools with
-<code>medchem install-lilly</code>. The installer builds the native reference engine and
-runs its 35,862-molecule regression suite; it adds no Medchem runtime
-dependency. This is never run by <code>pip install medchem</code>: it is an explicit
-optional command that installs three executables, not Python bindings. Windows
-users should run this integration through WSL: the upstream 2.1 query reader
-cannot resolve its bundled manifests on native Windows.</p>
-<p>uv users can run <code>uv add medchem</code> followed by
-<code>uv run medchem install-lilly</code>. A single <code>medchem[lilly]</code> extra is intentionally
-not advertised without separately built and tested platform wheels: packaging
-extras resolve dependencies but do not run a compiler after installation.</p>
+Install the pinned upstream 2.1 tools with <code>medchem install-lilly</code> (or
+<code>uv run medchem install-lilly</code> in a uv project). On Windows, run it through WSL.</p>
 <h3 id="nibr-filters">NIBR Filters<a class="headerlink" href="#nibr-filters" title="Permanent link">&para;</a></h3>
 <p>Rules used by the Novartis Institutes for BioMedical Research to build their screening deck. The initial proposal can be found in <a href="https://dx.doi.org/10.1021/acs.jmedchem.0c01332">"Evolution of Novartis' small molecule screening deck design" by Schuffenhauer, A. et al. J. Med. Chem. (2020)</a>.</p>
 <p>The Medchem implementation can be found at <code>medchem.structural.NIBRFilters()</code>.</p>

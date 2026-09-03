@@ -1270,16 +1270,10 @@ on 528 of the 35,862 oracle records.</p>
 <p>Install the checksum-pinned compatible tools beside the active Python:</p>
 <div class="highlight"><pre><span></span><code>medchem<span class="w"> </span>install-lilly
 </code></pre></div>
-<p>The command downloads the official source archive, verifies its SHA-256,
-builds the three required executables and runs the upstream regression suite.
-It is an explicit optional operation, separate from <code>pip install medchem</code>, and
-does not create Python bindings. The upstream test driver also requires Ruby.
-Native Windows is not supported because the upstream 2.1 query reader cannot
-resolve the bundled manifests; use WSL for the Lilly integration on Windows.
-The conda-forge build remains at 1.0.1 and cannot reproduce the 2.1 rule set,
-so it was removed from the development environment. A fresh Python or Rust
-rewrite was deliberately not substituted for the reference chemistry because
-it would not preserve the richer LillyMol query semantics.</p>
+<p>The command downloads the official source archive, verifies its SHA-256, builds
+the three required executables and runs the upstream regression suite. The
+upstream test driver also requires Ruby. On Windows, use WSL for the Lilly
+integration.</p>
 <p>Importing Medchem still performs no executable lookup or installation. The
 tools are resolved lazily, including beside an unactivated Python interpreter.
 Raw SMILES are passed to LillyMol without an RDKit pre-validation step, so
@@ -1298,10 +1292,6 @@ double bond rather than treating ordinary amines and thiols as acceptors.</p>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>medchem
 uv<span class="w"> </span>run<span class="w"> </span>medchem<span class="w"> </span>install-lilly
 </code></pre></div>
-<p>A direct <code>medchem[lilly]</code> extra needs a separately published native-wheel
-distribution for every supported platform. Extras cannot themselves run a
-post-install compiler, so this release keeps the honest two-step installation
-instead of exposing an extra that would not install Lilly.</p>
 <h2 id="development-and-releases">Development and releases<a class="headerlink" href="#development-and-releases" title="Permanent link">&para;</a></h2>
 <p>Create the complete development environment with:</p>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>sync<span class="w"> </span>--all-extras

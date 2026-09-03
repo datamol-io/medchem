@@ -186,5 +186,9 @@ jobs:
           if [ "$PRERELEASE" = "true" ]; then
             mike deploy --push "$RELEASE_VERSION"
           else
+            # `stable` may exist as a legacy standalone version from earlier
+            # deploys; mike refuses to reuse a version name as an alias, so drop
+            # it first. Harmless when `stable` is absent or already an alias.
+            mike delete stable 2>/dev/null || true
             mike deploy --push --update-aliases "$RELEASE_VERSION" stable
           fi

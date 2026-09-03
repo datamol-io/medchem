@@ -25,7 +25,7 @@ nav:
       - Molecular Complexity: tutorials/Molecular_Complexity.ipynb
       - Constraints Filtering: tutorials/Constraints_Filtering.ipynb
   - CLI: cli.md
-  - Migrating to 3.x: migration.md
+  - Upgrading to 2.1.0: migration.md
   - Releasing: releasing.md
   - API:
       - medchem.rules: api/medchem.rules.md

@@ -31,6 +31,11 @@ def SPS(mol: dm.Mol, normalize: bool = True):
     mol = dm.to_mol(mol)
     if mol is None:
         raise ValueError("Invalid molecule")
+    # ``dm.to_mol("")`` returns a non-None empty molecule, so the guards above do
+    # not catch it. The normalized score divides by the heavy-atom count and
+    # would raise a bare ZeroDivisionError; surface a clear error instead.
+    if normalize and mol.GetNumHeavyAtoms() == 0:
+        raise ValueError("Cannot compute a normalized SpacialScore for a molecule with no heavy atoms")
     return SpacialScore.SPS(mol, normalize=normalize)
 
 

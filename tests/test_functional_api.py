@@ -1,5 +1,13 @@
 import datamol as dm
 import medchem as mc
+import pytest
+from medchem.structural.lilly_demerits._lilly import find_lilly_binaries
+
+try:
+    find_lilly_binaries()
+    HAS_LILLY_TOOLS = True
+except ImportError:
+    HAS_LILLY_TOOLS = False
 
 
 def test_alert_filter():
@@ -187,6 +195,12 @@ def test_molecular_graph_filter():
     assert results.tolist() == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
+@pytest.mark.integration
+@pytest.mark.lilly
+@pytest.mark.skipif(
+    not HAS_LILLY_TOOLS,
+    reason="requires the optional Lilly MedChem Rules command-line tools",
+)
 def test_lilly_demerit_filter():
     data = dm.data.cdk2()
     data = data.iloc[:10]

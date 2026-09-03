@@ -6,7 +6,6 @@ from typing import Sequence
 import os
 import uuid
 import re
-import shutil
 import tempfile
 import importlib.resources as importlib_resources
 
@@ -16,11 +15,10 @@ import numpy as np
 
 
 from ._lilly import find_lilly_binaries
+from ._lilly import materialize_query_manifest
 from ._lilly import parse_output
 from ._lilly import run_cmd
-
-
-BIN2PATH = find_lilly_binaries()
+from ._lilly import run_pipeline
 
 
 class LillyDemeritsFilters:
@@ -57,8 +55,17 @@ class LillyDemeritsFilters:
         """
         self.mc_first_pass_options = mc_first_pass_options
         self.iwd_options = iwd_options
+        if stop_after_step not in {0, 1, 2, 3}:
+            raise ValueError("stop_after_step must be between 0 and 3")
         self.stop_after_step = stop_after_step
         self.run_options = run_options
+        self._binary_paths: Optional[dict[str, str]] = None
+
+    def _get_binary_paths(self) -> dict[str, str]:
+        """Resolve the optional Lilly tools only when the filter is executed."""
+        if self._binary_paths is None:
+            self._binary_paths = find_lilly_binaries()
+        return self._binary_paths
 
     def __call__(
         self,
@@ -76,7 +83,6 @@ class LillyDemeritsFilters:
 
         if n_splits > 1:
             mols_batch_list = np.array_split(mols, n_splits)
-            # EN: cannot run this code in processes or loky mode
             results = dm.parallelized(
                 self._score,
                 mols_batch_list,
@@ -100,6 +106,7 @@ class LillyDemeritsFilters:
             mols: list of smiles
         """
 
+        binary_paths = self._get_binary_paths()
         mc_first_pass_options = self.mc_first_pass_options
         iwd_options = self.iwd_options
         stop_after_step = self.stop_after_step
@@ -113,13 +120,13 @@ class LillyDemeritsFilters:
 
         extra_iwdemerit_options = ""
         demerit_cutoff = run_options.get("dthresh", None)
-        soft_upper_atom = run_options.get("soft_max_atoms", 30)
-        hard_upper_atom = run_options.get("hard_max_atoms", 50)
+        soft_upper_atom = run_options.get("soft_max_atoms", 25)
+        hard_upper_atom = run_options.get("hard_max_atoms", 40)
         max_size_rings = run_options.get("max_size_rings")
         min_num_rings = run_options.get("min_num_rings")
         max_num_rings = run_options.get("max_num_rings")
         max_size_chain = run_options.get("max_size_chain")
-        atom_count = run_options.get("min_atoms", 1)
+        atom_count = run_options.get("min_atoms", 7)
         allow_non_int_atoms = run_options.get("allow_non_interesting", False)
 
         ring_bond_ratio = run_options.get("ring_bond_ratio", -1)
@@ -140,15 +147,19 @@ class LillyDemeritsFilters:
             mc_first_pass_options += "-k "
         mc_first_pass_options += " -A I -A ipp"
 
-        query_files = ["reject1", "reject2", "demerits"]
-        for i, query_file in enumerate(query_files):
-            query_files[i] = str(importlib_resources.files("medchem.data.queries").joinpath(query_file))
-
         # output file dir
-        files_to_be_deleted = []
         run_id = str(uuid.uuid4())[:8]
-        bad_file_dir = tempfile.mkdtemp(suffix=f"_lilly_{run_id}")
-        files_to_be_deleted.append(bad_file_dir)
+        temporary_dir = tempfile.TemporaryDirectory(suffix=f"_lilly_{run_id}")
+        bad_file_dir = temporary_dir.name
+
+        query_resources = importlib_resources.files("medchem.data.queries")
+        query_files = [
+            materialize_query_manifest(
+                str(query_resources.joinpath(query_file)),
+                os.path.join(bad_file_dir, query_file),
+            )
+            for query_file in ("reject1", "reject2", "demerits")
+        ]
         bad_file_0 = os.path.join(bad_file_dir, "bad0")
         bad_file_1 = os.path.join(bad_file_dir, "bad1")
         bad_file_2 = os.path.join(bad_file_dir, "bad2")
@@ -158,10 +169,15 @@ class LillyDemeritsFilters:
         tsub_out_2 = os.path.join(bad_file_dir, "tsub2.smi")
         iwd_out = os.path.join(bad_file_dir, "iwd.smi")
 
-        # optional_queries
+        # optional_queries: each extra reject query file and SMARTS needs its
+        # own flag, and the string is concatenated after another token, so every
+        # entry keeps a leading space (a plain ``join`` dropped the first flag
+        # and glued the first entry onto the preceding query path).
         optional_queries = ""
-        optional_queries += " -q ".join(run_options.get("rej_queries", []))
-        optional_queries += " -s ".join(run_options.get("smarts", []))
+        for rej_query in run_options.get("rej_queries", []):
+            optional_queries += f" -q {rej_query}"
+        for smart in run_options.get("smarts", []):
+            optional_queries += f" -s {smart}"
 
         # extra iwdemerit options
         nodemerit = run_options.get("nodemerit", False)
@@ -181,8 +197,9 @@ class LillyDemeritsFilters:
         if iwd_options:
             extra_iwdemerit_options += " " + iwd_options
 
-        charge_assigner_path = str(
-            importlib_resources.files("medchem.data.charge_assigner").joinpath("queries")
+        charge_assigner_path = materialize_query_manifest(
+            str(importlib_resources.files("medchem.data.charge_assigner").joinpath("queries")),
+            os.path.join(bad_file_dir, "charge_assigner_queries"),
         )
         extra_iwdemerit_options += " -N F:" + charge_assigner_path
 
@@ -196,27 +213,25 @@ class LillyDemeritsFilters:
                     qry for qry in current_queries if not any(odm_p.search(qry) for odm_p in odm_patterns)
                 ]
 
-            with tempfile.NamedTemporaryFile(mode="w+t", suffix=".qry", delete=False) as tmp_file:
+            query_files[2] = os.path.join(bad_file_dir, "demerits.qry")
+            with open(query_files[2], mode="w", encoding="utf-8") as tmp_file:
                 tmp_file.write("\n".join(current_queries))
-                query_files[2] = tmp_file.name
-                files_to_be_deleted.append(tmp_file.name)
 
-        smiles_file = None
-        with tempfile.NamedTemporaryFile(
-            mode="w+t",
-            suffix=f"_lilly_{run_id}.smi",
-            delete=False,
-        ) as smiles_tmp_files:
+        smiles_file = os.path.join(bad_file_dir, "input.smi")
+        with open(smiles_file, mode="w", encoding="utf-8") as smiles_tmp_files:
             # Convert the input mols to a list of SMILES
             smiles_list = []
             for mol in mols:
                 if isinstance(mol, str):
-                    smiles = mol
+                    # LillyMol accepts some valid structures outside RDKit's
+                    # default valence model. Preserve raw SMILES and let the
+                    # reference implementation decide whether they are valid.
+                    smiles = mol.strip().split()[0] if mol.strip() else None
                 else:
                     smiles = dm.to_smiles(mol)
 
                 # Sanity check
-                if smiles is None or dm.to_mol(smiles) is None:
+                if smiles is None:
                     raise ValueError(f"Invalid SMILES: {smiles}. Demerits does not support invalid mol yet.")
 
                 smiles_list.append(smiles)
@@ -224,10 +239,11 @@ class LillyDemeritsFilters:
             smiles_tmp_files.write(
                 "\n".join([f"{sm.strip().split()[0]}\t{i}" for i, sm in enumerate(smiles_list)])
             )
-            smiles_file = smiles_tmp_files.name
-            files_to_be_deleted.append(smiles_file)
 
-        cmd = [BIN2PATH["mc_first_pass"]]
+        pipeline_commands = []
+        use_pipeline = stop_after_step == 3
+
+        cmd = [binary_paths["mc_first_pass"]]
         if ring_bond_ratio >= 0:
             cmd.extend(["-b", str(ring_bond_ratio)])
 
@@ -237,32 +253,45 @@ class LillyDemeritsFilters:
         cmd.extend(["-c", str(atom_count), "-C", str(hard_upper_atom)])
         cmd.extend("-E autocreate -o smi -V -g all -g ltltr -i ICTE".split())
         cmd.extend(["-L", bad_file_0, "-K", "TP1"])
-        cmd.extend(["-a", "-u", "-S", mc_pass_out, smiles_file])
+        cmd.extend(["-a", "-u", "-S", "-" if use_pipeline else mc_pass_out, smiles_file])
 
         out = []
-        out.append(run_cmd(cmd))
+        if use_pipeline:
+            pipeline_commands.append(cmd)
+        else:
+            out.append(run_cmd(cmd))
 
         if stop_after_step >= 1:
             cmd = []
-            cmd.extend((BIN2PATH["tsubstructure"] + " -E autocreate -b -u -i smi -o smi -A D ").split())
+            cmd.extend((binary_paths["tsubstructure"] + " -E autocreate -b -u -i smi -o smi -A D ").split())
             cmd.extend(("-m " + bad_file_1 + " -m QDT").split())
+            tsub_out = "-" if use_pipeline else tsub_out_1
+            tsub_input = "-" if use_pipeline else mc_pass_out
             cmd.extend(
-                (f"-n {tsub_out_1} -q F:" + query_files[0] + optional_queries + f" {mc_pass_out}").split()
+                (f"-n {tsub_out} -q F:" + query_files[0] + optional_queries + f" {tsub_input}").split()
             )
-            out.append(run_cmd(cmd))
+            if use_pipeline:
+                pipeline_commands.append(cmd)
+            else:
+                out.append(run_cmd(cmd))
 
         if stop_after_step >= 2:
             cmd = []
-            cmd.extend((BIN2PATH["tsubstructure"] + " -A D -E autocreate -b -u -i smi -o smi ").split())
+            cmd.extend((binary_paths["tsubstructure"] + " -A D -E autocreate -b -u -i smi -o smi ").split())
             cmd.extend(("-m " + bad_file_2 + " -m QDT").split())
-            cmd.extend((f"-n {tsub_out_2} -q F:" + query_files[1] + f" {tsub_out_1}").split())
-            out.append(run_cmd(cmd))
+            tsub_out = "-" if use_pipeline else tsub_out_2
+            tsub_input = "-" if use_pipeline else tsub_out_1
+            cmd.extend((f"-n {tsub_out} -q F:" + query_files[1] + f" {tsub_input}").split())
+            if use_pipeline:
+                pipeline_commands.append(cmd)
+            else:
+                out.append(run_cmd(cmd))
 
         if stop_after_step >= 3:
             cmd = []
             cmd.extend(
                 (
-                    BIN2PATH["iwdemerit"]
+                    binary_paths["iwdemerit"]
                     + " -u -k -x -t "
                     + extra_iwdemerit_options
                     + " -E autocreate -A D -i smi -o smi -q F:"
@@ -270,66 +299,84 @@ class LillyDemeritsFilters:
                 ).split()
             )
             cmd.extend(f"-R {bad_file_3}".split())
+            iwd_good_output = "-" if use_pipeline else iwd_out
+            iwd_input = "-" if use_pipeline else tsub_out_2
             cmd.extend(
-                f"-G {iwd_out} -c smax={soft_upper_atom} -c hmax={hard_upper_atom} {tsub_out_2}".split()
+                f"-G {iwd_good_output} -c smax={soft_upper_atom} -c hmax={hard_upper_atom} {iwd_input}".split()
             )
-            out.append(run_cmd(cmd))
+            if use_pipeline:
+                pipeline_commands.append(cmd)
+            else:
+                out.append(run_cmd(cmd))
+
+        if use_pipeline:
+            run_pipeline(pipeline_commands, iwd_out)
 
         data_list = []
-        for i, bad_file in enumerate([bad_file_0, bad_file_1, bad_file_2]):
+        completed_bad_files = [bad_file_0, bad_file_1, bad_file_2][: stop_after_step + 1]
+        for i, bad_file in enumerate(completed_bad_files):
             with open(bad_file + ".smi") as IN:
                 df_bad = parse_output(IN)
                 df_bad["step"] = i + 1
                 df_bad["rejected"] = True
                 data_list.append(df_bad)
 
-        demerit_extractor = re.compile(r"'([A-Za-z0-9_\s]+)'")
-        i = 0
-        for dt_file, rej in [(bad_file_3 + ".smi", True), (iwd_out, False)]:
-            parseable = []
-            demerit_scores = []
-            with open(dt_file) as IN:
-                for row in IN:
-                    in_string, *demerit_string = row.split(" : ")
-                    in_string = in_string.strip()
-                    demerit_score = 0
-                    if not demerit_string:
-                        in_string += ' ""'
-                    else:
-                        demerit_string = str(demerit_string[0]).strip()
-                        m = re.match(r"D\(([0-9]+)\)", demerit_string)
-                        if m is not None:
-                            demerit_score = int(m.group(1))
-                        tmp = demerit_extractor.findall(row)
-                        demerit_string = ",".join([":".join(reversed(line.split())) for line in tmp])
-                        in_string += " " + demerit_string
-                    parseable.append(in_string)
-                    demerit_scores.append(demerit_score)
+        if stop_after_step >= 3:
+            demerit_extractor = re.compile(r"'([A-Za-z0-9_\s]+)'")
+            for dt_file, rejected in [(bad_file_3 + ".smi", True), (iwd_out, False)]:
+                parseable = []
+                demerit_scores = []
+                with open(dt_file) as IN:
+                    for row in IN:
+                        in_string, *demerit_string = row.split(" : ")
+                        in_string = in_string.strip()
+                        demerit_score = 0
+                        if not demerit_string:
+                            in_string += ' ""'
+                        else:
+                            demerit_string = str(demerit_string[0]).strip()
+                            m = re.match(r"D\(([0-9]+)\)", demerit_string)
+                            if m is not None:
+                                demerit_score = int(m.group(1))
+                            tmp = demerit_extractor.findall(row)
+                            demerit_string = ",".join([":".join(reversed(line.split())) for line in tmp])
+                            in_string += " " + demerit_string
+                        parseable.append(in_string)
+                        demerit_scores.append(demerit_score)
 
-            df = parse_output(parseable)
-            df["rejected"] = rej
-            df["step"] = i + 1
-            df["demerit_score"] = demerit_scores
+                df = parse_output(parseable)
+                df["rejected"] = rejected
+                df["step"] = 4
+                df["demerit_score"] = demerit_scores
+                data_list.append(df)
+        else:
+            pass_file = [mc_pass_out, tsub_out_1, tsub_out_2][stop_after_step]
+            with open(pass_file) as IN:
+                df = parse_output(IN)
+            df["rejected"] = False
+            df["step"] = stop_after_step + 1
+            df["demerit_score"] = 0
             data_list.append(df)
-            i += 1
-        results = pd.concat(data_list)
+        results = pd.concat(data_list, ignore_index=True)
 
         # Postprocessing
-        results["status"] = results["rejected"].apply(lambda x: "Exclude" if x else "Ok")
-        results.loc[((results.demerit_score > 0) & (~results.rejected)), "status"] = "Flag"
-
-        results["status"] = results["status"].str.lower()
+        results["status"] = pd.Series(
+            ["exclude" if rejected else "ok" for rejected in results["rejected"]],
+            index=results.index,
+            dtype="string",
+        )
+        results.loc[((results.demerit_score > 0) & (~results.rejected)), "status"] = "flag"
         results["pass_filter"] = ~results["rejected"]
         results["mol"] = [mols[i] for i in results["ID"]]
 
         missing_entries = [
             {
-                "smiles": dm.to_smiles(dm.to_mol(mols[i])),
+                "smiles": (mols[i].strip().split()[0] if isinstance(mols[i], str) else dm.to_smiles(mols[i])),
                 "ID": i,
                 "reasons": "lillymol_invalid",
                 "step": 0,
                 "demerit_score": np.nan,
-                "status": "Exclude",
+                "status": "exclude",
                 "pass_filter": False,
                 "mol": mols[i],
             }
@@ -343,11 +390,6 @@ class LillyDemeritsFilters:
             .reset_index(drop=True)
         )
 
-        # clean
-        for to_del in files_to_be_deleted:
-            if os.path.isfile(to_del):
-                os.remove(to_del)
-            else:
-                shutil.rmtree(to_del)
+        temporary_dir.cleanup()
 
         return results

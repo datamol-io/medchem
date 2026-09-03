@@ -311,7 +311,6 @@ class _NodeEvaluator:
         self.node_expr = node_expr
         self.node_fn = None
         if self.node_expr.startswith("fn("):
-            # EN: revisit this with a regexp eventually for robustness
             node_expr = node_expr[3:-1]  # remove `fn(` and `)`
             node_arg_list = node_expr.split(", ")
             _fn = getattr(QueryOperator, node_arg_list[0], None)
@@ -357,9 +356,8 @@ class EvaluableQuery:
         if self.verbose:
             logger.debug(query_eval)
         if exec:
-            # EN: eval is not safe, but we are using it
-            # because ast.literal_eval cannot parse some tree structures
-            # and also because anything remaining here is sanitized or just boolean expression
+            # The parser reduces the query to boolean operators and values
+            # returned by QueryOperator nodes before evaluation.
             return eval(query_eval)
         return query_eval
 

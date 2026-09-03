@@ -3,8 +3,40 @@ import math
 from rdkit.Chem.rdmolops import GetMolFrags
 from rdkit.Chem.rdmolops import FindPotentialStereo
 from rdkit.Chem import FindMolChiralCenters
+from rdkit.Chem import SpacialScore
+from rdkit.Chem import rdchem
 
 import datamol as dm
+
+
+def _get_explicit_valence(atom: rdchem.Atom) -> int:
+    """Return explicit valence across the supported RDKit releases."""
+    if hasattr(atom, "GetValence"):
+        return atom.GetValence(rdchem.ValenceType.EXPLICIT)
+    return atom.GetExplicitValence()
+
+
+def SPS(mol: dm.Mol, normalize: bool = True):
+    """Compute RDKit's SpacialScore descriptor.
+
+    The score is described by Krzyzanowski et al., J. Med. Chem. 2023,
+    https://doi.org/10.1021/acs.jmedchem.3c00689.
+
+    Args:
+        mol: Input molecule.
+        normalize: Divide the score by the number of heavy atoms (nSPS).
+    """
+    if mol is None:
+        raise ValueError("Invalid molecule")
+    mol = dm.to_mol(mol)
+    if mol is None:
+        raise ValueError("Invalid molecule")
+    # ``dm.to_mol("")`` returns a non-None empty molecule, so the guards above do
+    # not catch it. The normalized score divides by the heavy-atom count and
+    # would raise a bare ZeroDivisionError; surface a clear error instead.
+    if normalize and mol.GetNumHeavyAtoms() == 0:
+        raise ValueError("Cannot compute a normalized SpacialScore for a molecule with no heavy atoms")
+    return SpacialScore.SPS(mol, normalize=normalize)
 
 
 def WhitlockCT(
@@ -83,7 +115,7 @@ def BaroneCT(mol: dm.Mol, chiral: bool = False):
     for aring in rinfo.AtomRings():
         cmpx += len(aring) * 6
     for atom in mol.GetAtoms():
-        deg = atom.GetExplicitValence()
+        deg = _get_explicit_valence(atom)
         if deg == 1:
             cmpx += 3
         elif deg == 2:
@@ -266,11 +298,11 @@ def _AWC(k: int, atom: int, table: list, neighbors: list):
 
 
 def TWC(mol: dm.Mol, log10: bool = True):
-    """Compute total walk count in a molecules as proxy for complexity. This score is described in:
+    r"""Compute total walk count in a molecules as proxy for complexity. This score is described in:
     [Gerta Rucker and Christoph Rucker, J. Chem. Inf. Comput. Sci. 1993, 33, 683-695](https://pubs.acs.org/doi/pdf/10.1021/ci00015a005)
 
-    The total walk count is defined as: $twc = \\frac{1}{2} \sum_{k=1}^{n-1} \sum_{i}^{Natoms} \\text{awc}(k,i)$
-    where $\\text{awc}(k,i)$ is the number of walk of length `k` starting at atom `i`.
+    The total walk count is defined as: $twc = \frac{1}{2} \sum_{k=1}^{n-1} \sum_{i}^{Natoms} \text{awc}(k,i)$
+    where $\text{awc}(k,i)$ is the number of walk of length `k` starting at atom `i`.
 
     On zinc 15 commercially available dataset, the range of this score is [1.20, 39.08] with a median of 10.65
 

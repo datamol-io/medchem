@@ -2,11 +2,10 @@ from lark import Transformer, v_args
 
 
 class QueryParser(Transformer):
-    """
-    Query parser for the custom query language for molecule. This parses the input language, build a parseable and evaluable representation.
-    The trick for lazy evaluation is to define custom guard with '`fn(*)`' around expression that needs to be evaluated.
+    """Transform the molecular query language into an evaluable expression.
 
-    Note that you **SHOULD NOT HAVE TO INTERACT WITH THIS CLASS DIRECTLY**.
+    Function nodes are wrapped in `` `fn(*)` `` markers so they can be evaluated
+    lazily for each molecule. This is an internal implementation class.
 
     Example:
         ```python

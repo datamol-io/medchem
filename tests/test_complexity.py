@@ -1,11 +1,14 @@
 import pytest
+import pandas as pd
 
 import datamol as dm
+from rdkit import Chem
 
 from medchem.complexity import WhitlockCT
 from medchem.complexity import BaroneCT
 from medchem.complexity import SMCM
 from medchem.complexity import TWC
+from medchem.complexity import SPS
 from medchem.complexity import ComplexityFilter
 
 
@@ -98,7 +101,23 @@ def test_twc():
     TWC(mols[0], log10=True)
 
 
-def test_complexity_filter():
+def test_spacial_score():
+    mol = dm.to_mol("C[C@H](O)Cl")
+
+    assert SPS(mol) == 15.75
+    assert SPS(mol, normalize=False) == 63
+
+    with pytest.raises(ValueError, match="Invalid molecule"):
+        SPS(None)
+
+    # A molecule with no heavy atoms must raise a clear error from the
+    # normalized score rather than a bare ZeroDivisionError.
+    empty = Chem.Mol()
+    with pytest.raises(ValueError, match="no heavy atoms"):
+        SPS(empty, normalize=True)
+
+
+def test_complexity_filter(tmp_path):
     cf = ComplexityFilter(threshold_stats_file="zinc_12")
 
     smiles = dm.data.cdk2().smiles.iloc[:10].values
@@ -128,3 +147,18 @@ def test_complexity_filter():
     _ = [cf4(dm.to_mol(x)) for x in smiles]
 
     assert outputs == expected_outputs
+
+    custom_thresholds = tmp_path / "spacialscore.csv"
+    pd.DataFrame(
+        {
+            "percentile": ["99", "99", "max"],
+            "mw_bins": [0, 1_000, 0],
+            "spacialscore": [0, 100, 999],
+        }
+    ).to_csv(custom_thresholds, index=False)
+    spatial_filter = ComplexityFilter(
+        limit="99",
+        complexity_metric="spacialscore",
+        threshold_stats_file=str(custom_thresholds),
+    )
+    assert spatial_filter("CCO")

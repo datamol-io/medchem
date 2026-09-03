@@ -151,7 +151,7 @@ def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairw
     """Count the number of fused aromatic rings in a molecule
 
     !!! warning
-        There is no such thing as a spiroaoaromatic ring in this implementation
+        Spiro-connected aromatic rings are not considered fused.
 
     Args:
         mol: input molecule
@@ -160,12 +160,9 @@ def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairw
             meaning phenanthrene and anthracene would count for 2 fused aromatic rings each
     """
 
-    # EN: might make sense to move this to datamol
-    # This code can be spedt up by sacrificing readability, will revisit eventually
-
     ring_systems = mol.GetRingInfo()
 
-    # we use bond since we are focusing on fused rings
+    # Fused rings share bonds, whereas spiro rings share only an atom.
     simple_rings = list(ring_systems.BondRings())
     rings = [set(r) for r in simple_rings]
     ring_map = [set([x]) for x in range(len(rings))]
@@ -185,9 +182,7 @@ def n_fused_aromatic_rings(mol: dm.Mol, require_all_aromatic: bool = True, pairw
                 go_next = True
                 break
 
-    # simple_rings: is the list of simple rings from ring info
-    # rings: the list of rings after mergin fused rings
-    # ring_map: the mapping between fused rings and the basic rings their contains
+    # ``ring_map`` tracks which simple rings contribute to each merged system.
     if pairwise:
         # we need to count all pair in any fused rings with more than 2 fused rings
         fused_rings = []

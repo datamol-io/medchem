@@ -1,4 +1,6 @@
 import typer
+from pathlib import Path
+from typing import Optional
 
 from loguru import logger
 
@@ -7,6 +9,28 @@ import datamol as dm
 import pandas as pd
 
 app = typer.Typer(help="The Medchem CLI", add_completion=False)
+
+
+@app.command("install-lilly", help="Install the pinned optional Lilly MedChem Rules tools")
+def install_lilly(
+    prefix: Optional[Path] = typer.Option(None, help="Installation prefix; defaults to active Python"),
+    jobs: Optional[int] = typer.Option(None, min=1, help="Number of parallel compiler jobs"),
+    run_upstream_tests: bool = typer.Option(True, "--test/--no-test", help="Run upstream regression tests"),
+    force: bool = typer.Option(False, help="Rebuild an existing pinned installation"),
+):
+    """Install the checksum-pinned reference implementation without conda."""
+    from medchem.structural.lilly_demerits._installer import LILLY_VERSION
+    from medchem.structural.lilly_demerits._installer import install_lilly_rules
+
+    installed = install_lilly_rules(
+        prefix=prefix,
+        jobs=jobs,
+        run_tests=run_upstream_tests,
+        force=force,
+    )
+    logger.info(f"Installed Lilly MedChem Rules {LILLY_VERSION}")
+    for name, path in installed.items():
+        logger.info(f"{name}: {path}")
 
 
 @app.command(help="Filtering for common structural alerts")

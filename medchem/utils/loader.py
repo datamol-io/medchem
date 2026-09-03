@@ -4,13 +4,8 @@ from typing import Union
 
 import os
 import io
-import sys
 import functools
-
-try:
-    import importlib.resources as importlib_resources
-except ImportError:
-    import importlib_resources
+import importlib.resources as importlib_resources
 
 import fsspec
 
@@ -18,12 +13,7 @@ import fsspec
 @functools.lru_cache(maxsize=10)
 def get_data_path(filename: str, module: str = "medchem.data"):
     """Return the filepath of an internal data file."""
-
-    if sys.version_info < (3, 9, 0):
-        with importlib_resources.path(module, filename) as p:
-            path = p
-    else:
-        path = importlib_resources.files(module).joinpath(filename)
+    path = importlib_resources.files(module).joinpath(filename)
     return str(path)
 
 

@@ -10,8 +10,8 @@ to PyPI.
    heading (the workflow rejects any other form) and refresh README or docs
    wording that still calls the release unreleased.
 2. Merge the release into `main`, preserving contributor history.
-3. Ensure the `PYPI_API_TOKEN` secret holds a token authorized for `medchem`.
-   The workflow confirms the secret exists but cannot check its scope.
+3. Confirm that PyPI's Trusted Publisher matches the `datamol-io/medchem`
+   repository, `.github/workflows/release.yml` workflow and `pypi` environment.
 
 ## Run the release action
 
@@ -26,10 +26,12 @@ version and notes, reruns the full test and quality suites on the target commit,
 builds the wheel and sdist, installs each in isolation to verify its version and
 import path, and builds the documentation before anything is uploaded.
 
-Upload uses the `PYPI_API_TOKEN` secret. PyPI rejects PEP 740 attestations on
-token-based uploads, so none are generated. Only after PyPI accepts the upload
-does the action tag the commit, create the GitHub Release and deploy versioned
-documentation. A prerelease never moves the `stable` docs alias, and a failed
+Upload uses PyPI Trusted Publishing: GitHub exchanges its short-lived OpenID
+Connect identity for a project-scoped PyPI token, without a long-lived GitHub
+secret. The action generates and uploads PEP 740 attestations. Only after PyPI
+accepts the upload does the action tag the commit, create the GitHub Release
+and deploy versioned documentation. A prerelease never moves the `stable` docs
+alias, and a failed
 upload leaves it untouched — rerun the failed jobs rather than rebuilding an
 already published version.
 

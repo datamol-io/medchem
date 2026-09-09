@@ -1247,8 +1247,8 @@ to PyPI.</p>
    heading (the workflow rejects any other form) and refresh README or docs
    wording that still calls the release unreleased.</li>
 <li>Merge the release into <code>main</code>, preserving contributor history.</li>
-<li>Ensure the <code>PYPI_API_TOKEN</code> secret holds a token authorized for <code>medchem</code>.
-   The workflow confirms the secret exists but cannot check its scope.</li>
+<li>Confirm that PyPI's Trusted Publisher matches the <code>datamol-io/medchem</code>
+   repository, <code>.github/workflows/release.yml</code> workflow and <code>pypi</code> environment.</li>
 </ol>
 <h2 id="run-the-release-action">Run the release action<a class="headerlink" href="#run-the-release-action" title="Permanent link">&para;</a></h2>
 <p>Open <strong>Actions → release → Run workflow</strong> from <code>main</code> and enter the version in
@@ -1260,10 +1260,12 @@ only the throwaway runner checkout, so it never touches GitHub or PyPI.</p>
 version and notes, reruns the full test and quality suites on the target commit,
 builds the wheel and sdist, installs each in isolation to verify its version and
 import path, and builds the documentation before anything is uploaded.</p>
-<p>Upload uses the <code>PYPI_API_TOKEN</code> secret. PyPI rejects PEP 740 attestations on
-token-based uploads, so none are generated. Only after PyPI accepts the upload
-does the action tag the commit, create the GitHub Release and deploy versioned
-documentation. A prerelease never moves the <code>stable</code> docs alias, and a failed
+<p>Upload uses PyPI Trusted Publishing: GitHub exchanges its short-lived OpenID
+Connect identity for a project-scoped PyPI token, without a long-lived GitHub
+secret. The action generates and uploads PEP 740 attestations. Only after PyPI
+accepts the upload does the action tag the commit, create the GitHub Release
+and deploy versioned documentation. A prerelease never moves the <code>stable</code> docs
+alias, and a failed
 upload leaves it untouched — rerun the failed jobs rather than rebuilding an
 already published version.</p>
 <h2 id="conda-forge">Conda-forge<a class="headerlink" href="#conda-forge" title="Permanent link">&para;</a></h2>

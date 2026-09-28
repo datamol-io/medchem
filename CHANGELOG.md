@@ -4,6 +4,13 @@ This file records user-visible changes. See the [migration guide](docs/migration
 for upgrade instructions and [GitHub releases](https://github.com/datamol-io/medchem/releases)
 for earlier release notes.
 
+## 2.1.1 - 2026-09-28
+
+### Fixed
+
+- Restore symmetry scoring with current NetworkX by matching each bond attribute
+  to its own default value.
+
 ## 2.1.0 - 2026-09-03
 
 ### Highlights

@@ -50,7 +50,7 @@ def automorphism(
     if node_attrs:
         node_match = nx.algorithms.isomorphism.categorical_node_match(node_attrs, [0] * len(node_attrs))
     if edge_attrs:
-        edge_match = nx.algorithms.isomorphism.categorical_edge_match(edge_attrs, [0] * len(node_attrs))
+        edge_match = nx.algorithms.isomorphism.categorical_edge_match(edge_attrs, [0] * len(edge_attrs))
 
     graph_matcher = nx.algorithms.isomorphism.GraphMatcher(
         graph, graph_copy, node_match=node_match, edge_match=edge_match
